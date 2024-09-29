@@ -27,13 +27,32 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     >>> cleaned_data = medals_to_int(data)
     >>> print(cleaned_data['Medal'].tolist())
     [3, 3, 2, 1, 0]
-    """
-   
-    df['Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
-    df['Medal'] = df['Medal'].fillna(0)
-    df['Medal'] = df['Medal'].astype(int)
     
-    return df
+    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [np.nan, 'Bronze', 'Bronze', 'Bronze', np.nan]  }) 
+    >>> cleaned_data =  medals_to_int(data)
+    >>> print(cleaned_data['Medal'].tolist())
+    [0, 1, 1, 1, 0]
+    
+    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [np.nan, np.nan, np.nan, np.nan, np.nan]  }) 
+    >>> cleaned_data =  medals_to_int(data)
+    >>> print(cleaned_data['Medal'].tolist())
+    [0, 0, 0, 0, 0]
+    """
+    try:
+        df['Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
+        df['Medal'] = df['Medal'].fillna(0)
+        df['Medal'] = df['Medal'].astype(int)
+        
+        return df
+    
+    except KeyError:
+        print(
+            f"The given dataframe has no column 'Área de Avaliação', consider replacing it.")
+        quit()
+    else:
+        return df
+    
+       
 
 
 def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
@@ -101,6 +120,5 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     doctest.testmod(verbose=True)
 
-# data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
-# cleaned_data = medals_to_int(data)
-# print(cleaned_data['Medal'].tolist())
+# data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Sex': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan], 
+#                      'Age': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan ], 'Weight': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
