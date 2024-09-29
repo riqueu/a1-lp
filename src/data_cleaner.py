@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+import doctest
 
 from sklearn.linear_model import LinearRegression
 from sklearn.impute import SimpleImputer
@@ -19,7 +20,15 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: DataFrame com coluna 'Medal' convertida para inteiros.
+    
+    Example
+    ----------
+    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
+    >>> cleaned_data = medals_to_int(data)
+    >>> print(cleaned_data['Medal'].tolist())
+    [3, 3, 2, 1, 0]
     """
+   
     df['Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
     df['Medal'] = df['Medal'].fillna(0)
     df['Medal'] = df['Medal'].astype(int)
@@ -87,3 +96,11 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
         df[col] = df[col].round(0).astype(int)
 
     return df
+
+
+if __name__ == "__main__":
+    doctest.testmod(verbose=True)
+
+# data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
+# cleaned_data = medals_to_int(data)
+# print(cleaned_data['Medal'].tolist())
