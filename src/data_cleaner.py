@@ -47,7 +47,7 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     
     except KeyError:
         print(
-            f"The given dataframe has no column 'Área de Avaliação', consider replacing it.")
+            f"The given dataframe has no column 'Medal', consider replacing it.")
         quit()
     else:
         return df
