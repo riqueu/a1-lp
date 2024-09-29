@@ -9,6 +9,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
+
 def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     """Recebe DataFrame com coluna 'Medal' e converte valores string para inteiros.
     0: Sem medalha; 1: Bronze; 2: Prata; 3: Ouro.
@@ -24,6 +25,7 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     df['Medal'] = df['Medal'].astype(int)
     
     return df
+
 
 def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     """Função que preenche valores faltantes de 'Age', 'Height' e 'Weight' com regressão linear
@@ -53,7 +55,7 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
                     continue
                 
                 # Extrai os dados de treino e teste
-                X_train, X_test, y_train, y_test = train_test_split(available_data[predictors], available_data[target], test_size=0.2, random_state=0)
+                X_train, _, y_train, _ = train_test_split(available_data[predictors], available_data[target], test_size=0.2, random_state=0)
                 
                 # Use uma pipeline para preencher os valores faltantes
                 imputer = SimpleImputer(strategy='mean')  # estratégia de média
@@ -80,4 +82,8 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     
     df.dropna(inplace=True) # Remove NaN's que não foram preenchidos (~ que faltaram informações para preencher)
     
+    # Arredonda os valores das target_columns e tranforma em inteiro 
+    for col in target_columns:
+        df[col] = df[col].round(0).astype(int)
+
     return df

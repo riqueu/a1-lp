@@ -1,5 +1,5 @@
 # Trabalho A1 - Linguagens de Programação
-Trabalho A1 - Linguagens de Programação - Análise Olimpíadas
+Trabalho A1 - Linguagens de Programação - Olympic Analytics
 
 ## Group:
 - [Carlos Daniel de Souza Lima](https://github.com/G4me0ver23)
