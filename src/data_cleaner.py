@@ -11,6 +11,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
 
+# TODO
+#  Criar função que confere se  possui todas as colunas necessárias para análise
+
 def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     """Recebe DataFrame com coluna 'Medal' e converte valores string para inteiros.
     0: Sem medalha; 1: Bronze; 2: Prata; 3: Ouro.
@@ -43,7 +46,6 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
         df['Medal'] = df['Medal'].fillna(0)
         df['Medal'] = df['Medal'].astype(int)
         
-    
     except KeyError:
         print(
             f"The given dataframe has no column 'Medal', consider replacing it.")
@@ -51,7 +53,6 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     else:
         return df
     
-       
 
 def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     """Função que preenche valores faltantes de 'Age', 'Height' e 'Weight' com regressão linear
@@ -128,5 +129,3 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
      doctest.testmod(verbose=True)
-
-
