@@ -54,8 +54,9 @@ class TestMedalsToInt(unittest.TestCase):
 class TestPredictMissing(unittest.TestCase):
     
     
-    #  Test the function with a  DataFrame with values only in one column
-    def test_values_only_in_one_column(self):
+    #  Test the function with a  DataFrame with one only 
+    def test_a_full_row_only(self):
+        
         data = data = pd.DataFrame({
     'Sport': ['Soccer', 'Soccer', 'Soccer'],
     'Sex': ['F', 'F', 'F'],
@@ -77,19 +78,37 @@ class TestPredictMissing(unittest.TestCase):
         self.assertEqual(expected_result['Height'].tolist(), modified_data['Height'].tolist())
         self.assertEqual(expected_result['Weight'].tolist(), modified_data['Weight'].tolist())
         
+        """
+        Outra possibilidade:
+        from pandas.testing import assert_frame_equal
         
-
-
+        assert_frame_equal(df1, df2)
+        """
 
     
     def test_no_missing_values(self):
-        pass
-    
+        
+        data = pd.DataFrame({
+    'Sport': ['Tennis', 'Tennis', 'Tennis', 'Tennis'],
+    'Sex': ['M', 'F', 'F', 'M'],
+    'Age': [30, 25, 18, 19],
+    'Height': [180, 170, 160, 155],
+    'Weight': [75, 65, 68, 81]
+})
+        expected_result = data.copy()
+
+        modified_data = predict_missing(data)
+        
+        self.assertEqual(expected_result['Age'].tolist(), modified_data['Age'].tolist())
+        self.assertEqual(expected_result['Height'].tolist(), modified_data['Height'].tolist())
+        self.assertEqual(expected_result['Weight'].tolist(), modified_data['Weight'].tolist())
+        
     
     
     
 
 if __name__== "__main__":
+    
     unittest.main()
     
     
