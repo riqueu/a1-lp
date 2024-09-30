@@ -116,5 +116,16 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-if __name__ == "__main__":
-    doctest.testmod(verbose=True)
+# if __name__ == "__main__":
+#      doctest.testmod(verbose=True)
+
+data = data = pd.DataFrame({
+    'Sport': ['Soccer', 'Soccer', 'Soccer'],
+    'Sex': ['F', 'F', 'F'],
+    'Age': [25, np.nan, 22],
+    'Height': [160, 165, np.nan],
+    'Weight': [55, np.nan, 60]
+})
+
+cleaned_data = predict_missing(data)
+print(cleaned_data)

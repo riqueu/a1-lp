@@ -10,11 +10,14 @@ class TestMedalsToInt(unittest.TestCase):
     def test_all_types_of_medals_present(self):
         
         data = pd.DataFrame({
-        'Atleta': ['A', 'B', 'C', 'D', 'E'], 
-        'Medal': ['Gold', 'Silver', 'Bronze', np.nan, 'Gold']
+        'Name': ['Alice', 'Bryan', 'Carlos', 'Daniel', 'Eliel'], 
+        'Medal': ['Gold', 'Silver', 'Bronze', np.nan, 'Gold'], 
+        'Height':  [170, 160, 150, 155, 187], 
+        'Weight': [80, 60, 65, 46, 89], 
+        'Age': [15, 16, 17, 18, 19]
 })
-        standardized_data = medals_to_int(data)
-        medals = standardized_data['Medal']
+        modified_data = medals_to_int(data)
+        medals = modified_data['Medal']
         expected_result =  [3, 2, 1, 0, 3]
         
         self.assertEqual(expected_result, medals.tolist())
@@ -24,26 +27,67 @@ class TestMedalsToInt(unittest.TestCase):
     def test_without_medals(self):
         
         data = pd.DataFrame({
-        'Atleta': ['Gustavo', 'Luciano', 'Chappel', 'Ariana', 'Taylor'], 
+        'Name': ['Gustavo', 'Luciano', 'Chappel', 'Ariana', 'Taylor'], 
         'Medal': [np.nan, np.nan, np.nan, np.nan, np.nan], 
-        'Height': [170, 160, 150, 155, 187]
+        'Height': [170, 160, 150, 155, 187], 
+         'Weight': [80, 60, 65, 46, 89], 
+        'Age': [15, 16, 17, 18, 19]
 })
-        standardized_data = medals_to_int(data)
+        modified_data = medals_to_int(data)
         medals = data['Medal']
         expected_result = [0, 0, 0, 0, 0]
         self.assertEqual(expected_result, medals.tolist())
 
 
      # Test the function with a dataframe that doesn't have the Medals column 
-    def test_withou_medal_collumn(self):
+    def test_without_medal_column(self):
         data = pd.DataFrame({
-        'Atleta': ['Jaime', 'Willian', 'Carneiro']
+        'Atleta': ['Jaime', 'Willian', 'Carneiro'], 
+        'Height': [170, 160, 150], 
+         'Weight': [80, 60, 65], 
+        'Age': [15, 16, 17]
 })
         
         with self.assertRaises(SystemExit):
             medals_to_int(data)
             
+class TestPredictMissing(unittest.TestCase):
+    
+    
+    #  Test the function with a  DataFrame with values only in one column
+    def test_values_only_in_one_column(self):
+        data = data = pd.DataFrame({
+    'Sport': ['Soccer', 'Soccer', 'Soccer'],
+    'Sex': ['F', 'F', 'F'],
+    'Age': [25, np.nan, 22],
+    'Height': [160, 165, np.nan],
+    'Weight': [55, np.nan, 60]
+})
+        expected_result = data = pd.DataFrame({
+    'Sport': ['Soccer', 'Soccer', 'Soccer'],
+    'Sex': ['F', 'F', 'F'],
+    'Age': [25, 25, 22],
+    'Height': [160, 165, 160],
+    'Weight': [55, 55, 60]
+})      
+        
+        modified_data = predict_missing(data) 
+        
+        self.assertEqual(expected_result['Age'].tolist(), modified_data['Age'].tolist())
+        self.assertEqual(expected_result['Height'].tolist(), modified_data['Height'].tolist())
+        self.assertEqual(expected_result['Weight'].tolist(), modified_data['Weight'].tolist())
+        
+        
 
+
+
+    
+    def test_no_missing_values(self):
+        pass
+    
+    
+    
+    
 
 if __name__== "__main__":
     unittest.main()
