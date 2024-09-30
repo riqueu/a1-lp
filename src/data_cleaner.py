@@ -54,7 +54,6 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     
        
 
-
 def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     """Função que preenche valores faltantes de 'Age', 'Height' e 'Weight' com regressão linear
     com base no esporte e sexo do atleta. Se não for possível prever, preenche com a média dos
@@ -119,6 +118,3 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     doctest.testmod(verbose=True)
-
-# data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Sex': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan], 
-#                      'Age': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan ], 'Weight': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
