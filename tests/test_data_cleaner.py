@@ -103,7 +103,6 @@ class TestPredictMissing(unittest.TestCase):
         self.assertEqual(expected_result['Age'].tolist(), modified_data['Age'].tolist())
         self.assertEqual(expected_result['Height'].tolist(), modified_data['Height'].tolist())
         self.assertEqual(expected_result['Weight'].tolist(), modified_data['Weight'].tolist())
-        
     
 
 if __name__== "__main__":
