@@ -20,21 +20,21 @@ def dataframe_cleaner(dataframe: pd.DataFrame) -> pd.DataFrame:
         Index:
             RangeIndex
         Columns:
-            Name: 'ID' - Unique number for each athlete
-            Name: 'Name' - Athlete's name
-            Name: 'Sex' - M or F
-            Name: 'Age' - Integer
-            Name: 'Height' - In centimeters
-            Name: 'Weight' - In kilograms
-            Name: 'Team' - Team name
-            Name: 'NOC' - National Olympic Committee 3-letter code
-            Name: 'Games' - Year and season
-            Name: 'Year' - Integer
-            Name: 'Season' - Summer or Winter
-            Name: 'City' - Host city
-            Name: 'Sport' - Sport
-            Name: 'Event' - Event
-            Name: 'Medal' - Gold, Silver, Bronze, or NA
+            Name: 'ID' - int64
+            Name: 'Name' - object
+            Name: 'Sex' - object
+            Name: 'Age' - float64
+            Name: 'Height' - float64
+            Name: 'Weight' - float64
+            Name: 'Team' - object
+            Name: 'NOC' - object
+            Name: 'Games' - object
+            Name: 'Year' - int64
+            Name: 'Season' - object
+            Name: 'City' - object
+            Name: 'Sport' - object
+            Name: 'Event' - object
+            Name: 'Medal' - object
         
     Returns:
         pd.DataFrame: a cleaned dataframe
