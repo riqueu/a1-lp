@@ -43,10 +43,9 @@ data_2016['Urban_Pop_Absolute'] = data_2016['Pop_Absolute'] * (data_2016['Urban_
 data_2016['Urban_Medalist_Density'] = data_2016['Medalists'] / data_2016['Urban_Pop_Absolute']
 data_2016 = data_2016.sort_values(by='Urban_Pop_Percent')
 
-data_2016.to_csv('data_2016.csv')
+# data_2016.to_csv('data_2016.csv')
 
 # Scatterplot com Seaborn
-
 sns.set_theme(style="whitegrid")
 sns.set_palette("rocket")
 
