@@ -11,9 +11,49 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
 
-# TODO
-#  Criar função que confere se  possui todas as colunas necessárias para análise
+def dataframe_cleaner(dataframe: pd.DataFrame) -> pd.DataFrame:
+    """A função que confere se  possui todas as colunas necessárias para análise
 
+    Args:
+        df (pd.DataFrame): dataframe
+        
+        Index:
+            RangeIndex
+        Columns:
+            Name: 'ID' - Unique number for each athlete
+            Name: 'Name' - Athlete's name
+            Name: 'Sex' - M or F
+            Name: 'Age' - Integer
+            Name: 'Height' - In centimeters
+            Name: 'Weight' - In kilograms
+            Name: 'Team' - Team name
+            Name: 'NOC' - National Olympic Committee 3-letter code
+            Name: 'Games' - Year and season
+            Name: 'Year' - Integer
+            Name: 'Season' - Summer or Winter
+            Name: 'City' - Host city
+            Name: 'Sport' - Sport
+            Name: 'Event' - Event
+            Name: 'Medal' - Gold, Silver, Bronze, or NA
+        
+    Returns:
+        pd.DataFrame: a cleaned dataframe
+    """
+    
+    # creates a copy of the original dataset
+    df = dataframe.copy()
+    
+    useful_columns = ['ID', 'Name', 'Sex', 'Age', 'Height', 'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport', 'Event', 'Medal']
+    
+    try:
+        useful_df = df[useful_columns]
+    except KeyError:
+        print(
+            f"The given dataframe doesn't have all needeed columns, consider replacing it.")
+        quit()
+    else:
+        return useful_df
+    
 def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     """Recebe DataFrame com coluna 'Medal' e converte valores string para inteiros.
     0: Sem medalha; 1: Bronze; 2: Prata; 3: Ouro.
@@ -69,7 +109,7 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     # TODO
     #  Analisar os casos onde há apenas uma linha com aquele parametro (sexo, esporte, peso, idade, altura)
     #  Por exemplo: Se num dataframe  de um determinado país num esporte há apenas um atleta que não possui a altura informada
-    # O programa executaria erro, pois não teria como comparar com outros atletas
+    #  O programa executaria erro, pois não teria como comparar com outros atletas
     
     try:
         for sport in df['Sport'].unique():
