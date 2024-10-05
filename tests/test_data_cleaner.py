@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from src.data_cleaner import *
+import unittest
 
-import doctest
 
 class TestDataframeCleaner(unittest.TestCase):
     
@@ -184,5 +184,6 @@ class TestPredictMissing(unittest.TestCase):
         self.assertEqual(expected_result['Height'].tolist(), modified_data['Height'].tolist())
         self.assertEqual(expected_result['Weight'].tolist(), modified_data['Weight'].tolist())
     
+
 if __name__ == "__main__":
-    doctest.testmod()
+    unittest.main()
