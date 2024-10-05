@@ -11,9 +11,49 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
 
-# TODO
-#  Criar função que confere se  possui todas as colunas necessárias para análise
+def check_athletes_columns(dataframe: pd.DataFrame) -> pd.DataFrame:
+    """A função que confere se  possui todas as colunas necessárias para análise
 
+    Args:
+        df (pd.DataFrame): dataframe
+        
+        Index:
+            RangeIndex
+        Columns:
+            Name: 'ID' - int64
+            Name: 'Name' - object
+            Name: 'Sex' - object
+            Name: 'Age' - float64
+            Name: 'Height' - float64
+            Name: 'Weight' - float64
+            Name: 'Team' - object
+            Name: 'NOC' - object
+            Name: 'Games' - object
+            Name: 'Year' - int64
+            Name: 'Season' - object
+            Name: 'City' - object
+            Name: 'Sport' - object
+            Name: 'Event' - object
+            Name: 'Medal' - object
+        
+    Returns:
+        pd.DataFrame: a cleaned dataframe
+    """
+    
+    # creates a copy of the original dataset
+    df = dataframe.copy()
+    
+    useful_columns = ['ID', 'Name', 'Sex', 'Age', 'Height', 'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport', 'Event', 'Medal']
+    
+    try:
+        useful_df = df[useful_columns]
+    except KeyError:
+        print(
+            f"The given dataframe doesn't have all needeed columns, consider replacing it.")
+        quit()
+    else:
+        return useful_df
+    
 def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     """Recebe DataFrame com coluna 'Medal' e converte valores string para inteiros.
     0: Sem medalha; 1: Bronze; 2: Prata; 3: Ouro.
@@ -104,7 +144,7 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     # TODO
     #  Analisar os casos onde há apenas uma linha com aquele parametro (sexo, esporte, peso, idade, altura)
     #  Por exemplo: Se num dataframe  de um determinado país num esporte há apenas um atleta que não possui a altura informada
-    # O programa executaria erro, pois não teria como comparar com outros atletas
+    #  O programa executaria erro, pois não teria como comparar com outros atletas
     
     try:
         for sport in df['Sport'].unique():
@@ -161,6 +201,7 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     else:
         return df
 
+
 def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
     """Função que renomeia os países com nomes diferentes/em conflito internacional
     para padronizar com os outros DataFrames.
@@ -195,6 +236,7 @@ def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
         quit()
     else:
         return df
+
 
 if __name__ == "__main__":
      doctest.testmod(verbose=True)
