@@ -3,7 +3,7 @@ import numpy as np
 from src.data_cleaner import *
 import unittest
 
-class TestDataframeCleaner(unittest.TestCase):
+class TestCheckAthletesColumns(unittest.TestCase):
     
      # Test the function with a dataframe containing all the needed columns.
     def test_all_columns_present(self):
@@ -25,7 +25,7 @@ class TestDataframeCleaner(unittest.TestCase):
             'Medal': [None, 'Gold', None]
              })
         
-        cleaned_data = dataframe_cleaner(data)
+        cleaned_data = check_athletes_columns(data)
         
         expected_columns =['ID', 'Name', 'Sex', 'Age', 'Height', 'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport', 'Event', 'Medal']
     
@@ -56,18 +56,18 @@ class TestDataframeCleaner(unittest.TestCase):
         expected_columns =['ID', 'Name', 'Sex', 'Age', 'Height', 'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport', 'Event', 'Medal']
 
         
-        cleaned_data =  dataframe_cleaner(data)
+        cleaned_data =  check_athletes_columns(data)
         
         self.assertEqual(cleaned_data.columns.tolist(), expected_columns)
         
     
     # test the function with an empty dataframe
-    def test_dataframe_cleaner_empty_dataframe(self):
+    def test_check_athletes_columns_empty_dataframe(self):
         
         df = pd.DataFrame()
         
         with self.assertRaises(SystemExit):
-            dataframe_cleaner(df)
+            check_athletes_columns(df)
         
             
     def test_dataframe_cleaner_missing_columns(self):
@@ -80,7 +80,7 @@ class TestDataframeCleaner(unittest.TestCase):
         # Colunas faltando: Height, Weight, etc.
     })
         with self.assertRaises(SystemExit):
-            dataframe_cleaner(data)
+            check_athletes_columns(data)
             
             
 class TestMedalsToInt(unittest.TestCase):
