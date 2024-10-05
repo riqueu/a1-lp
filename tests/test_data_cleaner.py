@@ -184,5 +184,9 @@ class TestPredictMissing(unittest.TestCase):
         self.assertEqual(expected_result['Weight'].tolist(), modified_data['Weight'].tolist())
     
 
+class TestRenameCountries(unittest.TestCase):
+    # TODO
+    # adicionar testes de caso
+    pass
 if __name__ == "__main__":
     unittest.main()
