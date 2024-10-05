@@ -7,6 +7,7 @@ import geopandas as gpd
 import seaborn as sns
 from data_cleaner import *
 
+
 def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urbanization_df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
     """Função que gera um scatterplot com a relação entre a urbanização percentual e a densidade de medalhas por habitante urbano.
     
@@ -14,8 +15,11 @@ def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urban
         athletes_df (pd.DataFrame): DataFrame com dados dos atletas.
         urbanization_df (pd.DataFrame): DataFrame com dados de urbanização.
         noc_df (pd.DataFrame): DataFrame com dados de NOC.
+    Returns:
+        pd.DataFrame: DataFrame com dados de medalistas e urbanização em 2016.
     """
     # Filtragem dos atletas medalhistas para Análise e união com os dados de urbanização
+    athletes_df = medals_to_bool(athletes_df) # Só queremos saber se o atleta ganhou ou não
     athletes_2016 = athletes_df[athletes_df['Year'] == 2016]
     medal_count_per_country_2016 = athletes_2016.groupby('NOC')['Medal'].sum().reset_index()
     medal_count_per_country_2016.rename(columns={'Medal': 'Medalists'}, inplace=True)
@@ -39,6 +43,7 @@ def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urban
     data_2016 = data_2016.sort_values(by='Urban_Pop_Percent')
     
     return data_2016
+
 
 def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None:
     """Função que gera um scatterplot com a relação entre a urbanização percentual e a densidade de medalhas por habitante urbano.
@@ -65,7 +70,7 @@ def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None
 
     # Anotando o scatterplot com os países
     colorir = [top_5_countries, bottom_5_countries, most_medalists, brazil]
-    colors = ['seagreen', '#e35252', '#d67e20', '#14ad09']
+    colors = ['seagreen', '#e35252', '#d67e20', '#037bfc']
     font_sizes = [7, 7, 6, 6]
     for i, df in enumerate(colorir):
         for _, row in df.iterrows():
