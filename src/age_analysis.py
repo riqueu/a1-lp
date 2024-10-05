@@ -3,24 +3,7 @@ from data_cleaner import *
 import matplotlib.pyplot as plt
 import seaborn as sns 
 
-df = pd.read_csv("data/athlete_events.csv")
 
-print("Conferindo se possui todas as colunas necessária")
-cleaned_data= check_athletes_columns(df)
-print()
-print("dataframe possui todas colunas necessárias")
-print()
-print("Conferindo os tipos de medahas para int")
-cleaned_data = medals_to_int(cleaned_data)
-print("Medalhas convertidas")
-print()
-print("tratando dados faltantes")
-cleaned_data = predict_missing(cleaned_data)
-print("Dados faltantes tratados")
-print()
-print("podemos começar")
-
-# Estatisticas de idade por esporte
 def estatisticas_idade_por_esporte(df: pd.DataFrame) -> dict:
     """
     Função que agrupa o DataFrame pela coluna 'Sport' e calcula mediana, 1º quartil (Q1) e 3º quartil (Q3)
@@ -119,21 +102,24 @@ def esportes_com_idades_extremas(df: pd.DataFrame) -> list:
 
 
 # Esportes Com Outliers
-esportes_extremos = esportes_com_idades_extremas(cleaned_data)
+def esportes_outliers_save_graph(df: pd.DataFrame) -> None:
+    """
+    Função que gera um boxplot com os esportes que possuem atletas com idades extremas.
+    
+    Args:
+        cleaned_data (pd.DataFrame): O DataFrame com os dados esportivos limpos.
+    """
+    esportes_extremos = esportes_com_idades_extremas(df)
+    # Analisando o esporte com mais valores extremos
+    maior_esporte = max(esportes_extremos, key=esportes_extremos.get)
+    quantidade = esportes_extremos[maior_esporte]
 
-# Analisando o esporte com mais valores extremos
-maior_esporte = max(esportes_extremos, key=esportes_extremos.get)
-quantidade = esportes_extremos[maior_esporte]
+    df_maioresporte = df[df['Sport'] == maior_esporte]
 
-df_maioresporte = cleaned_data[cleaned_data['Sport'] == maior_esporte]
+    sns.boxplot(x='Sport', y='Age', data=df_maioresporte)
+    plt.title('Boxplot de Idades por Esporte')
+    plt.xlabel('Esporte')
+    plt.ylabel('Idade')
 
-sns.boxplot(x='Sport', y='Age', data=df_maioresporte)
-plt.title('Boxplot de Idades por Esporte')
-plt.xlabel('Esporte')
-plt.ylabel('Idade')
-
-# Salvando o gráfico como PNG
-plt.savefig('graphs/bloxplot_gymnastics_age.png', format='png', dpi=300)
-
-# Exibindo o gráfico
-# plt.show()
+    # Salvando o gráfico como PNG
+    plt.savefig('graphs/bloxplot_gymnastics_age.png', format='png', dpi=300)

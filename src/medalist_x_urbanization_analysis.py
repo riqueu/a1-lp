@@ -15,6 +15,8 @@ def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urban
         athletes_df (pd.DataFrame): DataFrame com dados dos atletas.
         urbanization_df (pd.DataFrame): DataFrame com dados de urbanização.
         noc_df (pd.DataFrame): DataFrame com dados de NOC.
+    Returns:
+        pd.DataFrame: DataFrame com dados de medalistas e urbanização em 2016.
     """
     # Filtragem dos atletas medalhistas para Análise e união com os dados de urbanização
     athletes_df = medals_to_bool(athletes_df) # Só queremos saber se o atleta ganhou ou não
@@ -68,7 +70,7 @@ def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None
 
     # Anotando o scatterplot com os países
     colorir = [top_5_countries, bottom_5_countries, most_medalists, brazil]
-    colors = ['seagreen', '#e35252', '#d67e20', '#14ad09']
+    colors = ['seagreen', '#e35252', '#d67e20', '#037bfc']
     font_sizes = [7, 7, 6, 6]
     for i, df in enumerate(colorir):
         for _, row in df.iterrows():
