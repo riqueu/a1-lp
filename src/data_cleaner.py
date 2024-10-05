@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
 
-def dataframe_cleaner(dataframe: pd.DataFrame) -> pd.DataFrame:
+def check_athletes_columns(dataframe: pd.DataFrame) -> pd.DataFrame:
     """A função que confere se  possui todas as colunas necessárias para análise
 
     Args:
