@@ -46,6 +46,8 @@ def transform_olympics_to_paralympics_format(olympics_df: pd.DataFrame) -> pd.Da
     Returns:
         pd.DataFrame: Um DataFrame formatado como os DataFrames paralímpicos
     """
+    olympics_df = olympics_df[olympics_df['Year'] >= 1960]
+
     grouped_df = olympics_df.groupby(['NOC', 'Year', 'Season']).agg(
         Gold=('Medal', lambda x: (x == 'Gold').sum()),
         Silver=('Medal', lambda x: (x == 'Silver').sum()),
@@ -66,4 +68,5 @@ def transform_olympics_to_paralympics_format(olympics_df: pd.DataFrame) -> pd.Da
 
 # Aplica as funções, limpando e organizando os dois DataFrames para que possamos iniciar a análise
 olympics_df = transform_olympics_to_paralympics_format(olympics_df) 
-paralympics_df = merge_noc_with_country(summer_paralympics_df, noc_regions_df)
+paralympics_df = merge_noc_with_country(paralympics_df, noc_regions_df)
+
