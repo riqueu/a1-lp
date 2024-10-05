@@ -166,6 +166,5 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     else:
         return df
 
-
 if __name__ == "__main__":
      doctest.testmod(verbose=True)

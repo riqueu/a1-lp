@@ -3,7 +3,6 @@ import numpy as np
 from src.data_cleaner import *
 import unittest
 
-
 class TestDataframeCleaner(unittest.TestCase):
     
      # Test the function with a dataframe containing all the needed columns.
