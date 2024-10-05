@@ -3,85 +3,6 @@ import numpy as np
 from src.data_cleaner import *
 import unittest
 
-class TestCheckAthletesColumns(unittest.TestCase):
-    
-     # Test the function with a dataframe containing all the needed columns.
-    def test_all_columns_present(self):
-        data = pd.DataFrame({
-            'ID': [1, 2, 3],
-            'Name': ['Ana', 'Pedro', 'Maria'],
-            'Sex': ['F', 'M', 'F'],
-            'Age': [23, 35, 29],
-            'Height': [160.0, 175.0, 165.0],
-            'Weight': [55.0, 70.0, 60.0],
-            'Team': ['Brazil', 'Brazil', 'Brazil'],
-            'NOC': ['BRA', 'BRA', 'BRA'],
-            'Games': ['2016 Summer', '2016 Summer', '2016 Summer'],
-            'Year': [2016, 2016, 2016],
-            'Season': ['Summer', 'Summer', 'Summer'],
-            'City': ['Rio', 'Rio', 'Rio'],
-            'Sport': ['Swimming', 'Football', 'Athletics'],
-            'Event': ['200m Freestyle', 'Football', '100m Sprint'],
-            'Medal': [None, 'Gold', None]
-             })
-        
-        cleaned_data = check_athletes_columns(data)
-        
-        expected_columns =['ID', 'Name', 'Sex', 'Age', 'Height', 'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport', 'Event', 'Medal']
-    
-
-        self.assertEqual(cleaned_data.columns.tolist(), expected_columns)
-        
-    #  Test the function with a dataframe with extra columns
-    def test_with_extra_collumns(self):
-        
-        data = pd.DataFrame({
-        'ID': [1, 2, 3],
-        'Name': ['Ana', 'Pedro', 'Maria'],
-        'Sex': ['F', 'M', 'F'],
-        'Age': [23, 35, 29],
-        'Height': [160.0, 175.0, 165.0],
-        'Weight': [55.0, 70.0, 60.0],
-        'Team': ['Brazil', 'Brazil', 'Brazil'],
-        'NOC': ['BRA', 'BRA', 'BRA'],
-        'Games': ['2016 Summer', '2016 Summer', '2016 Summer'],
-        'Year': [2016, 2016, 2016],
-        'Season': ['Summer', 'Summer', 'Summer'],
-        'City': ['Rio', 'Rio', 'Rio'],
-        'Sport': ['Swimming', 'Football', 'Athletics'],
-        'Event': ['200m Freestyle', 'Football', '100m Sprint'],
-        'Medal': [None, 'Gold', None],
-        'ExtraColumn': ['Extra1', 'Extra2', 'Extra3']  # Coluna extra
-    })
-        expected_columns =['ID', 'Name', 'Sex', 'Age', 'Height', 'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport', 'Event', 'Medal']
-
-        
-        cleaned_data =  check_athletes_columns(data)
-        
-        self.assertEqual(cleaned_data.columns.tolist(), expected_columns)
-        
-    
-    # test the function with an empty dataframe
-    def test_check_athletes_columns_empty_dataframe(self):
-        
-        df = pd.DataFrame()
-        
-        with self.assertRaises(SystemExit):
-            check_athletes_columns(df)
-        
-            
-    def test_dataframe_cleaner_missing_columns(self):
-        
-        data = pd.DataFrame({
-        'ID': [1, 2, 3],
-        'Name': ['Ana', 'Pedro', 'Maria'],
-        'Sex': ['F', 'M', 'F'],
-        'Age': [23, 35, 29],
-        # Colunas faltando: Height, Weight, etc.
-    })
-        with self.assertRaises(SystemExit):
-            check_athletes_columns(data)
-            
             
 class TestMedalsToInt(unittest.TestCase):
     
@@ -182,7 +103,47 @@ class TestPredictMissing(unittest.TestCase):
         self.assertEqual(expected_result['Age'].tolist(), modified_data['Age'].tolist())
         self.assertEqual(expected_result['Height'].tolist(), modified_data['Height'].tolist())
         self.assertEqual(expected_result['Weight'].tolist(), modified_data['Weight'].tolist())
-    
+
+class TestValidateAthletesColumns(unittest.TestCase):
+
+    def test_all_columns_present(self):
+        data = pd.DataFrame({
+            'ID': [1, 2, 3],
+            'Name': ['Ana', 'Pedro', 'Maria'],
+            'Sex': ['F', 'M', 'F'],
+            'Age': [23, 35, 29],
+            'Height': [160.0, 175.0, 165.0],
+            'Weight': [55.0, 70.0, 60.0],
+            'Team': ['Brazil', 'Brazil', 'Brazil'],
+            'NOC': ['BRA', 'BRA', 'BRA'],
+            'Games': ['2016 Summer', '2016 Summer', '2016 Summer'],
+            'Year': [2016, 2016, 2016],
+            'Season': ['Summer', 'Summer', 'Summer'],
+            'City': ['Rio', 'Rio', 'Rio'],
+            'Sport': ['Swimming', 'Football', 'Athletics'],
+            'Event': ['200m Freestyle', 'Football', '100m Sprint'],
+            'Medal': [None, 'Gold', None]
+        })
+        try:
+            validade_athletes_columns(data)
+        except KeyError:
+            self.fail("validade_athletes_columns raised KeyError unexpectedly!")
+
+    def test_missing_columns(self):
+        data = pd.DataFrame({
+            'ID': [1, 2, 3],
+            'Name': ['Ana', 'Pedro', 'Maria'],
+            'Sex': ['F', 'M', 'F'],
+            'Age': [23, 35, 29]
+            # Missing other required columns
+        })
+        with self.assertRaises(KeyError):
+            validade_athletes_columns(data)
+
+    def test_empty_dataframe(self):
+        data = pd.DataFrame()
+        with self.assertRaises(KeyError):
+            validade_athletes_columns(data)
 
 class TestRenameCountries(unittest.TestCase):
     # TODO

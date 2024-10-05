@@ -11,6 +11,7 @@ try:
     gdp_per_capita_df = pd.read_csv('data/gdp/gdp_per_capita.csv')
 
     # Limpeza Inicial dos DataFrames
+    dc.validade_athletes_columns(athletes_df) # Verifica se o DataFrame de Atletas possui todas as colunas necessárias
     athletes_df = dc.medals_to_int(athletes_df)
     athletes_df = dc.predict_missing(athletes_df)
     urbanization_df.columns = ['Year', 'Economy_Code', 'Country', 'Pop_Absolute', 'Pop_Missing', 'Urban_Pop_Percent', 'Urban_Pop_Percent_Missing']

@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
 
-def check_athletes_columns(dataframe: pd.DataFrame) -> pd.DataFrame:
+def validade_athletes_columns(df: pd.DataFrame) -> None:
     """A função que confere se  possui todas as colunas necessárias para análise
 
     Args:
@@ -38,22 +38,23 @@ def check_athletes_columns(dataframe: pd.DataFrame) -> pd.DataFrame:
         
     Returns:
         pd.DataFrame: a cleaned dataframe
+        
+    Example:
+    >>> data = pd.DataFrame({'ID': [1, 2, 3], 'Name': ['Ana', 'Pedro', 'Maria']})
+    >>> validade_athletes_columns(data)
+    Traceback (most recent call last):
+        ...
+    KeyError: 'The given dataframe is missing columns'
+    >>> data = pd.DataFrame({'ID': [1], 'Name': ['Carlos'], 'Sex': ['M'], 'Age': [23], 'Height': [160.0], 'Weight': [55.0], 'Team': ['Brazil'], 'NOC': ['BRA'], 'Games': ['2016 Summer'], 'Year': [2016], 'Season': ['Summer'], 'City': ['Rio'], 'Sport': ['Swimming'], 'Event': ['200m Freestyle'], 'Medal': [None]})
+    >>> validade_athletes_columns(data)
+    
     """
-    
-    # creates a copy of the original dataset
-    df = dataframe.copy()
-    
-    useful_columns = ['ID', 'Name', 'Sex', 'Age', 'Height', 'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport', 'Event', 'Medal']
-    
-    try:
-        useful_df = df[useful_columns]
-    except KeyError:
-        print(
-            f"The given dataframe doesn't have all needeed columns, consider replacing it.")
-        quit()
-    else:
-        return useful_df
-    
+    required_columns = ['ID', 'Name', 'Sex', 'Age', 'Height', 'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport', 'Event', 'Medal']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
+        raise KeyError("The given dataframe is missing columns")
+
+
 def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     """Recebe DataFrame com coluna 'Medal' e converte valores string para inteiros.
     0: Sem medalha; 1: Bronze; 2: Prata; 3: Ouro.
@@ -93,6 +94,7 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     else:
         return df
 
+
 def medals_to_bool(df: pd.DataFrame) -> pd.DataFrame:
     """Recebe DataFrame com coluna 'Medal' e converte valores inteiros para booleanos.
     False: Sem medalha; True: Com medalha.
@@ -128,6 +130,7 @@ def medals_to_bool(df: pd.DataFrame) -> pd.DataFrame:
         quit()
     else:
         return df
+
 
 def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     """Função que preenche valores faltantes de 'Age', 'Height' e 'Weight' com regressão linear
@@ -239,4 +242,4 @@ def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
 
 
 if __name__ == "__main__":
-     doctest.testmod(verbose=True)
+     doctest.testmod(verbose=False)
