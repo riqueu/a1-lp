@@ -5,3 +5,5 @@ https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-
 https://www.kaggle.com/datasets/girishchowdary22/urban-population-analysis1950-2050
 
 https://www.kaggle.com/datasets/shivagovindasamy/60-years-of-paralympics
+
+https://www.kaggle.com/datasets/katiepress/paralympic-games?select=medal_athlete.csv
