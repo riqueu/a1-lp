@@ -81,3 +81,24 @@ def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None
 
 
 # TODO: Usar GeoPandas para visualização geográfica
+def prepare_map_visualization_data(athletes_df: pd.DataFrame, urbanization_df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
+    """Função para preparar os dados para entrada da função de visualização geográfica.
+
+    Args:
+        athletes_df (pd.DataFrame): DataFrame com dados dos atletas.
+        urbanization_df (pd.DataFrame): DataFrame com dados de urbanização.
+        noc_df (pd.DataFrame): DataFrame com dados de NOC.
+
+    Returns:
+        pd.DataFrame: DataFrame com os dados de medalistas e urbanização para visualização geográfica.
+    """
+    pass
+
+
+
+def save_map_visualization(data: pd.DataFrame) -> None:
+    """Função que gera a visualização geográfica dos dados com geopandas.
+
+    Args:
+        data (pd.DataFrame): dados preparados para visualização geográfica.
+    """
