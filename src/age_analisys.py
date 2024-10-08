@@ -128,7 +128,8 @@ def esporte_with_the_most_outliers_save_graph(df: pd.DataFrame) -> None:
     df_maioresporte = df[df['Sport'] == maior_esporte]
 
     
-    sns.boxplot(x='Sport', y='Age', data=df_maioresporte)
+    boxplot = sns.boxplot(x='Sport', y='Age', data=df_maioresporte)
+    boxplot.set_yscale('linear')
     plt.title('Boxplot de Idades por Esporte')
     plt.xlabel('Esporte')
     plt.ylabel('Idade')
@@ -151,7 +152,8 @@ def top_3_esportes_outliers(cleaned_data: pd.DataFrame)-> None:
     df_top_3_extremos =  cleaned_data[cleaned_data['Sport'].isin(nomes_top_3)]
     
     # Criando o boxplot com os 3 esportes com mais outliers
-    sns.boxplot(x='Sport', y='Age', data=df_top_3_extremos)
+    boxplots = sns.boxplot(x='Sport', y='Age', data=df_top_3_extremos)
+    boxplots.set_yscale('linear')
 
     # Adicionando título e rótulos
     plt.title('Boxplot de Idades por Esporte')
