@@ -116,10 +116,11 @@ def esportes_outliers_save_graph(df: pd.DataFrame) -> None:
 
     df_maioresporte = df[df['Sport'] == maior_esporte]
 
-    sns.boxplot(x='Sport', y='Age', data=df_maioresporte)
+    boxplot = sns.boxplot(x='Sport', y='Age', data=df_maioresporte)
+    boxplot.set_yscale('linear')
     plt.title('Boxplot de Idades por Esporte')
     plt.xlabel('Esporte')
     plt.ylabel('Idade')
 
     # Salvando o gráfico como PNG
-    plt.savefig('graphs/bloxplot_gymnastics_age.png', format='png', dpi=300)
+    plt.savefig('graphs/bloxplot_highest_age_aplitude.png', format='png', dpi=300)

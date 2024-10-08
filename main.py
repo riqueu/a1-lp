@@ -21,12 +21,10 @@ try:
 
     # Análise de Densidade de Medalhas por População Urbana em 2016
     data_2016 = mu.prepare_2016_medalist_urbanization_analysis(clean_athletes_df, urbanization_df, noc_df)
-    # data_2016.to_csv('aaa.csv')
     mu.save_scatterplot_2016_medalist_urbanization(data_2016)
     
     # Visualização Geográfica do crescimento de medalhas por país e do crescimento urbano de um país
     data_map_visualization = mu.prepare_map_visualization_data(clean_athletes_df, urbanization_df, noc_df)
-    # data_map_visualization.to_csv('bbb.csv')
     
     # Análise Idades
     aa.esportes_outliers_save_graph(clean_athletes_df)
