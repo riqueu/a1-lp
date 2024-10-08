@@ -92,7 +92,42 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
         quit()
     else:
         return df
+
+def medals_to_bool(df: pd.DataFrame) -> pd.DataFrame:
+    """Recebe DataFrame com coluna 'Medal' e converte valores inteiros para booleanos.
+    False: Sem medalha; True: Com medalha.
+
+    Args:
+        df (pd.DataFrame): DataFrame com coluna 'Medal'.
+
+    Returns:
+        pd.DataFrame: DataFrame com coluna 'Medal' convertida para booleanos.
     
+    Example
+    ----------
+    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [3, 3, 2, 1, 0]  })
+    >>> cleaned_data = medals_to_bool(data)
+    >>> print(cleaned_data['Medal'].tolist())
+    [True, True, True, True, False]
+    
+    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [0, 1, 1, 1, 0]  }) 
+    >>> cleaned_data =  medals_to_bool(data)
+    >>> print(cleaned_data['Medal'].tolist())
+    [False, True, True, True, False]
+    
+    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [0, 0, 0, 0, 0]  }) 
+    >>> cleaned_data =  medals_to_bool(data)
+    >>> print(cleaned_data['Medal'].tolist())
+    [False, False, False, False, False]
+    """
+    try:
+        df['Medal'] = df['Medal'].astype(bool)
+    except KeyError:
+        print(
+            f"The given dataframe has no column 'Medal', consider replacing it.")
+        quit()
+    else:
+        return df
 
 def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     """Função que preenche valores faltantes de 'Age', 'Height' e 'Weight' com regressão linear
@@ -165,6 +200,43 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
         quit()
     else:
         return df
+
+
+def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
+    """Função que renomeia os países com nomes diferentes/em conflito internacional
+    para padronizar com os outros DataFrames.
+
+    Args:
+        df (pd.DataFrame): DataFrame com coluna 'Country' para renomear.
+
+    Returns:
+        pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+    """
+    try:
+        countries = {
+            "United States of America": "USA",
+            "Côte d'Ivoire": "Ivory Coast",
+            "Korea, Republic of": "South Korea",
+            "Korea, Dem. People's Rep. of": "North Korea",
+            "Czechia": "Czech Republic",
+            "Russian Federation": "Russia",
+            "United Kingdom": "UK",
+            "Iran (Islamic Republic of)": "Iran",
+            "Netherlands (Kingdom of the)": "Netherlands",
+            "China, Taiwan Province of": "Taiwan",
+            "Trinidad and Tobago": "Trinidad",
+            "Türkiye": "Turkey",
+            "Venezuela (Bolivarian Rep. of)": "Venezuela",
+            "Viet Nam": "Vietnam"
+        }
+        df['Country'] = df['Country'].replace(countries)
+    except KeyError:
+        print(
+            f"The given dataframe has no column 'Country', consider replacing it.")
+        quit()
+    else:
+        return df
+
 
 if __name__ == "__main__":
      doctest.testmod(verbose=True)
