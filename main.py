@@ -27,7 +27,7 @@ try:
     data_map_visualization = mu.prepare_map_visualization_data(clean_athletes_df, urbanization_df, noc_df)
     
     # Análise Idades
-    aa.esportes_outliers_save_graph(clean_athletes_df)
+    aa.top_3_esportes_outliers_save_graph(clean_athletes_df)
     
 
 except FileNotFoundError:
