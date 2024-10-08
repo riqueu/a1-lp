@@ -6,7 +6,7 @@ import seaborn as sns
 df = pd.read_csv("data/athlete_events.csv")
 
 print("Conferindo se possui todas as colunas necessária")
-cleaned_data= dataframe_cleaner(df)
+cleaned_data= check_athletes_columns(df)
 print()
 print("dataframe possui todas colunas necessárias")
 print()
