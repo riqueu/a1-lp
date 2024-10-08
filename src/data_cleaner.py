@@ -230,7 +230,12 @@ def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
             "Trinidad and Tobago": "Trinidad",
             "Türkiye": "Turkey",
             "Venezuela (Bolivarian Rep. of)": "Venezuela",
-            "Viet Nam": "Vietnam"
+            "Viet Nam": "Vietnam",
+            "Moldova, Republic of": "Moldova",
+            "Syrian Arab Republic": "Syria",
+            "North Macedonia": "Macedonia",
+            "Curaçao": "Curacao",
+            "Tanzania, United Republic of": "Tanzania",
         }
         df['Country'] = df['Country'].replace(countries)
     except KeyError:
