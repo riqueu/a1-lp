@@ -1,8 +1,8 @@
 """Módulo com funções para limpeza de dados."""
 
-import numpy as np
 import pandas as pd
 import doctest
+<<<<<<< HEAD
 
 from sklearn.linear_model import LinearRegression
 from sklearn.impute import SimpleImputer
@@ -83,6 +83,8 @@ def fill(means: pd.DataFrame, row: pd.Series) -> pd.Series:
             cont_nan -= 1
         
     return row
+=======
+>>>>>>> main
 
 
 def validade_athletes_columns(df: pd.DataFrame) -> None:
@@ -205,6 +207,7 @@ def medals_to_bool(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
+<<<<<<< HEAD
 def linear_regression(df: pd.DataFrame, features: list, target: str, test_size: float) -> pd.DataFrame:
     """ Funcao que recebe um dataframe e executa sobre ele um algoritmo de regressão linear para preencher as os valores vazios de 'Age', 'Height' e 'Weight'.
 
@@ -213,10 +216,19 @@ def linear_regression(df: pd.DataFrame, features: list, target: str, test_size: 
         features (list): Lista com as colunas usadas na regressao linear para prever o valor de target
         target (str): Coluna cujos valores queremos preencher.
         test_size (float): Tamanho do conjunto de dados usados para testar o algoritmo.
+=======
+def transform_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforma o DataFrame de atletas olímpicos no formato utilizado pelos DataFrames paralímpicos
+
+    Args:
+        athletes_df (pd.DataFrame): DataFrame contendo os dados dos atletas olímpicos com as colunas:
+>>>>>>> main
 
     Returns:
-        pd.DataFrame: Dataframe com a coluna target preenchida
+        pd.DataFrame: Um DataFrame formatado como os DataFrames paralímpicos, mas com os dados das olimpíadas
     """
+<<<<<<< HEAD
     # Obtem os conjuntos de treino e de teste
     filter_train = ~df[features].isna()
     filter_train = filter_train.apply(lambda x: sum(x) == 5, axis=1)
@@ -243,15 +255,23 @@ def linear_regression(df: pd.DataFrame, features: list, target: str, test_size: 
         
     
     
+=======
+    athletes_df = athletes_df[athletes_df['Year'] >= 1960]
+>>>>>>> main
 
-def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
-    """Função que preenche valores faltantes de 'Age', 'Height' e 'Weight' com regressão linear
-    com base no esporte e sexo do atleta. Se não for possível prever, preenche com a média dos
-    valores do esporte e sexo.
+    olympic_df = athletes_df.groupby(['NOC', 'Year', 'Season']).agg(
+        Gold=('Medal', lambda x: (x == 'Gold').sum()),
+        Silver=('Medal', lambda x: (x == 'Silver').sum()),
+        Bronze=('Medal', lambda x: (x == 'Bronze').sum()),
+        Men=('Sex', lambda x: (x == 'M').sum()),
+        Women=('Sex', lambda x: (x == 'F').sum())
+    ).reset_index()
 
-    Args:
-        df (pd.DataFrame): DataFrame com colunas 'Age', 'Height', 'Weight vazias em algums atletas
+    # Calcula os totais e os atribui para suas respectivas novas colunas
+    olympic_df['M_Total'] = olympic_df['Gold'] + olympic_df['Silver'] + olympic_df['Bronze']
+    olympic_df['P_Total'] = olympic_df['Men'] + olympic_df['Women']
 
+<<<<<<< HEAD
     Returns:
         pd.DataFrame: DataFrame com valores faltantes preenchidos.
     """
@@ -283,6 +303,9 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
         df.loc[:, column] = encoders[column].inverse_transform(df[column].astype(int))
     
     return df
+=======
+    return olympic_df
+>>>>>>> main
 
 
 def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
@@ -324,5 +347,37 @@ def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
     else:
         return df
 
+<<<<<<< HEAD
+=======
+
+def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
+    """Função que normaliza os nomes dos países para o padrão do Geopandas. Função similar a rename_countries
+
+    Args:
+        df (pd.DataFrame): DataFrame com coluna 'Country' para renomear.
+
+    Returns:
+        pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+    """
+    try:
+        countries = {
+            "USA": "United States of America",
+            "UK": "United Kingdom",
+            "Trinidad": "Trinidad and Tobago",
+            "Macedonia": "North Macedonia",
+            "Czech Republic": "Czechia",
+            "Ivory Coast": "Côte d'Ivoire",
+        }
+        
+        df['Country'] = df['Country'].replace(countries)
+    except KeyError:
+        print(
+            f"The given dataframe has no column 'Country', consider replacing it.")
+        quit()
+    else:
+        return df
+
+
+>>>>>>> main
 if __name__ == "__main__":
      doctest.testmod(verbose=False)
