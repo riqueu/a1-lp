@@ -20,7 +20,7 @@ def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urban
         pd.DataFrame: DataFrame com dados de medalistas e urbanização em 2016.
     """
     # Filtragem dos atletas medalhistas para Análise e união com os dados de urbanização
-    athletes_df = medals_to_bool(athletes_df) # Só queremos saber se o atleta ganhou ou não
+    athletes_df.loc[:, 'Medal'] = athletes_df['Medal'].apply(lambda x: 1 if x in [1, 2, 3] else 0) # Só queremos saber se ganhou ou não
     athletes_2016 = athletes_df[athletes_df['Year'] == 2016]
     medal_count_per_country_2016 = athletes_2016.groupby('NOC')['Medal'].sum().reset_index()
     medal_count_per_country_2016.rename(columns={'Medal': 'Medalists'}, inplace=True)
@@ -93,7 +93,7 @@ def prepare_map_visualization_data(athletes_df: pd.DataFrame, urbanization_df: p
         pd.DataFrame: DataFrame com os dados de medalistas e urbanização para visualização geográfica.
     """
     # Preparação da base de atletas
-    athletes_df = medals_to_bool(athletes_df) # Só queremos saber se o atleta ganhou ou não
+    athletes_df.loc[:, 'Medal'] = athletes_df['Medal'].apply(lambda x: 1 if x in [1, 2, 3] else 0) # Só queremos saber se ganhou ou não
     athletes_df = athletes_df[athletes_df['Year'].between(1956, 2016)]
     medal_count_per_country_per_year = athletes_df.groupby(['Year', 'NOC'])['Medal'].sum().reset_index()
     medal_count_per_country_per_year.rename(columns={'Medal': 'Medalists'}, inplace=True)
