@@ -6,7 +6,7 @@ import pandas as pd
 try:
     # Criação dos DataFrames para Análise
     athletes_df = pd.read_csv('data/athlete_events.csv')
-    noc_df = pd.read_csv('data/noc_regions.csv')
+    noc_df = pd.read_csv('data/noc_regions.csv').rename(columns={'region': 'Country'})
     urbanization_df = pd.read_csv('data/urbanization.csv')
     gdp_df = pd.read_csv('data/gdp/gdp.csv')
     gdp_per_capita_df = pd.read_csv('data/gdp/gdp_per_capita.csv')
