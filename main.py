@@ -1,6 +1,7 @@
 from src import medalist_x_urbanization_analysis as mu
 from src import age_analysis as aa
 from src import data_cleaner as dc
+from src import data_predictor as dp
 import pandas as pd
 
 try:
@@ -14,7 +15,7 @@ try:
     # Limpeza Inicial dos DataFrames
     dc.validade_athletes_columns(athletes_df) # Verifica se o DataFrame de Atletas possui todas as colunas necessárias
     clean_athletes_df = dc.medals_to_int(athletes_df)
-    clean_athletes_df = dc.predict_missing(clean_athletes_df)
+    clean_athletes_df = dp.predict_missing(clean_athletes_df)
     urbanization_df.columns = ['Year', 'Economy_Code', 'Country', 'Pop_Absolute', 'Pop_Missing', 'Urban_Pop_Percent', 'Urban_Pop_Percent_Missing']
     urbanization_df = urbanization_df[['Year', 'Country', 'Pop_Absolute', 'Urban_Pop_Percent']]
     urbanization_df = dc.rename_countries(urbanization_df) # Renomear países para padrão do DataFrame de Atletas
