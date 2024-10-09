@@ -76,47 +76,10 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     [0, 0, 0, 0, 0]
     """
     try:
-        df['Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
-        df['Medal'] = df['Medal'].fillna(0)
-        df['Medal'] = df['Medal'].astype(int)
+        df.loc[:, 'Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
+        df['Medal'] = df['Medal'].infer_objects().fillna(0)
+        df.loc[:, 'Medal'] = df['Medal'].astype(int)
         
-    except KeyError:
-        print(
-            f"The given dataframe has no column 'Medal', consider replacing it.")
-        quit()
-    else:
-        return df
-
-
-def medals_to_bool(df: pd.DataFrame) -> pd.DataFrame:
-    """Recebe DataFrame com coluna 'Medal' e converte valores inteiros para booleanos.
-    False: Sem medalha; True: Com medalha.
-
-    Args:
-        df (pd.DataFrame): DataFrame com coluna 'Medal'.
-
-    Returns:
-        pd.DataFrame: DataFrame com coluna 'Medal' convertida para booleanos.
-    
-    Example
-    ----------
-    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [3, 3, 2, 1, 0]  })
-    >>> cleaned_data = medals_to_bool(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [True, True, True, True, False]
-    
-    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [0, 1, 1, 1, 0]  }) 
-    >>> cleaned_data =  medals_to_bool(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [False, True, True, True, False]
-    
-    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [0, 0, 0, 0, 0]  }) 
-    >>> cleaned_data =  medals_to_bool(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [False, False, False, False, False]
-    """
-    try:
-        df['Medal'] = df['Medal'].astype(bool)
     except KeyError:
         print(
             f"The given dataframe has no column 'Medal', consider replacing it.")
