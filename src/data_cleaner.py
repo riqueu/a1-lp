@@ -3,7 +3,6 @@
 import numpy as np
 import pandas as pd
 import doctest
-import time
 
 from sklearn.linear_model import LinearRegression
 from sklearn.impute import SimpleImputer
@@ -75,14 +74,13 @@ def fill(means: pd.DataFrame, row: pd.Series) -> pd.Series:
     
     # Caso tenha algum um valor NaN, preenche-o com a media ate deixar somente um vazio
     for column in features_nan.index:
-        value_column = means.loc[(means['Sex'].astype(str) == row['Sex']) & (means['Sport'].astype(str) == row['Sport']), column]
-        if value_column.shape[0] and cont_nan > 1:
-            row[column]  = value_column.iloc[0]
+        key = (row['Sex'], row['Sport'])
+        value_column = means[key][column]
+        if cont_nan <= 1:
+            break
+        elif value_column:
+            row[column]  = value_column
             cont_nan -= 1
-              
-    # Caso nao tenha sido possivel preencher os valores, deixa um nan para que a linha seja removida
-    if cont_nan > 1:
-        row[-1] = np.nan
         
     return row
 
@@ -262,7 +260,8 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     # Preenche linhas que tem 2 ou mais features vazios com a media do esporte e sexo
     filter_nan = df[features].isna()
     filter_nan = filter_nan.apply(lambda x: sum(x) > 1, axis=1)
-    means = df[features].groupby(['Sex', 'Sport']).mean().reset_index()
+    
+    means = df[features].groupby(['Sex', 'Sport']).mean().to_dict(orient='index')
     df.loc[filter_nan, features] = df.loc[filter_nan, features].apply(lambda row: fill(means, row), axis=1)
     
     # Remove as linhas que nao foram preenchidas
@@ -278,7 +277,7 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     # Para cada coluna target, treinamos um algoritmo e preenchemos os valores vazios
     for target in ['Age', 'Height', 'Weight']:
         df = linear_regression(df, features, target, test_size=0.2)
-    
+                
     # Retorna os valores encodificados de volta aos originais
     for column in encoders.keys():
         df.loc[:, column] = encoders[column].inverse_transform(df[column].astype(int))
