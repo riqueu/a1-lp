@@ -325,6 +325,33 @@ def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
         quit()
     else:
         return df
+     
+
+def transform_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforma o DataFrame de atletas olímpicos no formato utilizado pelos DataFrames paralímpicos
+
+    Args:
+        athletes_df (pd.DataFrame): DataFrame contendo os dados dos atletas olímpicos com as colunas:
+
+    Returns:
+        pd.DataFrame: Um DataFrame formatado como os DataFrames paralímpicos, mas com os dados das olimpíadas
+    """
+    athletes_df = athletes_df[athletes_df['Year'] >= 1960]
+
+    olympic_df = athletes_df.groupby(['NOC', 'Year', 'Season']).agg(
+        Gold=('Medal', lambda x: (x == 'Gold').sum()),
+        Silver=('Medal', lambda x: (x == 'Silver').sum()),
+        Bronze=('Medal', lambda x: (x == 'Bronze').sum()),
+        Men=('Sex', lambda x: (x == 'M').sum()),
+        Women=('Sex', lambda x: (x == 'F').sum())
+    ).reset_index()
+
+    # Calcula os totais e os atribui para suas respectivas novas colunas
+    olympic_df['M_Total'] = olympic_df['Gold'] + olympic_df['Silver'] + olympic_df['Bronze']
+    olympic_df['P_Total'] = olympic_df['Men'] + olympic_df['Women']
+
+    return olympic_df
 
 df = pd.read_csv('a1-lp\\data\\athlete_events.csv')
 df = medals_to_int(df)
