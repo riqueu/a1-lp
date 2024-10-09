@@ -111,10 +111,10 @@ def highest_age_aplitude_sports(df: pd.DataFrame) -> dict:
 
 
 def sport_with_the_most_outliers_save_graph(df: pd.DataFrame) -> None:
-    """Função que gera um boxplot com o esporte que possue mais atletas com idades extremas.
+    """Função que gera um boxplot com o esporte que possui mais atletas com idades extremas.
     
     Args:
-        cleaned_data (pd.DataFrame): O DataFrame com os dados esportivos limpos.
+        df (pd.DataFrame): O DataFrame com os dados esportivos limpos.
     """
     esportes_extremos = highest_age_aplitude_sports(df)
     # Analisando o esporte com mais valores extremos
