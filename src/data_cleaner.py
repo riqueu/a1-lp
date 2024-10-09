@@ -8,7 +8,7 @@ import time
 from sklearn.linear_model import LinearRegression
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import root_mean_squared_error, r2_score
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -201,14 +201,13 @@ def medals_to_bool(df: pd.DataFrame) -> pd.DataFrame:
     try:
         df['Medal'] = df['Medal'].astype(bool)
     except KeyError:
-        print(
-            f"The given dataframe has no column 'Medal', consider replacing it.")
+        print(f"The given dataframe has no column 'Medal', consider replacing it.")
         quit()
     else:
         return df
 
 
-def linear_regression(df: pd.DataFrame, features: list, target: str, test_size: float, encoders: list) -> pd.DataFrame:
+def linear_regression(df: pd.DataFrame, features: list, target: str, test_size: float) -> pd.DataFrame:
     """ Funcao que recebe um dataframe e executa sobre ele um algoritmo de regressão linear para preencher as os valores vazios de 'Age', 'Height' e 'Weight'.
 
     Args:
@@ -216,7 +215,6 @@ def linear_regression(df: pd.DataFrame, features: list, target: str, test_size: 
         features (list): Lista com as colunas usadas na regressao linear para prever o valor de target
         target (str): Coluna cujos valores queremos preencher.
         test_size (float): Tamanho do conjunto de dados usados para testar o algoritmo.
-        encoders (list): Lista com os algoritmos para converter os valores das colunas para valores bons para o sklearn
 
     Returns:
         pd.DataFrame: Dataframe com a coluna target preenchida
@@ -240,9 +238,9 @@ def linear_regression(df: pd.DataFrame, features: list, target: str, test_size: 
     # Varificacao de eficiencia do algoritmo
     y_pred_test = lin_reg.predict(X_test)
     r2 = r2_score(y_test, y_pred_test)
-    mean_sq_error = mean_squared_error(y_test, y_pred_test)
+    root_mean_sq_error = root_mean_squared_error(y_test, y_pred_test)
     print(f'Coeficiente r2: {r2}')
-    print(f'Mean sq error: {mean_sq_error}')
+    print(f'Root mean ean sq error: {root_mean_sq_error}')
     return df
         
     
@@ -259,7 +257,6 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame com valores faltantes preenchidos.
     """
-    df.reset_index(inplace=True)
     features = ['Sex', 'Sport', 'Age', 'Height', 'Weight']
     
     # Preenche linhas que tem 2 ou mais features vazios com a media do esporte e sexo
@@ -276,12 +273,15 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
     
     # Converte os valores para um formato bom para o sklearn
     df, columns_to_fix, columns_types, encoders = to_encoded(df)
-    
     print(f'Colunas problematicas: {columns_to_fix}\nTipos das colunas: {columns_types}')
     
     # Para cada coluna target, treinamos um algoritmo e preenchemos os valores vazios
     for target in ['Age', 'Height', 'Weight']:
-        df = linear_regression(df, features, target, test_size=0.2, encoders=encoders)
+        df = linear_regression(df, features, target, test_size=0.2)
+    
+    # Retorna os valores encodificados de volta aos originais
+    for column in encoders.keys():
+        df.loc[:, column] = encoders[column].inverse_transform(df[column].astype(int))
     
     return df
 
@@ -320,18 +320,10 @@ def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
         }
         df['Country'] = df['Country'].replace(countries)
     except KeyError:
-        print(
-            f"The given dataframe has no column 'Country', consider replacing it.")
+        print(f"The given dataframe has no column 'Country', consider replacing it.")
         quit()
     else:
         return df
-
-df = pd.read_csv('a1-lp\\data\\athlete_events.csv')
-df = medals_to_int(df)
-ini = time.time()
-df = predict_missing(df)
-print(f'{time.time() - ini} Segundos')
-df.to_csv('test.csv')
 
 if __name__ == "__main__":
      doctest.testmod(verbose=False)
