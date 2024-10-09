@@ -6,7 +6,7 @@ import pandas as pd
 try:
     # Criação dos DataFrames para Análise
     athletes_df = pd.read_csv('data/athlete_events.csv')
-    noc_df = pd.read_csv('data/noc_regions.csv')
+    noc_df = pd.read_csv('data/noc_regions.csv').rename(columns={'region': 'Country'})
     urbanization_df = pd.read_csv('data/urbanization.csv')
     gdp_df = pd.read_csv('data/gdp/gdp.csv')
     gdp_per_capita_df = pd.read_csv('data/gdp/gdp_per_capita.csv')
@@ -23,8 +23,11 @@ try:
     data_2016 = mu.prepare_2016_medalist_urbanization_analysis(clean_athletes_df, urbanization_df, noc_df)
     mu.save_scatterplot_2016_medalist_urbanization(data_2016)
     
+    # Visualização Geográfica do crescimento de medalhas por país e do crescimento urbano de um país
+    data_map_visualization = mu.prepare_map_visualization_data(clean_athletes_df, urbanization_df, noc_df)
+    
     # Análise Idades
-    aa.esportes_outliers_save_graph(clean_athletes_df)
+    aa.top_3_esportes_outliers_save_graph(clean_athletes_df)
     
 
 except FileNotFoundError:

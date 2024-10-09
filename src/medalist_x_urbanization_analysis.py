@@ -25,8 +25,7 @@ def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urban
     medal_count_per_country_2016.rename(columns={'Medal': 'Medalists'}, inplace=True)
 
     # Merge com noc_df pra mappear NOC no nome do país
-    medal_count_per_country_2016 = pd.merge(medal_count_per_country_2016, noc_df[['NOC', 'region']], on='NOC', how='left')
-    medal_count_per_country_2016 = medal_count_per_country_2016.rename(columns={'region': 'Country'})
+    medal_count_per_country_2016 = pd.merge(medal_count_per_country_2016, noc_df[['NOC', 'Country']], on='NOC', how='left')
     medal_count_per_country_2016 = medal_count_per_country_2016[medal_count_per_country_2016['Medalists'] > 0]
     urbanization_2016 = urbanization_df[urbanization_df['Year'] == 2016]
 
@@ -81,3 +80,47 @@ def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None
 
 
 # TODO: Usar GeoPandas para visualização geográfica
+def prepare_map_visualization_data(athletes_df: pd.DataFrame, urbanization_df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
+    """Função para preparar os dados para entrada da função de visualização geográfica.
+
+    Args:
+        athletes_df (pd.DataFrame): DataFrame com dados dos atletas.
+        urbanization_df (pd.DataFrame): DataFrame com dados de urbanização.
+        noc_df (pd.DataFrame): DataFrame com dados de NOC.
+
+    Returns:
+        pd.DataFrame: DataFrame com os dados de medalistas e urbanização para visualização geográfica.
+    """
+    # Preparação da base de atletas
+    athletes_df = medals_to_bool(athletes_df) # Só queremos saber se o atleta ganhou ou não
+    athletes_df = athletes_df[athletes_df['Year'].between(1956, 2016)]
+    medal_count_per_country_per_year = athletes_df.groupby(['Year', 'NOC'])['Medal'].sum().reset_index()
+    medal_count_per_country_per_year.rename(columns={'Medal': 'Medalists'}, inplace=True)
+    
+    # Merge com noc_df pra mappear NOC no nome do país
+    medal_count_per_country_per_year = pd.merge(medal_count_per_country_per_year, noc_df[['NOC', 'Country']], on='NOC', how='left')
+    medal_count_per_country_per_year = medal_count_per_country_per_year[medal_count_per_country_per_year['Medalists'] > 0]
+    
+    # Preparação da base de urbanização
+    urbanization_df = urbanization_df.rename(columns={'Country Name': 'Country'})
+    urbanization_df['Year'] = urbanization_df['Year'].astype(int)
+    urbanization_df = urbanization_df[urbanization_df['Year'].between(1956, 2016)]
+
+    # Merge dos dados de medalhas com os dados de urbanização
+    data = pd.merge(medal_count_per_country_per_year, urbanization_df, on=['Country', 'Year'], how='left')
+    data = data[~data['Country'].isin(['Kosovo', 'Individual Olympic Athletes'])] # Não temos dados de urbanização de Kosovo
+    
+    # Tratamento de dados faltantes
+    data = data[data['Urban_Pop_Percent'] != 'NOT APPLICABLE']
+    
+    return data
+
+
+def save_map_visualization(data: pd.DataFrame) -> None:
+    """Função que gera a visualização geográfica dos dados com geopandas.
+
+    Args:
+        data (pd.DataFrame): dados preparados para visualização geográfica.
+    """
+    # blablablabla
+    pass
