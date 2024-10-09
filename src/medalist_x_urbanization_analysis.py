@@ -5,6 +5,7 @@ Scatterplot para analisar a Urbanização Percentual X Densidade Urbana de Medal
 import pandas as pd
 import geopandas as gpd
 import seaborn as sns
+import matplotlib.pyplot as plt
 from data_cleaner import *
 
 
@@ -79,7 +80,7 @@ def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None
     scatterplot.figure.savefig('graphs/urban_medal_density.png', dpi=500, bbox_inches='tight')
 
 
-# TODO: Usar GeoPandas para visualização geográfica
+# GeoPandas para visualização geográfica
 def prepare_map_visualization_data(athletes_df: pd.DataFrame, urbanization_df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
     """Função para preparar os dados para entrada da função de visualização geográfica.
 
@@ -116,11 +117,90 @@ def prepare_map_visualization_data(athletes_df: pd.DataFrame, urbanization_df: p
     return data
 
 
+def calculate_dynamic_growth(data: pd.DataFrame, value_column: str) -> pd.DataFrame:
+    """Calcula o crescimento percentual de o valor especificado por coluna entre o primeiro e o último ano disponível do país.
+
+    Args:
+        data (pd.DataFrame): df com colunas: ,Year,NOC,Medalists,Country,Pop_Absolute,Urban_Pop_Percent
+        value_column (str): Colunas para calcular crescimento (e.g. 'Medalists' or 'Urban_Pop_Percent').
+
+    Returns:
+        pd.DataFrame: Dataframe com País e Crescimento Percentual daquela coluna.
+    """
+    # Pega primeiro e último ano disponível para cada país
+    first_year = data.groupby('Country').first().reset_index()[['Country', 'Year', value_column]]
+    last_year = data.groupby('Country').last().reset_index()[['Country', 'Year', value_column]]
+
+    # Renomeia colunas para facilitar merge
+    first_year.rename(columns={value_column: f"{value_column}_first", 'Year': 'First_Year'}, inplace=True)
+    last_year.rename(columns={value_column: f"{value_column}_last", 'Year': 'Last_Year'}, inplace=True)
+    
+    # Torna coluna em float
+    first_year['First_Year'] = first_year['First_Year'].astype(float)
+    last_year['Last_Year'] = last_year['Last_Year'].astype(float)
+
+    # Merge first and last year dataframes
+    growth_df = pd.merge(first_year, last_year, on='Country')
+
+    # Calcula crescimento percentual
+    growth_df[f'{value_column}_Growth'] = ((growth_df['Last_Year'] - growth_df['First_Year']) / growth_df['First_Year']) * 100
+    
+    return growth_df[['Country', f'{value_column}_Growth']]
+
+
 def save_map_visualization(data: pd.DataFrame) -> None:
     """Função que gera a visualização geográfica dos dados com geopandas.
 
     Args:
         data (pd.DataFrame): dados preparados para visualização geográfica.
     """
-    # blablablabla
-    pass
+    # Tratando inconsistências nos nomes dos países (de novo...)
+    data = map_name_normalization(data)
+    
+    # Calcula o crescimento da população urbana e dos medalhistas
+    urban_growth = calculate_dynamic_growth(data, 'Urban_Pop_Percent')
+    medalist_growth = calculate_dynamic_growth(data, 'Medalists')
+
+    # Carrega mapa do GeoPandas
+    world = gpd.read_file('data/world_map/ne_110m_admin_0_countries.shp')
+    
+    # Merge dos dados de crescimento com o geodataframe do mundo para plotagem
+    world_urban = pd.merge(world, urban_growth, how='left', left_on='NAME', right_on='Country')
+    world_medals = pd.merge(world, medalist_growth, how='left', left_on='NAME', right_on='Country')
+    
+    # Plot crescimento da urbanização
+    plt.figure()
+    fig, ax = plt.subplots(1, 2, figsize=(20, 10))
+    world_urban.plot(column='Urban_Pop_Percent_Growth', cmap='Blues', legend=False, ax=ax[0], missing_kwds={'color': 'lightgrey'}, linewidth=0.5)
+    ax[0].set_title('Urbanization Growth (First to Last Year)')
+
+    # Plot crescimento de medalhistas
+    world_medals.plot(column='Medalists_Growth', cmap='Reds', legend=False, ax=ax[1], missing_kwds={'color': 'lightgrey'}, linewidth=0.5)
+    ax[1].set_title('Medalists Growth (First to Last Year)')
+    
+    fig.suptitle('Comparison of Growth in Urbanization and Medalists (1956-2016)', fontsize=18, weight='bold')
+    plt.subplots_adjust(bottom=0.55)
+
+    plt.savefig('graphs/geographic_growth.png', dpi=500, bbox_inches='tight')
+
+
+# Função interna para encontrar países com nomes diferentes; alguns só não existem no GeoPandas (e.g. Singapura)
+def find_mismatched_countries(data: pd.DataFrame) -> pd.DataFrame:
+    """Find countries in the data that have mismatched names compared to GeoPandas world data.
+
+    Args:
+        data (pd.DataFrame): DataFrame containing the country names to check.
+
+    Returns:
+        pd.DataFrame: DataFrame with country names that do not match GeoPandas world dataset.
+    """
+    # Load world boundaries from GeoPandas
+    world = gpd.read_file('data/world_map/ne_110m_admin_0_countries.shp')
+    
+    # Perform a left merge to check which countries in 'data' don't have a match in the GeoPandas world dataset
+    merged_data = pd.merge(data[['Country']].drop_duplicates(), world[['NAME']], left_on='Country', right_on='NAME', how='left')
+    
+    # Find the countries where the merge resulted in NaN in the 'name' column (meaning no match in GeoPandas)
+    mismatched_countries = merged_data[merged_data['NAME'].isna()]
+    
+    return mismatched_countries[['Country']]

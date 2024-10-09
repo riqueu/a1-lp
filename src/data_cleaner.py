@@ -360,5 +360,33 @@ df = predict_missing(df)
 print(f'{time.time() - ini} Segundos')
 df.to_csv('test.csv')
 
+def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
+    """Função que normaliza os nomes dos países para o padrão do Geopandas. Função similar a rename_countries
+
+    Args:
+        df (pd.DataFrame): DataFrame com coluna 'Country' para renomear.
+
+    Returns:
+        pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+    """
+    try:
+        countries = {
+            "USA": "United States of America",
+            "UK": "United Kingdom",
+            "Trinidad": "Trinidad and Tobago",
+            "Macedonia": "North Macedonia",
+            "Czech Republic": "Czechia",
+            "Ivory Coast": "Côte d'Ivoire",
+        }
+        
+        df['Country'] = df['Country'].replace(countries)
+    except KeyError:
+        print(
+            f"The given dataframe has no column 'Country', consider replacing it.")
+        quit()
+    else:
+        return df
+    
+
 if __name__ == "__main__":
      doctest.testmod(verbose=False)
