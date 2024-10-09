@@ -63,16 +63,16 @@ def statistics_by_age(df: pd.DataFrame) -> dict:
         return estatisticas
 
 
-def highest_age_aplitude_sports(df: pd.DataFrame) -> list:
+def highest_age_aplitude_sports(df: pd.DataFrame) -> dict:
     """
-    Função que verifica quais esportes têm atletas com idades menores que o 1º quartil
-    ou maiores que o 3º quartil e retorna uma lista desses esportes.
+    Função que verifica quais esportes têm atletas com idades menores que o limite inferior
+    ou maiores que o limite superior e retorna uma lista desses esportes.
     
     Args:
         df (pd.DataFrame): O DataFrame com os dados esportivos.
     
     Returns:
-        list: Lista de esportes que possuem atletas com idades extremas.
+        dict: Dicionário com  esportes que possuem atletas com idades extremas e e quantidade de outliers
     """
 
     # Inicializando a lista para armazenar esportes com idades extremas
