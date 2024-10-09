@@ -25,8 +25,7 @@ def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urban
     medal_count_per_country_2016.rename(columns={'Medal': 'Medalists'}, inplace=True)
 
     # Merge com noc_df pra mappear NOC no nome do país
-    medal_count_per_country_2016 = pd.merge(medal_count_per_country_2016, noc_df[['NOC', 'region']], on='NOC', how='left')
-    medal_count_per_country_2016 = medal_count_per_country_2016.rename(columns={'region': 'Country'})
+    medal_count_per_country_2016 = pd.merge(medal_count_per_country_2016, noc_df[['NOC', 'Country']], on='NOC', how='left')
     medal_count_per_country_2016 = medal_count_per_country_2016[medal_count_per_country_2016['Medalists'] > 0]
     urbanization_2016 = urbanization_df[urbanization_df['Year'] == 2016]
 
@@ -99,8 +98,7 @@ def prepare_map_visualization_data(athletes_df: pd.DataFrame, urbanization_df: p
     medal_count_per_country_per_year.rename(columns={'Medal': 'Medalists'}, inplace=True)
     
     # Merge com noc_df pra mappear NOC no nome do país
-    medal_count_per_country_per_year = pd.merge(medal_count_per_country_per_year, noc_df[['NOC', 'region']], on='NOC', how='left')
-    medal_count_per_country_per_year = medal_count_per_country_per_year.rename(columns={'region': 'Country'})
+    medal_count_per_country_per_year = pd.merge(medal_count_per_country_per_year, noc_df[['NOC', 'Country']], on='NOC', how='left')
     medal_count_per_country_per_year = medal_count_per_country_per_year[medal_count_per_country_per_year['Medalists'] > 0]
     
     # Preparação da base de urbanização
