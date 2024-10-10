@@ -78,6 +78,23 @@ def highest_age_aplitude_sports(df: pd.DataFrame) -> dict:
     
     Returns:
         dict: dicionario com os  esportes que possuem atletas com idades extremas.
+    
+    Example
+    ----------
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({
+    ...     'Sport': ['Soccer']*10 + ['Basketball']*10 + ['Tennis']*10 + ['Swimming']*10 + 
+    ...              ['Boxing']*10 + ['Volleyball']*10 + ['Golf']*10,
+    ...     'Age': [20, 22, 45, 23, 21, 60, 18, 27, 29, 24, # Soccer
+    ...             30, 32, 35, 45, 38, 55, 19, 25, 50, 21, # Basketball
+    ...             19, 20, 40, 60, 23, 25, 55, 28, 30, 26, # Tennis
+    ...             15, 28, 34, 35, 33, 18, 24, 22, 25, 45, # Swimming
+    ...             17, 55, 29, 30, 32, 36, 20, 31, 33, 27, # Boxing
+    ...             23, 45, 25, 28, 26, 44, 29, 27, 48, 22, # Volleyball
+    ...             65, 70, 58, 55, 62, 64, 66, 67, 60, 59] # Golf
+    ... })
+    >>> highest_age_aplitude_sports(df)
+    {'Boxing': 2, 'Soccer': 2, 'Tennis': 1}
     """
 
     # Inicializando o dicionario para armazenar esportes com idades extremas
