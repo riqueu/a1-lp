@@ -199,7 +199,7 @@ def create_box_plot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
         quit()
         
 
-def create_box_plot_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFrame) -> plt:
+def create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFrame) -> plt:
     """Cria um boxplot de idade com as categorias atletas brasileiros premiados 
     e atletas brasileiros não premiados
     
@@ -234,3 +234,31 @@ def create_box_plot_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFrame)
             
         quit()    
     
+def create_box_plot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
+    """Cria um boxplot com as idades dos atletas premiados pelo brasil e 
+    categoriza por tipo de medalha 
+
+    Args:
+        df (pd.DataFrame): dataframe limpo
+
+    Returns:
+        plt:  Um objeto do tipo matplotlib.pyplot com o boxplot
+    """
+    
+    try:
+        #  Filtrando os atletas brasileiros
+        atletas_brasileiros =  df[df['NOC'] == 'BRA']
+        sns.boxplot(x='Medal', y='Age', data=atletas_brasileiros)
+
+        # Adicionando título e rótulos
+        plt.title('Boxplot de Idades dos atletas brasileiros por tipo de medalha')
+        plt.xlabel('Medalha')
+        plt.ylabel('Idade')
+
+        return plt
+    
+    except KeyError:
+        print(
+            f"The given dataframe doesn't have all needeed columns, consider replacing it")
+            
+        quit()
