@@ -96,7 +96,6 @@ def highest_age_aplitude_sports(df: pd.DataFrame) -> dict:
     >>> highest_age_aplitude_sports(df)
     {'Boxing': 2, 'Soccer': 2, 'Tennis': 1}
     """
-
     # Inicializando o dicionario para armazenar esportes com idades extremas
     esportes_extremos = {}
     

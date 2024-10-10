@@ -4,6 +4,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns 
 import unittest
 
-
 class TestStatisticsByAge(unittest.TestCase):
-    pass
+    
+    def test_with
