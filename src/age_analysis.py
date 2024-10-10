@@ -25,7 +25,6 @@ def statistics_by_age(df: pd.DataFrame) -> dict:
     >>> statistics_by_age(df)
     {'Basketball': {'mediana': 40.0, '1º quartil': 37.5, '3º quartil': 42.5, 'minimo': 35, 'maximo': 45, 'media': 40.0, 'desvio_padrao': 7.0710678118654755, 'variancia': 50.0, 'limite inferior': 30, 'limite superior': 50}, 'Soccer': {'mediana': 20.5, '1º quartil': 20.25, '3º quartil': 20.75, 'minimo': 20, 'maximo': 21, 'media': 20.5, 'desvio_padrao': 0.7071067811865476, 'variancia': 0.5, 'limite inferior': 20, 'limite superior': 22}, 'Tennis': {'mediana': 22.0, '1º quartil': 20.5, '3º quartil': 23.5, 'minimo': 19, 'maximo': 25, 'media': 22.0, 'desvio_padrao': 4.242640687119285, 'variancia': 18.0, 'limite inferior': 16, 'limite superior': 28}}
     """
-
     # Inicializando um dicionário para armazenar os resultados
     estatisticas = {}
     
