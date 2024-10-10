@@ -45,11 +45,14 @@ def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urban
     return data_2016
 
 
-def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None:
+def create_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> plt:
     """Função que gera um scatterplot com a relação entre a urbanização percentual e a densidade de medalhas por habitante urbano.
     
     Args:
         data_2016 (pd.DataFrame): DataFrame com dados de medalistas e urbanização em 2016.
+        
+    Returns:
+        plt: Objeto do tipo matplotlib.pyplot com o scatterplot.
     """
     # Scatterplot com Seaborn
     sns.set_theme(style="whitegrid")
@@ -76,8 +79,7 @@ def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None
         for _, row in df.iterrows():
             scatterplot.text(row['Urban_Pop_Percent'], row['Urban_Medalist_Density'], row['Country'], color=colors[i], weight='bold', fontsize=font_sizes[i])
 
-    # Save the scatterplot
-    scatterplot.figure.savefig('graphs/urban_medal_density.png', dpi=500, bbox_inches='tight')
+    return scatterplot
 
 
 # GeoPandas para visualização geográfica
@@ -155,11 +157,14 @@ def calculate_dynamic_growth(data: pd.DataFrame, value_column: str) -> pd.DataFr
     return growth_df[['Country', f'{value_column}_Growth']]
 
 
-def save_map_visualization(data: pd.DataFrame) -> None:
+def create_map_visualization(data: pd.DataFrame) -> plt:
     """Função que gera a visualização geográfica dos dados com geopandas.
 
     Args:
         data (pd.DataFrame): dados preparados para visualização geográfica.
+        
+    Returns: 
+        plt: Objeto do tipo matplotlib.pyplot com a visualização geográfica.
     """
     # Tratando inconsistências nos nomes dos países (de novo...)
     data = map_name_normalization(data)
@@ -189,7 +194,7 @@ def save_map_visualization(data: pd.DataFrame) -> None:
     fig.suptitle('Comparison of Growth in Urbanization and Medalists (1956-2016)', fontsize=18, weight='bold')
     plt.subplots_adjust(bottom=0.55)
 
-    plt.savefig('graphs/geographic_growth.png', dpi=500, bbox_inches='tight')
+    return plt
 
 
 # Função interna para encontrar países com nomes diferentes; alguns não existem no GeoPandas (e.g. Singapura)
