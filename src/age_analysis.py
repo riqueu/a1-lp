@@ -63,16 +63,16 @@ def statistics_by_age(df: pd.DataFrame) -> dict:
         return estatisticas
 
 
-def highest_age_aplitude_sports(df: pd.DataFrame) -> dict:
+def highest_age_aplitude_sports(df: pd.DataFrame) -> list:
     """
-    Função que verifica quais esportes têm atletas com idades menores que o limite inferior
-    ou maiores que o limite superior e retorna uma lista desses esportes.
+    Função que verifica quais esportes têm atletas com idades menores que o 1º quartil
+    ou maiores que o 3º quartil e retorna uma lista desses esportes.
     
     Args:
         df (pd.DataFrame): O DataFrame com os dados esportivos.
     
     Returns:
-        dict: Dicionário com  esportes que possuem atletas com idades extremas e e quantidade de outliers
+        list: Lista de esportes que possuem atletas com idades extremas.
     """
 
     # Inicializando a lista para armazenar esportes com idades extremas
@@ -110,11 +110,14 @@ def highest_age_aplitude_sports(df: pd.DataFrame) -> dict:
         return esportes_extremos
 
 
-def sport_with_the_most_outliers_save_graph(df: pd.DataFrame) -> None:
+def create_boxplot_sport_with_the_most_outliers(df: pd.DataFrame) -> plt:
     """Função que gera um boxplot com o esporte que possui mais atletas com idades extremas.
     
     Args:
         df (pd.DataFrame): O DataFrame com os dados esportivos limpos.
+        
+    Returns:
+        plt: Um objeto do tipo matplotlib.pyplot com o boxplot
     """
     esportes_extremos = highest_age_aplitude_sports(df)
     # Analisando o esporte com mais valores extremos
@@ -129,23 +132,25 @@ def sport_with_the_most_outliers_save_graph(df: pd.DataFrame) -> None:
     plt.xlabel('Esporte')
     plt.ylabel('Idade')
 
-    # Salvando o gráfico como PNG
-    plt.savefig('graphs/bloxplot_highest_age_aplitude.png', format='png', dpi=300)
+    return plt
 
 
-def top_3_esportes_outliers_save_graph(cleaned_data: pd.DataFrame)-> None:
+def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
     """Função que gera um boxplot com os  3 esportes que possuem mais atletas com idades extremas.
 
     Args:
-        df (pd.DataFrame): 
+        df (pd.DataFrame): O DataFrame com os dados esportivos limpos.
+        
+    Returns:
+        plt: Um objeto do tipo matplotlib.pyplot com o boxplot
     """
     
-    esportes_extremos = highest_age_aplitude_sports(cleaned_data)
+    esportes_extremos = highest_age_aplitude_sports(df)
     #  Top 3 esportes com mais outliers de idade
     top_3_extremos =  sorted(esportes_extremos.items(), key=lambda item: item[1], reverse=True)[:3]
     nomes_top_3 = [esporte for esporte, _ in top_3_extremos]    
 
-    df_top_3_extremos =  cleaned_data[cleaned_data['Sport'].isin(nomes_top_3)]
+    df_top_3_extremos =  df[df['Sport'].isin(nomes_top_3)]
     
     # Criando o boxplot com os 3 esportes com mais outliers
     plt.figure()
@@ -157,4 +162,5 @@ def top_3_esportes_outliers_save_graph(cleaned_data: pd.DataFrame)-> None:
     plt.xlabel('Esporte')
     plt.ylabel('Idade')
     
-    plt.savefig('graphs/bloxplot_top_3_highest_age_aplitude.png', format='png', dpi=300)
+    return plt
+    
