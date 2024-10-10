@@ -173,21 +173,64 @@ def create_box_plot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
     Returns:
         plt: Um objeto do tipo matplotlib.pyplot com o boxplot
     """
-    
-    atletas_brasileiros =  df[df['NOC'] == 'BRA']
-    
-    medalhas_br_por_esporte = atletas_brasileiros.groupby('Sport')['Medal'].sum()
-    top_3_esportes = medalhas_br_por_esporte.sort_values(ascending=False).head(3)
-    nome_dos_3_esportes_mais_premiados = top_3_esportes.index.tolist()
-    
-    df_top_3_mais =  atletas_brasileiros[atletas_brasileiros['Sport'].isin(nome_dos_3_esportes_mais_premiados)]
-    
-    # Criando o boxplot com os 3 esportes com mais outliers
-    sns.boxplot(x='Sport', y='Age', data=df_top_3_mais)
+    try:
+        #  Filtrando os atletas brasileiros
+        atletas_brasileiros =  df[df['NOC'] == 'BRA']
+        
+        medalhas_br_por_esporte = atletas_brasileiros.groupby('Sport')['Medal'].sum()
+        top_3_esportes = medalhas_br_por_esporte.sort_values(ascending=False).head(3)
+        nome_dos_3_esportes_mais_premiados = top_3_esportes.index.tolist()
+        
+        df_top_3_mais =  atletas_brasileiros[atletas_brasileiros['Sport'].isin(nome_dos_3_esportes_mais_premiados)]
+        
+        # Criando o boxplot com os 3 esportes com mais outliers
+        sns.boxplot(x='Sport', y='Age', data=df_top_3_mais)
 
-    # Adicionando título e rótulos
-    plt.title('Boxplot de Idades dos Esportes mais premiados pelo Brasil')
-    plt.xlabel('Esporte')
-    plt.ylabel('Idade')
+        # Adicionando título e rótulos
+        plt.title('Boxplot de Idades dos Esportes mais premiados pelo Brasil')
+        plt.xlabel('Esporte')
+        plt.ylabel('Idade')
 
-    return plt
+        return plt
+    except KeyError:
+        print(
+            f"The given dataframe doesn't have all needeed columns, consider replacing it")
+            
+        quit()
+        
+
+def create_box_plot_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFrame) -> plt:
+    """Cria um boxplot de idade com as categorias atletas brasileiros premiados 
+    e atletas brasileiros não premiados
+    
+    Args:
+        df (pd.DataFrame): O DataFrame com os dados esportivos limpos.
+
+    Returns:
+        plt: Um objeto do tipo matplotlib.pyplot com o boxplot
+    """
+
+    try:   
+    #  Criando coluna que informa se o atleta foi premiado ou não
+        df['Was Awarded'] = df['Medal'].apply(lambda x: 'Premiado' if x > 0 else 'Não premiado')
+
+        #  Filtrando os atletas brasileiros
+        atletas_brasileiros =  df[df['NOC'] == 'BRA']
+        
+        # Criando os boxplots com as idades dos medalhistas e não medalhistas 
+        sns.boxplot(x='Was Awarded', y='Age', data=atletas_brasileiros)
+
+        # Adicionando título e rótulos
+        plt.title('Boxplot de Idades dos atletas brasileiros premiados e não premiados')
+        plt.xlabel('Was Awarded')
+        plt.ylabel('Idade')
+
+        # Exibindo o gráfico
+        return plt
+        
+    except KeyError:
+        print(
+            f"The given dataframe doesn't have all needeed columns, consider replacing it")
+            
+        quit()    
+    
