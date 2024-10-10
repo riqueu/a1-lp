@@ -5,7 +5,7 @@ import doctest
 
 
 def validade_athletes_columns(df: pd.DataFrame) -> None:
-    """A função que confere se  possui todas as colunas necessárias para análise
+    """A função que confere se possui todas as colunas necessárias para análise
 
     Args:
         df (pd.DataFrame): dataframe
