@@ -136,7 +136,7 @@ def create_boxplot_sport_with_the_most_outliers(df: pd.DataFrame) -> plt:
 
 
 def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
-    """Função que gera um boxplot com os  3 esportes que possuem mais atletas com idades extremas.
+    """Função que gera um boxplot com as idaddes dos  3 esportes que possuem mais atletas com idades extremas.
 
     Args:
         df (pd.DataFrame): O DataFrame com os dados esportivos limpos.
@@ -163,4 +163,31 @@ def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
     plt.ylabel('Idade')
     
     return plt
+
+def create_box_plot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
+    """Função que gera um boxplot com os  3 esportes que possuem mais atletas premiados  com idades extremas.
+
+    Args:
+        df (pd.DataFrame): O DataFrame com os dados esportivos limpos.
+
+    Returns:
+        plt: Um objeto do tipo matplotlib.pyplot com o boxplot
+    """
     
+    atletas_brasileiros =  df[df['NOC'] == 'BRA']
+    
+    medalhas_br_por_esporte = atletas_brasileiros.groupby('Sport')['Medal'].sum()
+    top_3_esportes = medalhas_br_por_esporte.sort_values(ascending=False).head(3)
+    nome_dos_3_esportes_mais_premiados = top_3_esportes.index.tolist()
+    
+    df_top_3_mais =  atletas_brasileiros[atletas_brasileiros['Sport'].isin(nome_dos_3_esportes_mais_premiados)]
+    
+    # Criando o boxplot com os 3 esportes com mais outliers
+    sns.boxplot(x='Sport', y='Age', data=df_top_3_mais)
+
+    # Adicionando título e rótulos
+    plt.title('Boxplot de Idades dos Esportes mais premiados pelo Brasil')
+    plt.xlabel('Esporte')
+    plt.ylabel('Idade')
+
+    return plt
