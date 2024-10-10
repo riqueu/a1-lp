@@ -5,7 +5,7 @@ import doctest
 
 
 def validade_athletes_columns(df: pd.DataFrame) -> None:
-    """A função que confere se  possui todas as colunas necessárias para análise
+    """A função que confere se possui todas as colunas necessárias para análise
 
     Args:
         df (pd.DataFrame): dataframe
@@ -115,7 +115,7 @@ def transform_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd
     return olympic_df
 
 
-def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
+def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
     """Função que renomeia os países com nomes diferentes/em conflito internacional
     para padronizar com os outros DataFrames.
 
