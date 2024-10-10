@@ -232,7 +232,7 @@ def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
         quit()
 
 
-def create_box_plot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
+def create_boxplot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
     """Função que gera um boxplot  de idade com os  3 esportes
     mais premiados pro brasileiros.
     
@@ -251,7 +251,7 @@ def create_box_plot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
     ...     'Medal': [1, 1, 0, 1, 1, 1, 1, 1, 0, 1],
     ...     'Age': [22, 24, 20, 23, 27, 26, 28, 25, 22, 24]
     ... })
-    >>> plot = create_box_plot_top_3_esportes_most_awarded(df_example)
+    >>> plot = create_boxplot_top_3_esportes_most_awarded(df_example)
     >>> plot.__class__.__name__ == "module"
     True
     """
@@ -281,7 +281,7 @@ def create_box_plot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
         quit()
         
 
-def create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFrame) -> plt:
+def create_boxplot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFrame) -> plt:
     """Cria um boxplot de idade com as categorias atletas brasileiros premiados 
     e atletas brasileiros não premiados
     
@@ -299,7 +299,7 @@ def create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFr
     ...     'Medal': [1, 0, 1, 0, 1, 0, 1, 0],
     ...     'Age': [22, 24, 20, 23, 27, 26, 28, 25]
     ... })
-    >>> plot = create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df_example)
+    >>> plot = create_boxplot_age_awarded_and_non_awarded_athletes_in_brazil(df_example)
     >>> plot.__class__.__name__ == "module"
     True
         
@@ -331,7 +331,7 @@ def create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFr
         quit()    
     
 
-def create_box_plot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
+def create_boxplot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
     """Cria um boxplot com as idades dos atletas premiados pelo brasil e 
     categoriza por tipo de medalha 
 
@@ -349,7 +349,7 @@ def create_box_plot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
     ...     'Medal': ['3', '2', '1', 0, '3', '3', '2'],
     ...     'Age': [22, 24, 20, 23, 27, 26, 28]
     ... })
-    >>> plot = create_box_plot_age_by_medals_athletes_in_brazil(df_example)
+    >>> plot = create_boxplot_age_by_medals_athletes_in_brazil(df_example)
     >>> plot.__class__.__name__ == "module"
     True
     """
