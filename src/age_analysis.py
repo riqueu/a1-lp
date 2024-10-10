@@ -231,13 +231,27 @@ def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
         quit()
 
 def create_box_plot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
-    """Função que gera um boxplot com os  3 esportes que possuem mais atletas premiados  com idades extremas.
+    """Função que gera um boxplot  de idade com os  3 esportes
+    mais premiados pro brasileiros.
 
     Args:
         df (pd.DataFrame): O DataFrame com os dados esportivos limpos.
 
     Returns:
         plt: Um objeto do tipo matplotlib.pyplot com o boxplot
+    
+    Example
+    ----------
+    >>> import pandas as pd
+    >>> df_example = pd.DataFrame({
+    ...     'NOC': ['BRA', 'BRA', 'BRA', 'BRA', 'USA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA'],
+    ...     'Sport': ['Soccer', 'Volleyball', 'Swimming', 'Swimming', 'Soccer', 'Soccer', 'Judo', 'Volleyball', 'Judo', 'Judo'],
+    ...     'Medal': [1, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+    ...     'Age': [22, 24, 20, 23, 27, 26, 28, 25, 22, 24]
+    ... })
+    >>> plot = create_box_plot_top_3_esportes_most_awarded(df_example)
+    >>> plot.__class__.__name__ == "module"
+    True
     """
     try:
         #  Filtrando os atletas brasileiros
