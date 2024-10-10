@@ -163,4 +163,3 @@ def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
     plt.ylabel('Idade')
     
     return plt
-    
