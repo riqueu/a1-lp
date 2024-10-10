@@ -94,9 +94,9 @@ class TestValidateAthletesColumns(unittest.TestCase):
             validade_athletes_columns(data)
 
             
-class TestRenameCountries(unittest.TestCase):
+class TestUrbanizationRenameCountries(unittest.TestCase):
 
-    def test_rename_countries_standard(self):
+    def test_urbanization_rename_countries_standard(self):
         data = pd.DataFrame({
             'Country': [
                 "United States of America", "Côte d'Ivoire", "Korea, Republic of",
@@ -113,33 +113,33 @@ class TestRenameCountries(unittest.TestCase):
                 "Venezuela", "Vietnam"
             ]
         })
-        modified_data = rename_countries(data)
+        modified_data = urbanization_rename_countries(data)
         self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
 
-    def test_rename_countries_no_rename_needed(self):
+    def test_urbanization_rename_countries_no_rename_needed(self):
         data = pd.DataFrame({
             'Country': ["Brazil", "Argentina", "Canada"]
         })
         expected_result = data.copy()
-        modified_data = rename_countries(data)
+        modified_data = urbanization_rename_countries(data)
         self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
 
-    def test_rename_countries_mixed(self):
+    def test_urbanization_rename_countries_mixed(self):
         data = pd.DataFrame({
             'Country': ["Brazil", "United States of America", "Canada", "Türkiye"]
         })
         expected_result = pd.DataFrame({
             'Country': ["Brazil", "USA", "Canada", "Turkey"]
         })
-        modified_data = rename_countries(data)
+        modified_data = urbanization_rename_countries(data)
         self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
 
-    def test_rename_countries_missing_column(self):
+    def test_urbanization_rename_countries_missing_column(self):
         data = pd.DataFrame({
             'Nation': ["Brazil", "United States of America", "Canada"]
         })
         with self.assertRaises(SystemExit):
-            rename_countries(data)
+            urbanization_rename_countries(data)
 
 
 class TestMapNameNormalization(unittest.TestCase):

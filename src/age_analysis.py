@@ -152,6 +152,7 @@ def create_boxplot_sport_with_the_most_outliers(df: pd.DataFrame) -> plt:
     >>> plot = create_boxplot_sport_with_the_most_outliers(data)
     >>> plot.__class__.__name__ == "module"
     True
+
     """
     try:
         esportes_extremos = highest_age_aplitude_sports(df)
@@ -215,6 +216,7 @@ def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
         boxplots = sns.boxplot(x='Sport', y='Age', data=df_top_3_extremos)
         boxplots.set_yscale('linear')
 
+
         # Adicionando título e rótulos
         plt.title('Boxplot de Idades por Esporte')
         plt.xlabel('Esporte')
@@ -229,10 +231,11 @@ def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
         print(f"The given dataframe does not have sports with outliers")
         quit()
 
+
 def create_box_plot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
     """Função que gera um boxplot  de idade com os  3 esportes
     mais premiados pro brasileiros.
-
+    
     Args:
         df (pd.DataFrame): O DataFrame com os dados esportivos limpos.
 
@@ -299,6 +302,9 @@ def create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFr
     >>> plot = create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df_example)
     >>> plot.__class__.__name__ == "module"
     True
+        
+    Returns:
+        plt: Um objeto do tipo matplotlib.pyplot com o boxplot
     """
     try:   
     #  Criando coluna que informa se o atleta foi premiado ou não
@@ -324,6 +330,7 @@ def create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFr
             
         quit()    
     
+
 def create_box_plot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
     """Cria um boxplot com as idades dos atletas premiados pelo brasil e 
     categoriza por tipo de medalha 
@@ -359,6 +366,7 @@ def create_box_plot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
 
         return plt
     
+
     except KeyError:
         print(
             f"The given dataframe doesn't have all needeed columns, consider replacing it")
@@ -367,3 +375,5 @@ def create_box_plot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
 
 if __name__ == "__main__":
      doctest.testmod(verbose=False)
+
+

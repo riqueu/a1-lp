@@ -45,11 +45,14 @@ def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urban
     return data_2016
 
 
-def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None:
+def create_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> plt:
     """Função que gera um scatterplot com a relação entre a urbanização percentual e a densidade de medalhas por habitante urbano.
     
     Args:
         data_2016 (pd.DataFrame): DataFrame com dados de medalistas e urbanização em 2016.
+        
+    Returns:
+        plt: Objeto do tipo matplotlib.pyplot com o scatterplot.
     """
     # Scatterplot com Seaborn
     sns.set_theme(style="whitegrid")
@@ -76,8 +79,7 @@ def save_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> None
         for _, row in df.iterrows():
             scatterplot.text(row['Urban_Pop_Percent'], row['Urban_Medalist_Density'], row['Country'], color=colors[i], weight='bold', fontsize=font_sizes[i])
 
-    # Save the scatterplot
-    scatterplot.figure.savefig('graphs/urban_medal_density.png', dpi=500, bbox_inches='tight')
+    return scatterplot
 
 
 # GeoPandas para visualização geográfica
@@ -141,18 +143,28 @@ def calculate_dynamic_growth(data: pd.DataFrame, value_column: str) -> pd.DataFr
 
     # Merge first and last year dataframes
     growth_df = pd.merge(first_year, last_year, on='Country')
+    growth_df.to_csv(f'data/df_checkpoints/growth_{value_column}_checkpoint.csv', index=False) # Checkpoint para análise
+    
+    column_growth = (growth_df[f'{value_column}_first'].astype(float) - growth_df[f'{value_column}_last'].astype(float))
+    year_growth = (growth_df['First_Year'] - growth_df['Last_Year']).astype(float)
 
     # Calcula crescimento percentual
-    growth_df[f'{value_column}_Growth'] = ((growth_df['Last_Year'] - growth_df['First_Year']) / growth_df['First_Year']) * 100
+    try:
+        growth_df[f'{value_column}_Growth'] = (column_growth / year_growth) * 100
+    except ZeroDivisionError: # Caso onde o primeiro e o último ano são iguais
+        growth_df[f'{value_column}_Growth'] = 0
     
     return growth_df[['Country', f'{value_column}_Growth']]
 
 
-def save_map_visualization(data: pd.DataFrame) -> None:
+def create_map_visualization(data: pd.DataFrame) -> plt:
     """Função que gera a visualização geográfica dos dados com geopandas.
 
     Args:
         data (pd.DataFrame): dados preparados para visualização geográfica.
+        
+    Returns: 
+        plt: Objeto do tipo matplotlib.pyplot com a visualização geográfica.
     """
     # Tratando inconsistências nos nomes dos países (de novo...)
     data = map_name_normalization(data)
@@ -171,20 +183,21 @@ def save_map_visualization(data: pd.DataFrame) -> None:
     # Plot crescimento da urbanização
     plt.figure()
     fig, ax = plt.subplots(1, 2, figsize=(20, 10))
-    world_urban.plot(column='Urban_Pop_Percent_Growth', cmap='Blues', legend=False, ax=ax[0], missing_kwds={'color': 'lightgrey'}, linewidth=0.5)
-    ax[0].set_title('Urbanization Growth (First to Last Year)')
+    plt.subplots_adjust(wspace=0)  # Adjust the width space between subplots
+    world_urban.plot(column='Urban_Pop_Percent_Growth', cmap='Blues', legend=False, ax=ax[0], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black')
+    ax[0].set_title('Urbanization Growth (First to Last Available Year)')
 
     # Plot crescimento de medalhistas
-    world_medals.plot(column='Medalists_Growth', cmap='Reds', legend=False, ax=ax[1], missing_kwds={'color': 'lightgrey'}, linewidth=0.5)
-    ax[1].set_title('Medalists Growth (First to Last Year)')
+    world_medals.plot(column='Medalists_Growth', cmap='Reds', legend=False, ax=ax[1], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black')
+    ax[1].set_title('Medalists Growth (First to Last Available Year)')
     
     fig.suptitle('Comparison of Growth in Urbanization and Medalists (1956-2016)', fontsize=18, weight='bold')
     plt.subplots_adjust(bottom=0.55)
 
-    plt.savefig('graphs/geographic_growth.png', dpi=500, bbox_inches='tight')
+    return plt
 
 
-# Função interna para encontrar países com nomes diferentes; alguns só não existem no GeoPandas (e.g. Singapura)
+# Função interna para encontrar países com nomes diferentes; alguns não existem no GeoPandas (e.g. Singapura)
 def find_mismatched_countries(data: pd.DataFrame) -> pd.DataFrame:
     """Find countries in the data that have mismatched names compared to GeoPandas world data.
 
