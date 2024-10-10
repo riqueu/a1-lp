@@ -288,8 +288,19 @@ def create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFr
 
     Returns:
         plt: Um objeto do tipo matplotlib.pyplot com o boxplot
+    
+    Example
+    ----------
+    >>> import pandas as pd
+    >>> df_example = pd.DataFrame({
+    ...     'NOC': ['BRA', 'BRA', 'BRA', 'BRA', 'USA', 'BRA', 'BRA', 'BRA'],
+    ...     'Medal': [1, 0, 1, 0, 1, 0, 1, 0],
+    ...     'Age': [22, 24, 20, 23, 27, 26, 28, 25]
+    ... })
+    >>> plot = create_box_plot_age_awarded_and_non_awarded_athletes_in_brazil(df_example)
+    >>> plot.__class__.__name__ == "module"
+    True
     """
-
     try:   
     #  Criando coluna que informa se o atleta foi premiado ou não
         df['Was Awarded'] = df['Medal'].apply(lambda x: 'Premiado' if x > 0 else 'Não premiado')
@@ -323,6 +334,18 @@ def create_box_plot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
 
     Returns:
         plt:  Um objeto do tipo matplotlib.pyplot com o boxplot
+    
+    Example
+    ----------
+     >>> import pandas as pd
+    >>> df_example = pd.DataFrame({
+    ...     'NOC': ['BRA', 'BRA', 'BRA', 'BRA', 'USA', 'BRA', 'BRA'],
+    ...     'Medal': ['3', '2', '1', 0, '3', '3', '2'],
+    ...     'Age': [22, 24, 20, 23, 27, 26, 28]
+    ... })
+    >>> plot = create_box_plot_age_by_medals_athletes_in_brazil(df_example)
+    >>> plot.__class__.__name__ == "module"
+    True
     """
     
     try:
