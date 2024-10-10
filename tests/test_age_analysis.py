@@ -5,5 +5,5 @@ import seaborn as sns
 import unittest
 
 
-class TestMedalsT(unittest.TestCase):
+class TestStatisticsByAge(unittest.TestCase):
     pass

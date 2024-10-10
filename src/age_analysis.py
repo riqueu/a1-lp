@@ -17,10 +17,7 @@ def statistics_by_age(df: pd.DataFrame) -> dict:
         dict: Um dicionário contendo as estatísticas da coluna 'Age' para cada esporte.
     """
     
-    # Verifica se as colunas 'Sport' e 'Age' existem no DataFrame
-    if 'Sport' not in df.columns or 'Age' not in df.columns:
-        raise ValueError("As colunas 'Sport' e/ou 'Age' não estão presentes no DataFrame.")
-    
+
     # Inicializando um dicionário para armazenar os resultados
     estatisticas = {}
     
@@ -118,6 +115,19 @@ def create_boxplot_sport_with_the_most_outliers(df: pd.DataFrame) -> plt:
         
     Returns:
         plt: Um objeto do tipo matplotlib.pyplot com o boxplot
+    
+    Example
+    ----------
+    >>> import pandas as pd
+    >>> import numpy as np 
+    >>> data = pd.DataFrame({
+    ...    'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 
+    ...    'Medal': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan], 
+    ...    'Age': [80, 20, 19, 19, 18], 
+    ...    'Sport': ['Volleybol', 'Volleybol', 'Volleybol', 'Volleybol', 'Volleybol']})       
+    >>> plot = create_boxplot_sport_with_the_most_outliers(data)
+    >>> plot.__class__.__name__ == "module"
+    True
     """
     esportes_extremos = highest_age_aplitude_sports(df)
     # Analisando o esporte com mais valores extremos
@@ -262,3 +272,6 @@ def create_box_plot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
             f"The given dataframe doesn't have all needeed columns, consider replacing it")
             
         quit()
+
+if __name__ == "__main__":
+     doctest.testmod(verbose=False)
