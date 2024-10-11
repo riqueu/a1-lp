@@ -6,8 +6,9 @@ from data_predictor import *
 from coeficient_functions import r2
 
 
-original = pd.read_csv('athlete_events.csv')
-df = pd.read_csv('inverse.csv', index_col=0)
+original = pd.read_csv('data\\athlete_events.csv')
+original = medals_to_int(original)
+df = predict_missing(original.copy())
 
 # Classificacao dos esportes em 7 categorias, dada pelo ChatGpt
 sport_map = {
