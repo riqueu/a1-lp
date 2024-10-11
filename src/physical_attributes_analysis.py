@@ -6,7 +6,7 @@ import seaborn as sns
 
 from data_cleaner import medals_to_int
 from data_predictor import *
-from coeficient_functions import r2
+from coeficient_functions import *
 
 original = pd.read_csv('data\\athlete_events.csv')
 original = medals_to_int(original)
@@ -124,3 +124,31 @@ def attributes_sports_analisys(df: pd.DataFrame):
             plt.savefig(f'graphs\\{sport}_{attribute}.png')
             
 attributes_sports_analisys(df)
+
+
+def attributes_years_analisys(df: pd.DataFrame):
+    
+    # Analise da correlacao entre o ano e os atributos fisicos
+    plt.xlabel('Year')
+    for attribute in ['Age', 'Height', 'Weight']:
+        plt.ylabel(attribute)
+        
+        df_brasil = df[df['NOC'] == 'BRA']
+        print(f'\n--------------- Correlacao entre {attribute} e Year - Geral')
+        print(corr(df, attribute, 'Year', False))
+        plt.title(f'Correlacao: {attribute} e ano')
+        plt.scatter(data=df, x='Year', y=attribute)
+        
+        plt.savefig(f'graphs\\{attribute}_ano.png')
+
+        print(f'\nCorrelacao entre {attribute} e Year - Brasil')
+        print(corr(df_brasil, attribute, 'Year', False))
+        plt.title(f'Correlacao: {attribute} e ano')
+        plt.scatter(data=df_brasil, x='Year', y=attribute)
+        plt.savefig(f'graphs\\{attribute}_ano_brasil.png')
+
+    # Idade parece se correlacionar mais com o Ano do que os demais atributos, mas ainda assim, muito pouco
+    # No Brasil, pelo contrario, a idade quase nao variou, mas as correlacoes de altura e peso com o Ano sao mais significantes (ainda pouco) que a Idade
+    
+    
+attributes_years_analisys(df)
