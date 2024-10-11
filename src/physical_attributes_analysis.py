@@ -62,8 +62,8 @@ for filter_sport, name_filter in zip([top_sports_complete, top_sports_complete_c
     for column_quali in ['Sport', 'sport_class']:
         print(f'--------------- Analisando associacao com {column_quali}:')
         for attribute in ['Age', 'Height', 'Weight']:
-            r_2 = r2(df_filter, column_quali, attribute)
-            print(f'Correlacao entre {column_quali} e \'{attribute}\'')
+            r_2 = r2(df_filter, column_quali, attribute, False)
+            print(f'Associacao entre {column_quali} e {attribute}')
             print(f'Coeficiente r_2 = {r_2}\n')
     print('\n\n\n')
 
