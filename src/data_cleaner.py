@@ -125,6 +125,12 @@ def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
 
     Returns:
         pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+        
+    Example:
+    >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
+    >>> df = urbanization_rename_countries(data)
+    >>> print(df['Country'].tolist())
+    ['United States of America', 'United Kingdom', 'Trinidad and Tobago', 'North Macedonia', 'Czechia', "Côte d'Ivoire"]
     """
     try:
         countries = {
@@ -165,6 +171,12 @@ def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+    
+    Example:
+    >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
+    >>> df = map_name_normalization(data)
+    >>> print(df['Country'].tolist())
+    ['United States of America', 'United Kingdom', 'Trinidad and Tobago', 'North Macedonia', 'Czechia', "Côte d'Ivoire"]
     """
     try:
         countries = {
