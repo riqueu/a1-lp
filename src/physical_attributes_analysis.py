@@ -1,6 +1,9 @@
 """Modulo com as funcoes para a hipotese do perfil fisico dos atletas"""
 import numpy as pd
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from data_cleaner import medals_to_int
 from data_predictor import *
 from coeficient_functions import r2
@@ -110,3 +113,14 @@ def attributes_sports_analisys(df: pd.DataFrame):
     # Notamos que mal existe associacao entre tais atributos e a medalha ganha pelo atleta naquele esporte
     # Entre os jogadores brasileiros, existe uma associacao maior entre as variaveis, mas ainda e minimo
     # Vale somente ressaltar o volei, o futebol e o basquete brasileiros
+    
+    # Codigo para salvar os graficos da analise
+    for sport in ['Volleyball', 'Football', 'Basketball']:
+        df_sport_brasil = df_top_sports_brasil[df_top_sports_brasil['Sport'] == sport]
+        for attribute in ['Height', 'Weight']:
+            plt.figure()
+            sns.boxplot(x='Medal', y=attribute, data=df_sport_brasil)
+            plt.title(f'{sport} - {attribute}')
+            plt.savefig(f'graphs\\{sport}_{attribute}.png')
+            
+attributes_sports_analisys(df)
