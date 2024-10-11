@@ -163,3 +163,10 @@ def create_dataframes():
     df2_paralymp_bra[df2_paralymp_bra.columns.difference(['Sport'])] = df2_paralymp_bra[df2_paralymp_bra.columns.difference(['Sport'])].astype(int)
 
     return df_olymp, df_olymp_countries, df_paralymp, df_paralymp_countries, df2_olymp, df2_olymp_bra, df2_paralymp, df2_paralymp_bra
+
+def estimate_statistics(df):
+    df_with_outliers = df[['F_Athletes', 'F_Medal', 'F_Score']].describe()    
+    df = df[(df['F_Athletes'] > 0) & (df['F_Medal'] > 0) & (df['F_Score'] > 0)]
+    df_without_outliers = df[['F_Athletes', 'F_Medal', 'F_Score']].describe()
+    
+    return pd.concat([df_with_outliers, df_without_outliers])
