@@ -55,8 +55,8 @@ def create_table_of_stds():
     df = df.set_axis(index).reset_index()
     df.rename(columns={'index': ''}, inplace=True)
 
-    sns.set_theme(style='darkgrid')
-    fig, ax = plt.subplots(figsize=(10, 3))  # Definindo o tamanho da figura
+    sns.set_theme(style='darkgrid') 
+    fig, ax = plt.subplots(figsize=(10, 3))
     ax.axis('tight')   
     ax.axis('off')
     table = ax.table(cellText=df.values, colLabels=df.columns, cellLoc='center', loc='center')
