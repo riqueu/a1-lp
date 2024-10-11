@@ -1,6 +1,7 @@
 """Módulo com funções para limpeza de dados."""
 
 import pandas as pd
+import numpy as np
 import doctest
 
 
@@ -61,19 +62,19 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     Example:
     ----------
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
-    >>> cleaned_data = medals_to_int(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [3, 3, 2, 1, 0]
+    >>> df = medals_to_int(data)
+    >>> print(df['Medal'].tolist())
+    [3.0, 3.0, 2.0, 1.0, 0.0]
     
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [np.nan, 'Bronze', 'Bronze', 'Bronze', np.nan]  }) 
-    >>> cleaned_data =  medals_to_int(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [0, 1, 1, 1, 0]
+    >>> df = medals_to_int(data)
+    >>> print(df['Medal'].tolist())
+    [0.0, 1.0, 1.0, 1.0, 0.0]
     
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [np.nan, np.nan, np.nan, np.nan, np.nan]  }) 
-    >>> cleaned_data =  medals_to_int(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [0, 0, 0, 0, 0]
+    >>> df = medals_to_int(data)
+    >>> print(df['Medal'].tolist())
+    [0.0, 0.0, 0.0, 0.0, 0.0]
     """
     try:
         df.loc[:, 'Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
@@ -89,32 +90,7 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def convert_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Transforma o DataFrame de atletas olímpicos no formato utilizado pelos DataFrames paralímpicos
-
-    Args:
-        athletes_df (pd.DataFrame): DataFrame contendo os dados dos atletas olímpicos com as colunas:
-
-    Returns:
-        pd.DataFrame: Um DataFrame formatado como os DataFrames paralímpicos, mas com os dados das olimpíadas
-    
-    Example:
-    ----------
-    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [3, 3, 2, 1, 0]  })
-    >>> cleaned_data = medals_to_bool(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [True, True, True, True, False]
-    
-    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [0, 1, 1, 1, 0]  }) 
-    >>> cleaned_data =  medals_to_bool(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [False, True, True, True, False]
-    
-    >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [0, 0, 0, 0, 0]  }) 
-    >>> cleaned_data =  medals_to_bool(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [False, False, False, False, False]
-    """
+    """TODO:"""
     athletes_df = athletes_df[athletes_df['Year'] >= 1960]
 
     olympic_df = athletes_df.groupby(['NOC', 'Year', 'Season']).agg(
@@ -141,6 +117,12 @@ def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
 
     Returns:
         pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+        
+    Example:
+    >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
+    >>> df = urbanization_rename_countries(data)
+    >>> print(df['Country'].tolist())
+    ['United States of America', 'United Kingdom', 'Trinidad and Tobago', 'North Macedonia', 'Czechia', "Côte d'Ivoire"]
     """
     try:
         countries = {
@@ -172,7 +154,7 @@ def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
     else:
         return df
     
-
+    
 def rename_countries_gdp(df: pd.DataFrame) -> pd.DataFrame:
     countries = {
         "Bahamas, The": "Bahamas",
@@ -216,6 +198,37 @@ def rename_countries_gdp(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
+def clean_paralympic_atletes_dataset():
+    """Função que padroniza os dados do dataset medal_athletes.csv com os dados dos outros datasets com informações das paralimpíadas e olimpíadas e cria um dataset modified_medal_athletes.csv com as modificações
+    """
+    df = pd.read_csv("data/medal_athlete.csv")
+    df.rename(columns={column: column.capitalize() for column in df.columns}, inplace=True)
+    df = medals_to_int(df)
+    df['Sex'] = np.nan
+    df.loc[df['Event'].str.contains('Men', case=False, na=False), ['Sex']] = 'M'
+    df.loc[df['Event'].str.contains('Women', case=False, na=False), ['Sex']] = 'F'
+
+    # Variaveis auxiliares para verificar se a quantidade de atletas removidos esta correta
+    identified_athletes = df[(df['Sex'] == 'F') | (df['Sex'] == 'M')]
+    unidentified_athletes = df[df['Sex'].isna()]
+    aux_1 = identified_athletes['Athlete_name'].unique().astype(str)
+    aux_2 = unidentified_athletes['Athlete_name'].unique().astype(str)
+
+    # Atualiza o dataframe com o genero dos atletas que foram distinguiveis
+    df_auxiliar_map = df.groupby(['Athlete_name']).first()
+    df_auxiliar_map = df_auxiliar_map['Sex'].to_dict()
+    df['Sex'] = df['Athlete_name'].map(df_auxiliar_map)
+
+    # Dropa os atletas em que nao foi possivel descobrir o genero
+    df.dropna(subset=['Sex'], inplace=True)
+
+    # Intersecao dos atletas que nao possuem identificacao alguma de genero com os atletas do dataset modificado
+    # print(np.intersect1d(df['Athlete_name'].to_numpy(), np.setdiff1d(aux_2, aux_1)))
+    # print(df['Athlete_name'].nunique())
+    
+    df.to_csv('data/modified_medal_athlete.csv')
+
+
 def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
     """Função que normaliza os nomes dos países para o padrão do Geopandas. Função similar a rename_countries
 
@@ -224,6 +237,12 @@ def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+    
+    Example:
+    >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
+    >>> df = map_name_normalization(data)
+    >>> print(df['Country'].tolist())
+    ['United States of America', 'United Kingdom', 'Trinidad and Tobago', 'North Macedonia', 'Czechia', "Côte d'Ivoire"]
     """
     try:
         countries = {
@@ -242,6 +261,33 @@ def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
         quit()
     else:
         return df
+
+
+def aggregate_medals_by_event_team(athletes_df: pd.DataFrame) -> pd.DataFrame:
+    """Função que recebe um DataFrame de atletas e retorna um DataFrame com as medalhas agregadas por evento e time,
+    para evitar medalhas duplicadas (ex: 11 medalhas de ouro para o mesmo time no mesmo evento, por ter 11 atletas).
+
+    Args:
+        athletes_df (pd.DataFrame): df dos atletas
+
+    Returns:
+        pd.DataFrame: dataframe com as medalhas agregadas por evento e time
+    
+    Examples:
+    >>> data = pd.DataFrame({'Event': ['100m', '100m', '100m', '100m', '100m'], 'Team': ['Brazil', 'Brazil', 'Brazil', 'Brazil', 'Brazil'], 'NOC': ['BRA', 'BRA', 'BRA', 'BRA', 'BRA'], 'Year': [2016, 2016, 2016, 2016, 2016], 'Games': ['2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer'], 'Season': ['Summer', 'Summer', 'Summer', 'Summer', 'Summer'], 'City': ['Rio', 'Rio', 'Rio', 'Rio', 'Rio'], 'Sport': ['Athletics', 'Athletics', 'Athletics', 'Athletics', 'Athletics'], 'Medal': ['Gold', 'Gold', 'Gold', 'Gold', 'Gold']})
+    >>> df = aggregate_medals_by_event_team(data)
+    >>> print(df['Medal'].tolist())
+    ['Gold']
+    """
+    # Group the data by relevant columns and take the first non-null medal for the team in each event
+    aggregated_df = athletes_df.groupby(
+        ['Event', 'Team', 'NOC', 'Year', 'Games', 'Season', 'City', 'Sport'],
+        as_index=False
+    ).agg({
+        'Medal': 'first'  # Takes the first non-null medal for the team in each event
+    })
+    
+    return aggregated_df
 
 
 if __name__ == "__main__":
