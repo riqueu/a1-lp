@@ -2,6 +2,8 @@ from src import medalist_x_urbanization_analysis as mu
 from src import age_analysis as aa
 from src import data_cleaner as dc
 from src import data_predictor as dp
+from src import womens_participation_graphs as wpg
+from src import womens_participation as wp
 import pandas as pd
 
 try:
@@ -19,7 +21,9 @@ try:
     urbanization_df.columns = ['Year', 'Economy_Code', 'Country', 'Pop_Absolute', 'Pop_Missing', 'Urban_Pop_Percent', 'Urban_Pop_Percent_Missing']
     urbanization_df = urbanization_df[['Year', 'Country', 'Pop_Absolute', 'Urban_Pop_Percent']]
     urbanization_df = dc.urbanization_rename_countries(urbanization_df) # Renomear países para padrão do DataFrame de Atletas
-    
+    wp.clean_paralympic_atletes_dataset()
+    olymp_df, olymp_countries_df, paralymp_df, paralymp_countries_df, olymp_sports_df, olymp_sports_bra_df, paralymp_sports_df, paralymp_sports_bra_df = wp.create_dataframes()
+
     # Análise de Densidade de Medalhas por População Urbana em 2016: Henrique
     data_2016 = mu.prepare_2016_medalist_urbanization_analysis(clean_athletes_df, urbanization_df, noc_df)
     scatterplot_2016 = mu.create_scatterplot_2016_medalist_urbanization(data_2016)
@@ -39,6 +43,26 @@ try:
     
     boxplot_age_medal_status_brazil = aa.create_boxplot_age_medal_status_brazil(clean_athletes_df)
     boxplot_age_medal_status_brazil.savefig('graphs/boxplot_age_awarded_and_non_awarded_brazil.png', format='png', dpi=300)
+
+    #Análise Participação Feminina: Walléria
+    table_stds = wpg.create_table_of_stds()
+    table_stds.savefig('graphs/table_stds_olympics_and_paralympics_bra.png', format='png', dpi=300)
+
+    scatterplot_paralymp_score_bra_df = wpg.filter_paralymp_score_bra()
+    scatterplot_paralymp_score_bra = wpg.plot_scatter_graph(scatterplot_paralymp_score_bra_df, 'Year', 'F_Medal', 'M_Medal', 'Scatter Plot: Men\'s Score X Women\'s Score (Brazil)', 'Score')
+    scatterplot_paralymp_score_bra.savefig('graphs/scatterplot_paralymp_score_bra.png', format='png', dpi=300)
+
+    scatterplot_paralymp_score_global_df = wpg.filter_paralymp_score_global()
+    scatterplot_paralymp_score_global = wpg.plot_scatter_graph(scatterplot_paralymp_score_global_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Score', 'Score')
+    scatterplot_paralymp_score_global.savefig('graphs/scatterplot_paralymp_score_global.png', format='png', dpi=300)
+
+    scatterplot_olymp_score_global_df = wpg.filter_olympic_score_global()
+    scatterplot_olymp_score_global = wpg.plot_scatter_graph(scatterplot_olymp_score_global_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Score', 'Score')
+    scatterplot_olymp_score_global.savefig('graphs/scatterplot_olymp_score_global.png', format='png', dpi=300)
+
+    scatterplot_olymp_score_bra_df = wpg.filter_olympic_score_bra()
+    scatterplot_olymp_score_bra = wpg.plot_scatter_graph(scatterplot_olymp_score_bra_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Score', 'Score')
+    scatterplot_olymp_score_bra.savefig('graphs/scatterplot_olymp_score_bra.png', format='png', dpi=300)
 
 
 except FileNotFoundError:
