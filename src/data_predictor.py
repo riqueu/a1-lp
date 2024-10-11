@@ -97,12 +97,20 @@ def fill(means: pd.DataFrame, row: pd.Series) -> pd.Series:
     # Caso tenha algum um valor NaN, preenche-o com a media ate deixar somente um vazio
     for column in features_nan.index:
         key = (row['Sex'], row['Sport'])
-        value_column = means[key][column]
-        if cont_nan <= 1:
-            break
-        elif value_column:
-            row[column]  = value_column
-            cont_nan -= 1
+        try:
+            value_column = means[key][column]
+            if cont_nan <= 1:
+                break
+            elif value_column:
+                row[column] = value_column
+                cont_nan -= 1
+        except KeyError:
+            # Caso a chave (Sex, Sport) não exista no dicionário means
+            continue
+        except Exception as e:
+            # Para qualquer outro tipo de erro
+            print(f"Erro ao preencher a coluna {column}: {e}")
+            continue
         
     return row
 

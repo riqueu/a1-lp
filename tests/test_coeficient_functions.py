@@ -3,6 +3,7 @@ from src.coeficient_functions import *
 import numpy as np
 import unittest
 
+
 class TestR2(unittest.TestCase):
     
     #  Teste com um dataframe valido e  esperado
@@ -64,6 +65,7 @@ class TestR2(unittest.TestCase):
         with self.assertRaises(KeyError) as context:
              r2(df, 'qualitativa', 'quantitativa')
 
+
 class TestCorr(unittest.TestCase):
     
     #  Teste correlação igual a 1
@@ -103,3 +105,7 @@ class TestCorr(unittest.TestCase):
         df = pd.DataFrame({'x': [1, 2, 3, 4, 5], 'y': [5, 6, 7, 8, 9]})
         with self.assertRaises(KeyError):
             corr(df, 'x', 'z')
+
+
+if __name__ == "__main__":
+    unittest.main()
