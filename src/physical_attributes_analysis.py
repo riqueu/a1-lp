@@ -5,10 +5,18 @@ from data_cleaner import medals_to_int
 from data_predictor import *
 from coeficient_functions import r2
 
+
+original = pd.read_csv('a1-lp\\data\\athlete_events.csv')
+print(original)
+
+count = original.groupby('Sport').count()
+print(count)
+
+
 df = pd.read_csv('inverse.csv', index_col=0)
 
-df, cols_to_fix, cols_types, encoders = to_encoded(df)
-print(f'Colunas problematicas: {cols_to_fix}\nColunas com varios tipos: {cols_types}')
+# df, cols_to_fix, cols_types, encoders = to_encoded(df)
+# print(f'Colunas problematicas: {cols_to_fix}\nColunas com varios tipos: {cols_types}')
 
 # Verificacao das colunas que tem maior correlacao com o esporte do atleta
 for attribute in ['Year', 'Age', 'Height', 'Weight']:
