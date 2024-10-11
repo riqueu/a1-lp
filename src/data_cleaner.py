@@ -1,18 +1,53 @@
 """Módulo com funções para limpeza de dados."""
 
-import numpy as np
 import pandas as pd
+import numpy as np
 import doctest
 
-from sklearn.linear_model import LinearRegression
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
 
+def validade_athletes_columns(df: pd.DataFrame) -> None:
+    """A função que confere se possui todas as colunas necessárias para análise
 
-# TODO
-#  Criar função que confere se  possui todas as colunas necessárias para análise
+    Args:
+        df (pd.DataFrame): dataframe
+        
+        Index:
+            RangeIndex
+        Columns:
+            Name: 'ID' - int64
+            Name: 'Name' - object
+            Name: 'Sex' - object
+            Name: 'Age' - float64
+            Name: 'Height' - float64
+            Name: 'Weight' - float64
+            Name: 'Team' - object
+            Name: 'NOC' - object
+            Name: 'Games' - object
+            Name: 'Year' - int64
+            Name: 'Season' - object
+            Name: 'City' - object
+            Name: 'Sport' - object
+            Name: 'Event' - object
+            Name: 'Medal' - object
+        
+    Returns:
+        pd.DataFrame: a cleaned dataframe
+        
+    Example:
+    >>> data = pd.DataFrame({'ID': [1, 2, 3], 'Name': ['Ana', 'Pedro', 'Maria']})
+    >>> validade_athletes_columns(data)
+    Traceback (most recent call last):
+        ...
+    KeyError: 'The given dataframe is missing columns'
+    >>> data = pd.DataFrame({'ID': [1], 'Name': ['Carlos'], 'Sex': ['M'], 'Age': [23], 'Height': [160.0], 'Weight': [55.0], 'Team': ['Brazil'], 'NOC': ['BRA'], 'Games': ['2016 Summer'], 'Year': [2016], 'Season': ['Summer'], 'City': ['Rio'], 'Sport': ['Swimming'], 'Event': ['200m Freestyle'], 'Medal': [None]})
+    >>> validade_athletes_columns(data)
+    
+    """
+    required_columns = ['ID', 'Name', 'Sex', 'Age', 'Height', 'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport', 'Event', 'Medal']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
+        raise KeyError("The given dataframe is missing columns")
+
 
 def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     """Recebe DataFrame com coluna 'Medal' e converte valores string para inteiros.
@@ -27,24 +62,24 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     Example
     ----------
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
-    >>> cleaned_data = medals_to_int(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [3, 3, 2, 1, 0]
+    >>> df = medals_to_int(data)
+    >>> print(df['Medal'].tolist())
+    [3.0, 3.0, 2.0, 1.0, 0.0]
     
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [np.nan, 'Bronze', 'Bronze', 'Bronze', np.nan]  }) 
-    >>> cleaned_data =  medals_to_int(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [0, 1, 1, 1, 0]
+    >>> df = medals_to_int(data)
+    >>> print(df['Medal'].tolist())
+    [0.0, 1.0, 1.0, 1.0, 0.0]
     
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [np.nan, np.nan, np.nan, np.nan, np.nan]  }) 
-    >>> cleaned_data =  medals_to_int(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [0, 0, 0, 0, 0]
+    >>> df = medals_to_int(data)
+    >>> print(df['Medal'].tolist())
+    [0.0, 0.0, 0.0, 0.0, 0.0]
     """
     try:
-        df['Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
-        df['Medal'] = df['Medal'].fillna(0)
-        df['Medal'] = df['Medal'].astype(int)
+        df.loc[:, 'Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
+        df['Medal'] = df['Medal'].infer_objects().fillna(0)
+        df.loc[:, 'Medal'] = df['Medal'].astype(int)
         
     except KeyError:
         print(
@@ -52,76 +87,77 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
         quit()
     else:
         return df
-    
 
-def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
-    """Função que preenche valores faltantes de 'Age', 'Height' e 'Weight' com regressão linear
-    com base no esporte e sexo do atleta. Se não for possível prever, preenche com a média dos
-    valores do esporte e sexo.
+
+def transform_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforma o DataFrame de atletas olímpicos no formato utilizado pelos DataFrames paralímpicos
 
     Args:
-        df (pd.DataFrame): DataFrame com colunas 'Age', 'Height', 'Weight vazias em algums atletas
+        athletes_df (pd.DataFrame): DataFrame contendo os dados dos atletas olímpicos com as colunas:
 
     Returns:
-        pd.DataFrame: DataFrame com valores faltantes preenchidos.
+        pd.DataFrame: Um DataFrame formatado como os DataFrames paralímpicos, mas com os dados das olimpíadas
     """
-    
-    # TODO
-    #  Analisar os casos onde há apenas uma linha com aquele parametro (sexo, esporte, peso, idade, altura)
-    #  Por exemplo: Se num dataframe  de um determinado país num esporte há apenas um atleta que não possui a altura informada
-    # O programa executaria erro, pois não teria como comparar com outros atletas
-    
+    athletes_df = athletes_df[athletes_df['Year'] >= 1960]
+
+    olympic_df = athletes_df.groupby(['NOC', 'Year', 'Season']).agg(
+        Gold=('Medal', lambda x: (x == 'Gold').sum()),
+        Silver=('Medal', lambda x: (x == 'Silver').sum()),
+        Bronze=('Medal', lambda x: (x == 'Bronze').sum()),
+        Men=('Sex', lambda x: (x == 'M').sum()),
+        Women=('Sex', lambda x: (x == 'F').sum())
+    ).reset_index()
+
+    # Calcula os totais e os atribui para suas respectivas novas colunas
+    olympic_df['M_Total'] = olympic_df['Gold'] + olympic_df['Silver'] + olympic_df['Bronze']
+    olympic_df['P_Total'] = olympic_df['Men'] + olympic_df['Women']
+
+    return olympic_df
+
+
+def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
+    """Função que renomeia os países com nomes diferentes/em conflito internacional
+    para padronizar com os outros DataFrames.
+
+    Args:
+        df (pd.DataFrame): DataFrame com coluna 'Country' para renomear.
+
+    Returns:
+        pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+        
+    Example:
+    >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
+    >>> df = urbanization_rename_countries(data)
+    >>> print(df['Country'].tolist())
+    ['United States of America', 'United Kingdom', 'Trinidad and Tobago', 'North Macedonia', 'Czechia', "Côte d'Ivoire"]
+    """
     try:
-        for sport in df['Sport'].unique():
-            for sex in df['Sex'].unique():
-                # Filtra o dataframe para pegar apenas o esporte e sexo em questão
-                subset = df[(df['Sport'] == sport) & (df['Sex'] == sex)]
-                target_columns = ['Age', 'Height', 'Weight']
-                
-                # Preenche cada com regressão linear
-                for target in target_columns:
-                    # Cria um subconjunto de linhas onde a coluna alvo não está faltando
-                    available_data = subset.dropna(subset=[target])
-                    predictors = [col for col in target_columns if col != target]
-                    
-                    # Se faltam todos, cai no caso que não usa regressão linear e preenche com a média do esporte e sexo
-                    if available_data[predictors].isnull().all().any():
-                        continue
-                    
-                    # Extrai os dados de treino e teste
-                    X_train, _, y_train, _ = train_test_split(available_data[predictors], available_data[target], test_size=0.2, random_state=0)
-                    
-                    # Use uma pipeline para preencher os valores faltantes
-                    imputer = SimpleImputer(strategy='mean')  # estratégia de média
-                    reg = LinearRegression()
-                    pipeline = make_pipeline(imputer, reg)
-                    
-                    # Ajusta o modelo usando o pipeline
-                    pipeline.fit(X_train, y_train)
-                
-                    # Acha as linhas onde a coluna alvo está faltando
-                    missing_data = subset[subset[target].isnull()]
-                    
-                    if not missing_data.empty:
-                        # Usa modelo para prever valores faltantes
-                        X_missing = missing_data[predictors]
-                        
-                        # Só prever se os preditores tiverem valores não faltantes
-                        if not X_missing.isnull().all(axis=1).any():
-                            predicted_values = pipeline.predict(X_missing)
-                            df.loc[(df['Sport'] == sport) & (df['Sex'] == sex) & (df[target].isnull()), target] = predicted_values
-                        
-                # Preenche os valores faltantes com a média dos valores daquele esporte e sexo
-                df[target_columns] = df.groupby(['Sex', 'Sport'])[target_columns].transform(lambda x: x.fillna(x.mean())).round(1)
-        
-        df.dropna(inplace=True) # Remove NaN's que não foram preenchidos (~ que faltaram informações para preencher)
-        
-        # Arredonda os valores das target_columns e tranforma em inteiro 
-        for col in target_columns:
-            df[col] = df[col].round(0).astype(int)
+        countries = {
+            "United States of America": "USA",
+            "Côte d'Ivoire": "Ivory Coast",
+            "Korea, Republic of": "South Korea",
+            "Korea, Dem. People's Rep. of": "North Korea",
+            "Czechia": "Czech Republic",
+            "Russian Federation": "Russia",
+            "United Kingdom": "UK",
+            "Iran (Islamic Republic of)": "Iran",
+            "Netherlands (Kingdom of the)": "Netherlands",
+            "China, Taiwan Province of": "Taiwan",
+            "Trinidad and Tobago": "Trinidad",
+            "Türkiye": "Turkey",
+            "Venezuela (Bolivarian Rep. of)": "Venezuela",
+            "Viet Nam": "Vietnam",
+            "Moldova, Republic of": "Moldova",
+            "Syrian Arab Republic": "Syria",
+            "North Macedonia": "Macedonia",
+            "Curaçao": "Curacao",
+            "Tanzania, United Republic of": "Tanzania",
+        }
+        df['Country'] = df['Country'].replace(countries)
     except KeyError:
         print(
-            f"The given dataframe doesn't have all needeed columns, consider replacing it.")
+            f"The given dataframe has no column 'Country', consider replacing it.")
         quit()
     else:
         return df
@@ -157,5 +193,66 @@ def clean_paralympic_atletes_dataset():
     df.to_csv('data/modified_medal_athlete.csv')
 
 
+def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
+    """Função que normaliza os nomes dos países para o padrão do Geopandas. Função similar a rename_countries
+
+    Args:
+        df (pd.DataFrame): DataFrame com coluna 'Country' para renomear.
+
+    Returns:
+        pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+    
+    Example:
+    >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
+    >>> df = map_name_normalization(data)
+    >>> print(df['Country'].tolist())
+    ['United States of America', 'United Kingdom', 'Trinidad and Tobago', 'North Macedonia', 'Czechia', "Côte d'Ivoire"]
+    """
+    try:
+        countries = {
+            "USA": "United States of America",
+            "UK": "United Kingdom",
+            "Trinidad": "Trinidad and Tobago",
+            "Macedonia": "North Macedonia",
+            "Czech Republic": "Czechia",
+            "Ivory Coast": "Côte d'Ivoire",
+        }
+        
+        df['Country'] = df['Country'].replace(countries)
+    except KeyError:
+        print(
+            f"The given dataframe has no column 'Country', consider replacing it.")
+        quit()
+    else:
+        return df
+
+
+def aggregate_medals_by_event_team(athletes_df: pd.DataFrame) -> pd.DataFrame:
+    """Função que recebe um DataFrame de atletas e retorna um DataFrame com as medalhas agregadas por evento e time,
+    para evitar medalhas duplicadas (ex: 11 medalhas de ouro para o mesmo time no mesmo evento, por ter 11 atletas).
+
+    Args:
+        athletes_df (pd.DataFrame): df dos atletas
+
+    Returns:
+        pd.DataFrame: dataframe com as medalhas agregadas por evento e time
+    
+    Examples:
+    >>> data = pd.DataFrame({'Event': ['100m', '100m', '100m', '100m', '100m'], 'Team': ['Brazil', 'Brazil', 'Brazil', 'Brazil', 'Brazil'], 'NOC': ['BRA', 'BRA', 'BRA', 'BRA', 'BRA'], 'Year': [2016, 2016, 2016, 2016, 2016], 'Games': ['2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer'], 'Season': ['Summer', 'Summer', 'Summer', 'Summer', 'Summer'], 'City': ['Rio', 'Rio', 'Rio', 'Rio', 'Rio'], 'Sport': ['Athletics', 'Athletics', 'Athletics', 'Athletics', 'Athletics'], 'Medal': ['Gold', 'Gold', 'Gold', 'Gold', 'Gold']})
+    >>> df = aggregate_medals_by_event_team(data)
+    >>> print(df['Medal'].tolist())
+    ['Gold']
+    """
+    # Group the data by relevant columns and take the first non-null medal for the team in each event
+    aggregated_df = athletes_df.groupby(
+        ['Event', 'Team', 'NOC', 'Year', 'Games', 'Season', 'City', 'Sport'],
+        as_index=False
+    ).agg({
+        'Medal': 'first'  # Takes the first non-null medal for the team in each event
+    })
+    
+    return aggregated_df
+
+
 if __name__ == "__main__":
-     doctest.testmod(verbose=True)
+     doctest.testmod(verbose=False)

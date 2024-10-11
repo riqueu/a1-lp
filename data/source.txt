@@ -6,4 +6,6 @@ https://www.kaggle.com/datasets/girishchowdary22/urban-population-analysis1950-2
 
 https://www.kaggle.com/datasets/shivagovindasamy/60-years-of-paralympics
 
-https://www.kaggle.com/datasets/katiepress/paralympic-games?select=medal_athlete.csv
+https://www.kaggle.com/datasets/katiepress/paralympic-games
+
+https://www.naturalearthdata.com/downloads/110m-cultural-vectors/
