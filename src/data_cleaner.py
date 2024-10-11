@@ -65,7 +65,7 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame com coluna 'Medal' convertida para inteiros.
     
-    Example
+    Example:
     ----------
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
     >>> cleaned_data = medals_to_int(data)
@@ -105,7 +105,7 @@ def medals_to_bool(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame com coluna 'Medal' convertida para booleanos.
     
-    Example
+    Example:
     ----------
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [3, 3, 2, 1, 0]  })
     >>> cleaned_data = medals_to_bool(data)
@@ -237,6 +237,49 @@ def rename_countries(df: pd.DataFrame) -> pd.DateOffset:
             "Curaçao": "Curacao",
             "Tanzania, United Republic of": "Tanzania",
         }
+        df['Country'] = df['Country'].replace(countries)
+    except KeyError:
+        print(
+            f"The given dataframe has no column 'Country', consider replacing it.")
+        quit()
+    else:
+        return df
+    
+
+def rename_countries_gdp(df: pd.DataFrame) -> pd.DataFrame:
+    countries = {
+        "Bahamas, The": "Bahamas",
+        "Curacao": "Curacao",
+        "Iran, Islamic Rep.": "Iran",
+        "Russian Federation": "Russia",
+        "Korea, Rep.": "South Korea",
+        "Syrian Arab Republic": "Syria",
+        "Trinidad and Tobago": "Trinidad",
+        "United Kingdom": "UK",
+        "United States": "USA",
+        "Venezuela, RB": "Venezuela",
+        "Bolivia": "Boliva",
+        "Egypt, Arab Rep.": "Egypt",
+        "Cote d'Ivoire": "Ivory Coast",
+        "Congo, Rep.": "Republic of Congo",
+        "Congo, Dem. Rep.": "Democratic Republic of the Congo",
+        "Virgin Islands (U.S.)": "Virgin Islands, US",
+        "Eswatini": "Swaziland",
+        "Antigua and Barbuda": "Antigua",
+        "Lao PDR": "Laos",
+        "Gambia, The": "Gambia",
+        "Yemen, Rep.": "Yemen",
+        "St. Vincent and the Grenadines": "Saint Vincent",
+        "Slovak Republic": "Slovakia",
+        "Kyrgyz Republic": "Kyrgyzstan",
+        "Brunei Darussalam": "Brunei",
+        "Cabo Verde": "Cape Verde",
+        "North Macedonia": "Macedonia",
+        "St. Kitts and Nevis": "Saint Kitts",
+        "St. Lucia": "Saint Lucia",
+        "Micronesia, Fed. Sts.": "Micronesia",
+    }
+    try:
         df['Country'] = df['Country'].replace(countries)
     except KeyError:
         print(

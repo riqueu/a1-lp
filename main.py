@@ -8,8 +8,7 @@ try:
     athletes_df = pd.read_csv('data/athlete_events.csv')
     noc_df = pd.read_csv('data/noc_regions.csv').rename(columns={'region': 'Country'})
     urbanization_df = pd.read_csv('data/urbanization.csv')
-    gdp_df = pd.read_csv('data/gdp/gdp.csv')
-    gdp_per_capita_df = pd.read_csv('data/gdp/gdp_per_capita.csv')
+    gdp_df = pd.read_csv("../data/gdp/gdp.csv").drop(columns=['Code', 'Unnamed: 65'])
 
     # Limpeza Inicial dos DataFrames
     dc.validade_athletes_columns(athletes_df) # Verifica se o DataFrame de Atletas possui todas as colunas necessárias
