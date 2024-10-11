@@ -3,7 +3,6 @@ import numpy as np
 import seaborn as sns
 from data_cleaner import *
 
-clean_paralympic_atletes_dataset()
 
 def count_athletes(df, *args):
     df = df.groupby(list(args))['Medal'].count().unstack(fill_value=0)
@@ -40,6 +39,16 @@ def merge_by_year(df_main, df_aux):
         df_aux,
         how='outer',
         on='Year'
+    )
+    
+    return df_main
+
+def merge_by_sport(df_main, df_aux):
+    df_main = pd.merge(
+        df_main,
+        df_aux,
+        how='outer',
+        on=['Year', 'Sport']
     )
     
     return df_main
@@ -103,4 +112,52 @@ df_paralymp = merge_by_year(df_paralymp, df_aux)
 df_paralymp.dropna(inplace=True)
 df_paralymp = df_paralymp.astype('int64')
 
+
 # Analise 2: Participacao e rendimento dos atletas do brasil comparado com o mundo (agrupado por esporte)
+df2_olymp = df1.drop_duplicates(['Year','Sport', 'Name'])
+df2_olymp = count_athletes(df2_olymp, *['Year', 'Sport','Sex'])
+
+df2_paralymp = df2.drop_duplicates(['Games_year','Sport', 'Athlete_name'])
+df2_paralymp = count_athletes(df2_paralymp, *['Games_year','Sport', 'Sex'])
+df2_paralymp.rename(columns={'Games_year': 'Year'}, inplace=True)
+
+# Olimpiada e Paralimpiada por esporte no Brasil
+df2_olymp_bra = df1[df1['NOC'] == 'BRA']
+df2_olymp_bra = df2_olymp_bra.drop_duplicates(['Year','Sport', 'Name'])
+df2_olymp_bra = count_athletes(df2_olymp_bra, *['Year', 'Sport','Sex']) 
+
+df2_paralymp_bra = df2[df2['Npc_new'] == 'BRA']
+df2_paralymp_bra = df2_paralymp_bra.drop_duplicates(['Games_year','Sport', 'Athlete_name'])
+df2_paralymp_bra = count_athletes(df2_paralymp_bra, *['Games_year','Sport', 'Sex']) 
+df2_paralymp_bra.rename(columns={'Games_year': 'Year'}, inplace=True)
+
+# Quantidade de medalhas por esporte e por ano
+df_aux = update_medals_or_score(df1, 'Medal', *['Year', 'Sport', 'Sex'], **{'F': 'F_Medal', 'M': 'M_Medal'})
+df2_olymp = merge_by_sport(df2_olymp, df_aux)
+
+df_aux = update_medals_or_score(df2, 'Medal', *['Games_year', 'Sport', 'Sex'], **{'Games_year': 'Year', 'F': 'F_Medal', 'M': 'M_Medal'})
+df2_paralymp = merge_by_sport(df2_paralymp, df_aux)
+df2_paralymp.dropna(inplace=True)
+
+df_aux = update_medals_or_score(df1[df1['NOC'] == 'BRA'], 'Medal', *['Year', 'Sport', 'Sex'], **{'F': 'F_Medal', 'M': 'M_Medal'})
+df2_olymp_bra = merge_by_sport(df2_olymp_bra, df_aux)
+
+df_aux = update_medals_or_score(df2[df2['Npc_new'] == 'BRA'], 'Medal', *['Games_year', 'Sport', 'Sex'], **{'Games_year': 'Year', 'F': 'F_Medal', 'M': 'M_Medal'})
+df2_paralymp_bra = merge_by_sport(df2_paralymp_bra, df_aux)
+
+# Pontuacao do pais por esporte (baseado no peso das medalhas)
+df_aux = update_medals_or_score(df1, 'Score', *['Year', 'Sport', 'Sex'], **{'F': 'F_Score', 'M': 'M_Score'})
+df2_olymp = merge_by_sport(df2_olymp, df_aux)
+df2_olymp[df2_olymp.columns.difference(['Sport'])] = df2_olymp[df2_olymp.columns.difference(['Sport'])].astype(int)
+
+df_aux = update_medals_or_score(df2, 'Score', *['Games_year', 'Sport', 'Sex'], **{'Games_year': 'Year', 'F': 'F_Score', 'M': 'M_Score'})
+df2_paralymp = merge_by_sport(df2_paralymp, df_aux)
+df2_paralymp[df2_paralymp.columns.difference(['Sport'])] = df2_paralymp[df2_paralymp.columns.difference(['Sport'])].astype(int)
+
+df_aux = update_medals_or_score(df1[df1['NOC'] == 'BRA'], 'Score', *['Year', 'Sport', 'Sex'], **{'F': 'F_Score', 'M': 'M_Score'})
+df2_olymp_bra = merge_by_sport(df2_olymp_bra, df_aux)
+df2_olymp_bra[df2_olymp_bra.columns.difference(['Sport'])] = df2_olymp_bra[df2_olymp_bra.columns.difference(['Sport'])].astype(int)
+
+df_aux = update_medals_or_score(df2[df2['Npc_new'] == 'BRA'], 'Score', *['Games_year', 'Sport', 'Sex'], **{'Games_year': 'Year', 'F': 'F_Score', 'M': 'M_Score'})
+df2_paralymp_bra = merge_by_sport(df2_paralymp_bra, df_aux)
+df2_paralymp_bra[df2_paralymp_bra.columns.difference(['Sport'])] = df2_paralymp_bra[df2_paralymp_bra.columns.difference(['Sport'])].astype(int)
