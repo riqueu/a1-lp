@@ -20,19 +20,25 @@ try:
     urbanization_df = urbanization_df[['Year', 'Country', 'Pop_Absolute', 'Urban_Pop_Percent']]
     urbanization_df = dc.urbanization_rename_countries(urbanization_df) # Renomear países para padrão do DataFrame de Atletas
     
-    # Análise de Densidade de Medalhas por População Urbana em 2016
+    # Análise de Densidade de Medalhas por População Urbana em 2016: Henrique
     data_2016 = mu.prepare_2016_medalist_urbanization_analysis(clean_athletes_df, urbanization_df, noc_df)
     scatterplot_2016 = mu.create_scatterplot_2016_medalist_urbanization(data_2016)
     scatterplot_2016.figure.savefig('graphs/urban_medal_density.png', dpi=500, bbox_inches='tight')
     
-    # Visualização Geográfica do crescimento de medalhas por país e do crescimento urbano de um país
+    # Visualização Geográfica do crescimento de medalhas por país e do crescimento urbano de um país: Henrique
     data_map_visualization = mu.prepare_map_visualization_data(clean_athletes_df, urbanization_df, noc_df)
     map_visualization = mu.create_map_visualization(data_map_visualization)
     map_visualization.savefig('graphs/geographic_growth.png', dpi=500, bbox_inches='tight')
     
-    # Análise Idades
-    top_3_boxplot = aa.create_boxplot_top_3_esportes_outliers(clean_athletes_df)
-    top_3_boxplot.savefig('graphs/bloxplot_top_3_highest_age_aplitude.png', format='png', dpi=300)
+    # Análise Idades: Jaime
+    top_3_boxplot_outliers = aa.create_boxplot_top_3_esportes_outliers(clean_athletes_df)
+    top_3_boxplot_outliers.savefig('graphs/bloxplot_top_3_highest_age_aplitude.png', format='png', dpi=300)
+    
+    top_3_boxplot_most_awarded = aa.create_boxplot_top_3_esportes_most_awarded(clean_athletes_df)
+    top_3_boxplot_most_awarded.savefig('graphs/boxplot_top_3_most_awarded.png', format='png', dpi=300)
+    
+    boxplot_age_medal_status_brazil = aa.create_boxplot_age_medal_status_brazil(clean_athletes_df)
+    boxplot_age_medal_status_brazil.savefig('graphs/boxplot_age_awarded_and_non_awarded_brazil.png', format='png', dpi=300)
 
 
 except FileNotFoundError:
