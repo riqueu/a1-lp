@@ -22,6 +22,8 @@ def plot_scatter_graph(df, x, y1, y2, title, score_or_amount):
     plt.show()
     
     
+# Plot dos graficos de dispersao das olimpiadas
+
 df_analisys_aux = df_olymp
 #plot_scatter_graph(df_analisys_aux, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Male Athletes X Female Athletes (Global)', 'Amount')
 df_analisys_aux = df_analisys_aux[(df_analisys_aux['M_Score'] > 0) | (df_analisys_aux['F_Score'] > 0)]
@@ -32,3 +34,15 @@ df_analisys_aux = df_olymp_countries[df_olymp_countries['NOC']=='BRA']
 df_analisys_aux = df_analisys_aux[(df_analisys_aux['M_Score'] > 0) | (df_analisys_aux['F_Score'] > 0)]
 #plot_scatter_graph(df_analisys_aux, 'Year', 'F_Medal', 'M_Medal', 'Scatter Plot: Men\'s Score X Women\'s Score (Brazil)', 'Score')
 
+
+# Plot dos graficos de dispersao das paralimpiadas
+
+df_analisys_aux = df_paralymp
+#plot_scatter_graph(df_analisys_aux, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Male Athletes X Female Athletes (Global)', 'Amount')
+df_analisys_aux = df_analisys_aux[(df_analisys_aux['M_Score'] > 0) | (df_analisys_aux['F_Score'] > 0)]
+#plot_scatter_graph(df_analisys_aux, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Score', 'Score')
+
+df_analisys_aux = df_paralymp_countries[df_paralymp_countries['NOC']=='BRA']
+#plot_scatter_graph(df_analisys_aux, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Male Athletes X Female Athletes (Brazil)', 'Amount')
+df_analisys_aux = df_analisys_aux[(df_analisys_aux['M_Score'] > 0) | (df_analisys_aux['F_Score'] > 0)]
+#plot_scatter_graph(df_analisys_aux, 'Year', 'F_Medal', 'M_Medal', 'Scatter Plot: Men\'s Score X Women\'s Score (Brazil)', 'Score')
