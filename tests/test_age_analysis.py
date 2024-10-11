@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns 
 import unittest
 
-from src.data_cleaner import *
 class TestStatisticsByAge(unittest.TestCase):
     
     # Teste com DataFrame vazio.
@@ -95,3 +94,4 @@ class TestStatisticsByAge(unittest.TestCase):
         result = statistics_by_age(df)
         
         self.assertEqual(result, expected_result)
+
