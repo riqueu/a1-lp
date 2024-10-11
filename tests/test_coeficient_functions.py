@@ -22,10 +22,7 @@ class TestR2(unittest.TestCase):
     # Teste para verificar se a função levanta um ValueError com valores inválidos
     def test_r2_invalid_values(self):
             
-        # with self.assertRaises(ValueError) as context:
-        #         r2(self.df_invalid_values, 'qualitativa', 'quantitativa')
-        #         self.assertEqual(str(context.exception), 'Quanti column has non-numeric values')
-        
+    
         data = pd.DataFrame({
             'qualitativa': ['P', 'Q', 'R'],
             'quantitativa': [1, 2, 'invalid']
