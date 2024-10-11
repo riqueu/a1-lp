@@ -90,6 +90,10 @@ def fill(means: pd.DataFrame, row: pd.Series) -> pd.Series:
 
     Returns:
         pd.Series: Linha preenchida, ou com um valor nan para ser removida
+    
+    Example:
+    ----------
+    
     """
     features_nan = row[row.isna()]
     cont_nan = features_nan.shape[0]
