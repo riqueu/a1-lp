@@ -53,6 +53,17 @@ class TestToEncoded(unittest.TestCase):
         self.assertIn('AllNaN', cols_to_fix)
         self.assertEqual(cols_to_fix['AllNaN'], 'Contains NaN')
 
-
+class TestFill(unittest.TestCase):
+    #  Teste com apenas um valor NaN
+    def test_fill_single_nan(self):
+        
+        means = pd.DataFrame({
+            'Height': {('M', 'Soccer'): 180, ('M', 'Basketball'): 200, ('F', 'Tennis'): 170},
+            'Weight': {('M', 'Soccer'): 75, ('M', 'Basketball'): 90, ('F', 'Tennis'): 65}
+        })
+        row = pd.Series({'Sex': 'M', 'Sport': 'Soccer', 'Height': np.nan, 'Weight': 70})
+        filled_row = fill(self.means, row)
+        self.assertEqual(filled_row['Height'], 180)
+            
 if __name__ == "__main__":
     unittest.main()
