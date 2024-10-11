@@ -1,6 +1,7 @@
 """Módulo com funções para limpeza de dados."""
 
 import pandas as pd
+import numpy as np
 import doctest
 
 
@@ -61,19 +62,19 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     Example
     ----------
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
-    >>> cleaned_data = medals_to_int(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [3, 3, 2, 1, 0]
+    >>> df = medals_to_int(data)
+    >>> print(df['Medal'].tolist())
+    [3.0, 3.0, 2.0, 1.0, 0.0]
     
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [np.nan, 'Bronze', 'Bronze', 'Bronze', np.nan]  }) 
-    >>> cleaned_data =  medals_to_int(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [0, 1, 1, 1, 0]
+    >>> df = medals_to_int(data)
+    >>> print(df['Medal'].tolist())
+    [0.0, 1.0, 1.0, 1.0, 0.0]
     
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': [np.nan, np.nan, np.nan, np.nan, np.nan]  }) 
-    >>> cleaned_data =  medals_to_int(data)
-    >>> print(cleaned_data['Medal'].tolist())
-    [0, 0, 0, 0, 0]
+    >>> df = medals_to_int(data)
+    >>> print(df['Medal'].tolist())
+    [0.0, 0.0, 0.0, 0.0, 0.0]
     """
     try:
         df.loc[:, 'Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
@@ -124,6 +125,12 @@ def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
 
     Returns:
         pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+        
+    Example:
+    >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
+    >>> df = urbanization_rename_countries(data)
+    >>> print(df['Country'].tolist())
+    ['United States of America', 'United Kingdom', 'Trinidad and Tobago', 'North Macedonia', 'Czechia', "Côte d'Ivoire"]
     """
     try:
         countries = {
@@ -164,6 +171,12 @@ def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: DataFrame com coluna 'Country' renomeada.
+    
+    Example:
+    >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
+    >>> df = map_name_normalization(data)
+    >>> print(df['Country'].tolist())
+    ['United States of America', 'United Kingdom', 'Trinidad and Tobago', 'North Macedonia', 'Czechia', "Côte d'Ivoire"]
     """
     try:
         countries = {
@@ -182,6 +195,33 @@ def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
         quit()
     else:
         return df
+
+
+def aggregate_medals_by_event_team(athletes_df: pd.DataFrame) -> pd.DataFrame:
+    """Função que recebe um DataFrame de atletas e retorna um DataFrame com as medalhas agregadas por evento e time,
+    para evitar medalhas duplicadas (ex: 11 medalhas de ouro para o mesmo time no mesmo evento, por ter 11 atletas).
+
+    Args:
+        athletes_df (pd.DataFrame): df dos atletas
+
+    Returns:
+        pd.DataFrame: dataframe com as medalhas agregadas por evento e time
+    
+    Examples:
+    >>> data = pd.DataFrame({'Event': ['100m', '100m', '100m', '100m', '100m'], 'Team': ['Brazil', 'Brazil', 'Brazil', 'Brazil', 'Brazil'], 'NOC': ['BRA', 'BRA', 'BRA', 'BRA', 'BRA'], 'Year': [2016, 2016, 2016, 2016, 2016], 'Games': ['2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer'], 'Season': ['Summer', 'Summer', 'Summer', 'Summer', 'Summer'], 'City': ['Rio', 'Rio', 'Rio', 'Rio', 'Rio'], 'Sport': ['Athletics', 'Athletics', 'Athletics', 'Athletics', 'Athletics'], 'Medal': ['Gold', 'Gold', 'Gold', 'Gold', 'Gold']})
+    >>> df = aggregate_medals_by_event_team(data)
+    >>> print(df['Medal'].tolist())
+    ['Gold']
+    """
+    # Group the data by relevant columns and take the first non-null medal for the team in each event
+    aggregated_df = athletes_df.groupby(
+        ['Event', 'Team', 'NOC', 'Year', 'Games', 'Season', 'City', 'Sport'],
+        as_index=False
+    ).agg({
+        'Medal': 'first'  # Takes the first non-null medal for the team in each event
+    })
+    
+    return aggregated_df
 
 
 if __name__ == "__main__":

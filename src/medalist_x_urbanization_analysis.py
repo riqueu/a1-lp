@@ -61,9 +61,9 @@ def create_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> pl
     scatterplot = sns.scatterplot(x='Urban_Pop_Percent', y='Urban_Medalist_Density', data=data_2016, size='Medalists', sizes=(10, 100), legend=False)
     scatterplot.set_yscale('log') # Escala logarítmica para melhor visualização
 
-    scatterplot.set_title('Urbanização X Densidade Urbana de Medalhas (2016)')
-    scatterplot.set_xlabel('População Urbana (%)')
-    scatterplot.set_ylabel('Medalhas por Habitante Urbano')
+    scatterplot.set_title('Urbanization vs Urban Medal Density (2016)')
+    scatterplot.set_xlabel('Urban Population (%)')
+    scatterplot.set_ylabel('Medals per Urban Inhabitant')
 
     # Identificando o top 5 e bottom 5 por Urban_Medalist_Density; também pegando o top 5 por medalhistas
     top_5_countries = data_2016.nlargest(5, 'Urban_Medalist_Density')
@@ -97,12 +97,12 @@ def prepare_map_visualization_data(athletes_df: pd.DataFrame, urbanization_df: p
     # Preparação da base de atletas
     athletes_df.loc[:, 'Medal'] = athletes_df['Medal'].apply(lambda x: 1 if x in [1, 2, 3] else 0) # Só queremos saber se ganhou ou não
     athletes_df = athletes_df[athletes_df['Year'].between(1956, 2016)]
-    medal_count_per_country_per_year = athletes_df.groupby(['Year', 'NOC'])['Medal'].sum().reset_index()
-    medal_count_per_country_per_year.rename(columns={'Medal': 'Medalists'}, inplace=True)
+    athletes_df = athletes_df[athletes_df['Medal'] > 0]
+    aggregated_df = aggregate_medals_by_event_team(athletes_df)
+    aggregated_df.to_csv('data/df_checkpoints/athletes_agregados.csv')
     
-    # Merge com noc_df pra mappear NOC no nome do país
+    medal_count_per_country_per_year = aggregated_df.groupby(['Year', 'NOC'])['Medal'].sum().reset_index()
     medal_count_per_country_per_year = pd.merge(medal_count_per_country_per_year, noc_df[['NOC', 'Country']], on='NOC', how='left')
-    medal_count_per_country_per_year = medal_count_per_country_per_year[medal_count_per_country_per_year['Medalists'] > 0]
     
     # Preparação da base de urbanização
     urbanization_df = urbanization_df.rename(columns={'Country Name': 'Country'})
@@ -116,6 +116,7 @@ def prepare_map_visualization_data(athletes_df: pd.DataFrame, urbanization_df: p
     # Tratamento de dados faltantes
     data = data[data['Urban_Pop_Percent'] != 'NOT APPLICABLE']
     
+    data.to_csv('data/df_checkpoints/map_visualization_data_checkpoint.csv', index=False) # Checkpoint para análise
     return data
 
 
@@ -123,8 +124,8 @@ def calculate_dynamic_growth(data: pd.DataFrame, value_column: str) -> pd.DataFr
     """Calcula o crescimento percentual de o valor especificado por coluna entre o primeiro e o último ano disponível do país.
 
     Args:
-        data (pd.DataFrame): df com colunas: ,Year,NOC,Medalists,Country,Pop_Absolute,Urban_Pop_Percent
-        value_column (str): Colunas para calcular crescimento (e.g. 'Medalists' or 'Urban_Pop_Percent').
+        data (pd.DataFrame): df com colunas: ,Year,NOC,Medal,Country,Pop_Absolute,Urban_Pop_Percent
+        value_column (str): Colunas para calcular crescimento (e.g. 'Medal' or 'Urban_Pop_Percent').
 
     Returns:
         pd.DataFrame: Dataframe com País e Crescimento Percentual daquela coluna.
@@ -143,18 +144,17 @@ def calculate_dynamic_growth(data: pd.DataFrame, value_column: str) -> pd.DataFr
 
     # Merge first and last year dataframes
     growth_df = pd.merge(first_year, last_year, on='Country')
-    growth_df.to_csv(f'data/df_checkpoints/growth_{value_column}_checkpoint.csv', index=False) # Checkpoint para análise
-    
-    column_growth = (growth_df[f'{value_column}_first'].astype(float) - growth_df[f'{value_column}_last'].astype(float))
-    year_growth = (growth_df['First_Year'] - growth_df['Last_Year']).astype(float)
+    column_growth = (growth_df[f'{value_column}_last'].astype(float) - growth_df[f'{value_column}_first'].astype(float))
+    year_growth = (growth_df['Last_Year'] - growth_df['First_Year']).astype(float)
 
-    # Calcula crescimento percentual
+    # Calcula crescimento dinamico
     try:
-        growth_df[f'{value_column}_Growth'] = (column_growth / year_growth) * 100
+        growth_df[f'{value_column}_Dynamic_Growth'] = (column_growth / year_growth) * 100
     except ZeroDivisionError: # Caso onde o primeiro e o último ano são iguais
-        growth_df[f'{value_column}_Growth'] = 0
+        growth_df[f'{value_column}_Dynamic_Growth'] = 0
     
-    return growth_df[['Country', f'{value_column}_Growth']]
+    growth_df.to_csv(f'data/df_checkpoints/growth_{value_column}_checkpoint.csv', index=False) # Checkpoint para análise
+    return growth_df[['Country', f'{value_column}_Dynamic_Growth']]
 
 
 def create_map_visualization(data: pd.DataFrame) -> plt:
@@ -171,27 +171,27 @@ def create_map_visualization(data: pd.DataFrame) -> plt:
     
     # Calcula o crescimento da população urbana e dos medalhistas
     urban_growth = calculate_dynamic_growth(data, 'Urban_Pop_Percent')
-    medalist_growth = calculate_dynamic_growth(data, 'Medalists')
+    medal_growth = calculate_dynamic_growth(data, 'Medal')
 
     # Carrega mapa do GeoPandas
     world = gpd.read_file('data/world_map/ne_110m_admin_0_countries.shp')
     
     # Merge dos dados de crescimento com o geodataframe do mundo para plotagem
     world_urban = pd.merge(world, urban_growth, how='left', left_on='NAME', right_on='Country')
-    world_medals = pd.merge(world, medalist_growth, how='left', left_on='NAME', right_on='Country')
+    world_medals = pd.merge(world, medal_growth, how='left', left_on='NAME', right_on='Country')
     
     # Plot crescimento da urbanização
     plt.figure()
     fig, ax = plt.subplots(1, 2, figsize=(20, 10))
     plt.subplots_adjust(wspace=0)  # Adjust the width space between subplots
-    world_urban.plot(column='Urban_Pop_Percent_Growth', cmap='Blues', legend=False, ax=ax[0], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black')
+    world_urban.plot(column='Urban_Pop_Percent_Dynamic_Growth', cmap='Blues', legend=False, ax=ax[0], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black')
     ax[0].set_title('Urbanization Growth (First to Last Available Year)')
 
     # Plot crescimento de medalhistas
-    world_medals.plot(column='Medalists_Growth', cmap='Reds', legend=False, ax=ax[1], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black')
-    ax[1].set_title('Medalists Growth (First to Last Available Year)')
+    world_medals.plot(column='Medal_Dynamic_Growth', cmap='Reds', legend=False, ax=ax[1], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black')
+    ax[1].set_title('Medal Growth (First to Last Available Year)')
     
-    fig.suptitle('Comparison of Growth in Urbanization and Medalists (1956-2016)', fontsize=18, weight='bold')
+    fig.suptitle('Comparison of Growth in Urbanization and Medals (1956-2016)', fontsize=18, weight='bold')
     plt.subplots_adjust(bottom=0.55)
 
     return plt

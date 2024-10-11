@@ -161,11 +161,12 @@ def create_boxplot_sport_with_the_most_outliers(df: pd.DataFrame) -> plt:
         
         df_maioresporte = df[df['Sport'] == maior_esporte]
 
+        plt.figure()
         boxplot = sns.boxplot(x='Sport', y='Age', data=df_maioresporte)
         boxplot.set_yscale('linear')
-        plt.title('Boxplot de Idades por Esporte')
-        plt.xlabel('Esporte')
-        plt.ylabel('Idade')
+        plt.title('Age Boxplot by Sport')
+        plt.xlabel('Sport')
+        plt.ylabel('Age')
 
         return plt
     except KeyError:
@@ -176,6 +177,7 @@ def create_boxplot_sport_with_the_most_outliers(df: pd.DataFrame) -> plt:
     except ValueError:
         print(f"The given dataframe does not have sports with outliers")
         quit()
+
 
 def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
     """Função que gera um boxplot com as idades dos  3 esportes que possuem mais atletas com idades extremas.
@@ -217,9 +219,9 @@ def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
 
 
         # Adicionando título e rótulos
-        plt.title('Boxplot de Idades por Esporte')
-        plt.xlabel('Esporte')
-        plt.ylabel('Idade')
+        plt.title('Age Boxplot by Sport')
+        plt.xlabel('Sport')
+        plt.ylabel('Age')
         
         return plt
     except KeyError:
@@ -265,12 +267,13 @@ def create_boxplot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
         df_top_3_mais =  atletas_brasileiros[atletas_brasileiros['Sport'].isin(nome_dos_3_esportes_mais_premiados)]
         
         # Criando o boxplot com os 3 esportes com mais outliers
+        plt.figure()
         sns.boxplot(x='Sport', y='Age', data=df_top_3_mais)
 
         # Adicionando título e rótulos
-        plt.title('Boxplot de Idades dos Esportes mais premiados pelo Brasil')
-        plt.xlabel('Esporte')
-        plt.ylabel('Idade')
+        plt.title('Boxplot of Ages of the Most Awarded Sports by Brazil')
+        plt.xlabel('Sport')
+        plt.ylabel('Age')
 
         return plt
     except KeyError:
@@ -280,7 +283,8 @@ def create_boxplot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
         quit()
         
 
-def create_boxplot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFrame) -> plt:
+
+def create_boxplot_age_medal_status_brazil(df: pd.DataFrame) -> plt:
     """Cria um boxplot de idade com as categorias atletas brasileiros premiados 
     e atletas brasileiros não premiados
     
@@ -298,7 +302,7 @@ def create_boxplot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFra
     ...     'Medal': [1, 0, 1, 0, 1, 0, 1, 0],
     ...     'Age': [22, 24, 20, 23, 27, 26, 28, 25]
     ... })
-    >>> plot = create_boxplot_age_awarded_and_non_awarded_athletes_in_brazil(df_example)
+    >>> plot = create_boxplot_age_medal_status_brazil(df_example)
     >>> plot.__class__.__name__ == "module"
     True
         
@@ -307,18 +311,20 @@ def create_boxplot_age_awarded_and_non_awarded_athletes_in_brazil(df: pd.DataFra
     """
     try:   
     #  Criando coluna que informa se o atleta foi premiado ou não
-        df['Was Awarded'] = df['Medal'].apply(lambda x: 'Premiado' if x > 0 else 'Não premiado')
+        df.loc[:, 'Medal'] = df['Medal'].apply(lambda x: 1 if x in [1, 2, 3] else 0)
 
         #  Filtrando os atletas brasileiros
         atletas_brasileiros =  df[df['NOC'] == 'BRA']
         
-        # Criando os boxplots com as idades dos medalhistas e não medalhistas 
-        sns.boxplot(x='Was Awarded', y='Age', data=atletas_brasileiros)
+        # Criando os boxplots com as idades dos medalhistas e não medalhistas
+        plt.figure()
+        sns.boxplot(x='Medal', y='Age', data=atletas_brasileiros)
 
         # Adicionando título e rótulos
-        plt.title('Boxplot de Idades dos atletas brasileiros premiados e não premiados')
+        plt.title('Boxplot of Ages of Awarded and Non-Awarded Brazilian Athletes')
         plt.xlabel('Was Awarded')
-        plt.ylabel('Idade')
+        plt.xticks([0, 1], ['Not Awarded', 'Awarded'])
+        plt.ylabel('Age')
 
         # Exibindo o gráfico
         return plt
@@ -356,12 +362,13 @@ def create_boxplot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
     try:
         #  Filtrando os atletas brasileiros
         atletas_brasileiros =  df[df['NOC'] == 'BRA']
+        plt.figure()
         sns.boxplot(x='Medal', y='Age', data=atletas_brasileiros)
 
         # Adicionando título e rótulos
-        plt.title('Boxplot de Idades dos atletas brasileiros por tipo de medalha')
-        plt.xlabel('Medalha')
-        plt.ylabel('Idade')
+        plt.title('Age Boxplot of Brazilian Athletes by Medals')
+        plt.xlabel('Medal')
+        plt.ylabel('Age')
 
         return plt
     
@@ -371,6 +378,7 @@ def create_boxplot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
             f"The given dataframe doesn't have all needeed columns, consider replacing it")
             
         quit()
+
 
 if __name__ == "__main__":
      doctest.testmod(verbose=False)

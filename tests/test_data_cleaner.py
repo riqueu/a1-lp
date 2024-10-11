@@ -184,9 +184,181 @@ class TestMapNameNormalization(unittest.TestCase):
 
 
 class TestTransformAthletesDfToParalympicsFormat(unittest.TestCase):
-    # TODO: Implementar tests para transform_athletes_df_to_paralympics_format
-    pass 
+
+    def test_transform_athletes_df_to_paralympics_format_standard(self):
+        data = pd.DataFrame({
+            'NOC': ['BRA', 'BRA', 'USA', 'USA', 'USA'],
+            'Year': [2016, 2016, 2016, 2016, 2016],
+            'Season': ['Summer', 'Summer', 'Summer', 'Summer', 'Summer'],
+            'Medal': ['Gold', 'Silver', 'Bronze', 'Gold', 'Silver'],
+            'Sex': ['M', 'F', 'M', 'M', 'F']
+        })
+        expected_result = pd.DataFrame({
+            'NOC': ['BRA', 'USA'],
+            'Year': [2016, 2016],
+            'Season': ['Summer', 'Summer'],
+            'Gold': [1, 1],
+            'Silver': [1, 1],
+            'Bronze': [0, 1],
+            'Men': [1, 2],
+            'Women': [1, 1],
+            'M_Total': [2, 3],
+            'P_Total': [2, 3]
+        })
+        transformed_data = transform_athletes_df_to_paralympics_format(data)
+        pd.testing.assert_frame_equal(expected_result, transformed_data)
+
+    def test_transform_athletes_df_to_paralympics_format_no_medals(self):
+        data = pd.DataFrame({
+            'NOC': ['BRA', 'BRA', 'USA', 'USA'],
+            'Year': [2016, 2016, 2016, 2016],
+            'Season': ['Summer', 'Summer', 'Summer', 'Summer'],
+            'Medal': [None, None, None, None],
+            'Sex': ['M', 'F', 'M', 'F']
+        })
+        expected_result = pd.DataFrame({
+            'NOC': ['BRA', 'USA'],
+            'Year': [2016, 2016],
+            'Season': ['Summer', 'Summer'],
+            'Gold': [0, 0],
+            'Silver': [0, 0],
+            'Bronze': [0, 0],
+            'Men': [1, 1],
+            'Women': [1, 1],
+            'M_Total': [0, 0],
+            'P_Total': [2, 2]
+        })
+        transformed_data = transform_athletes_df_to_paralympics_format(data)
+        pd.testing.assert_frame_equal(expected_result, transformed_data)
+
+    def test_transform_athletes_df_to_paralympics_format_mixed_years(self):
+        data = pd.DataFrame({
+            'NOC': ['BRA', 'BRA', 'USA', 'USA', 'USA'],
+            'Year': [2016, 2012, 2016, 2012, 2016],
+            'Season': ['Summer', 'Summer', 'Summer', 'Summer', 'Summer'],
+            'Medal': ['Gold', 'Silver', 'Bronze', 'Gold', 'Silver'],
+            'Sex': ['M', 'F', 'M', 'M', 'F']
+        })
+        expected_result = pd.DataFrame({
+                'NOC': ['BRA', 'BRA', 'USA', 'USA'],
+                'Year': [2012, 2016, 2012, 2016],
+                'Season': ['Summer', 'Summer', 'Summer', 'Summer'],
+                'Gold': [0, 1, 1, 0],
+                'Silver': [1, 0, 0, 1],
+                'Bronze': [0, 0, 0, 1],
+                'Men': [0, 1, 1, 1],
+                'Women': [1, 0, 0, 1],
+                'M_Total': [1, 1, 1, 2],
+                'P_Total': [1, 1, 1, 2]
+        })
+        transformed_data = transform_athletes_df_to_paralympics_format(data)
+        pd.testing.assert_frame_equal(expected_result, transformed_data)
+
+    def test_transform_athletes_df_to_paralympics_format_missing_columns(self):
+        data = pd.DataFrame({
+            'NOC': ['BRA', 'BRA', 'USA', 'USA'],
+            'Year': [2016, 2016, 2016, 2016],
+            'Season': ['Summer', 'Summer', 'Summer', 'Summer'],
+            'Sex': ['M', 'F', 'M', 'F']
+        })
+        with self.assertRaises(KeyError):
+            transform_athletes_df_to_paralympics_format(data)
 
 
+class TestAggregateMedalsByEventTeam(unittest.TestCase):
+
+    def test_aggregate_medals_by_event_team_standard(self):
+        data = pd.DataFrame({
+            'Event': ['100m', '100m', '100m', '200m', '200m'],
+            'Team': ['Brazil', 'Brazil', 'Brazil', 'USA', 'USA'],
+            'NOC': ['BRA', 'BRA', 'BRA', 'USA', 'USA'],
+            'Year': [2016, 2016, 2016, 2016, 2016],
+            'Games': ['2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer'],
+            'Season': ['Summer', 'Summer', 'Summer', 'Summer', 'Summer'],
+            'City': ['Rio', 'Rio', 'Rio', 'Rio', 'Rio'],
+            'Sport': ['Athletics', 'Athletics', 'Athletics', 'Athletics', 'Athletics'],
+            'Medal': ['Gold', 'Gold', 'Gold', 'Silver', 'Silver']
+        })
+        expected_result = pd.DataFrame({
+            'Event': ['100m', '200m'],
+            'Team': ['Brazil', 'USA'],
+            'NOC': ['BRA', 'USA'],
+            'Year': [2016, 2016],
+            'Games': ['2016 Summer', '2016 Summer'],
+            'Season': ['Summer', 'Summer'],
+            'City': ['Rio', 'Rio'],
+            'Sport': ['Athletics', 'Athletics'],
+            'Medal': ['Gold', 'Silver']
+        })
+        aggregated_data = aggregate_medals_by_event_team(data)
+        pd.testing.assert_frame_equal(expected_result, aggregated_data)
+
+    def test_aggregate_medals_by_event_team_no_medals(self):
+        data = pd.DataFrame({
+            'Event': ['100m', '200m'],
+            'Team': ['Brazil', 'USA'],
+            'NOC': ['BRA', 'USA'],
+            'Year': [2016, 2016],
+            'Games': ['2016 Summer', '2016 Summer'],
+            'Season': ['Summer', 'Summer'],
+            'City': ['Rio', 'Rio'],
+            'Sport': ['Athletics', 'Athletics'],
+            'Medal': [None, None]
+        })
+        expected_result = pd.DataFrame({
+            'Event': ['100m', '200m'],
+            'Team': ['Brazil', 'USA'],
+            'NOC': ['BRA', 'USA'],
+            'Year': [2016, 2016],
+            'Games': ['2016 Summer', '2016 Summer'],
+            'Season': ['Summer', 'Summer'],
+            'City': ['Rio', 'Rio'],
+            'Sport': ['Athletics', 'Athletics'],
+            'Medal': [None, None]
+        })
+        aggregated_data = aggregate_medals_by_event_team(data)
+        pd.testing.assert_frame_equal(expected_result, aggregated_data)
+
+    def test_aggregate_medals_by_event_team_mixed_medals(self):
+        data = pd.DataFrame({
+            'Event': ['100m', '100m', '200m', '200m', '200m'],
+            'Team': ['Brazil', 'Brazil', 'USA', 'USA', 'USA'],
+            'NOC': ['BRA', 'BRA', 'USA', 'USA', 'USA'],
+            'Year': [2016, 2016, 2016, 2016, 2016],
+            'Games': ['2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer', '2016 Summer'],
+            'Season': ['Summer', 'Summer', 'Summer', 'Summer', 'Summer'],
+            'City': ['Rio', 'Rio', 'Rio', 'Rio', 'Rio'],
+            'Sport': ['Athletics', 'Athletics', 'Athletics', 'Athletics', 'Athletics'],
+            'Medal': ['Gold', 'Silver', 'Bronze', 'Gold', 'Silver']
+        })
+        expected_result = pd.DataFrame({
+            'Event': ['100m', '200m'],
+            'Team': ['Brazil', 'USA'],
+            'NOC': ['BRA', 'USA'],
+            'Year': [2016, 2016],
+            'Games': ['2016 Summer', '2016 Summer'],
+            'Season': ['Summer', 'Summer'],
+            'City': ['Rio', 'Rio'],
+            'Sport': ['Athletics', 'Athletics'],
+            'Medal': ['Gold', 'Bronze']
+        })
+        aggregated_data = aggregate_medals_by_event_team(data)
+        pd.testing.assert_frame_equal(expected_result, aggregated_data)
+
+    def test_aggregate_medals_by_event_team_missing_columns(self):
+        data = pd.DataFrame({
+            'Event': ['100m', '200m'],
+            'Team': ['Brazil', 'USA'],
+            'Year': [2016, 2016],
+            'Games': ['2016 Summer', '2016 Summer'],
+            'Season': ['Summer', 'Summer'],
+            'City': ['Rio', 'Rio'],
+            'Sport': ['Athletics', 'Athletics'],
+            'Medal': ['Gold', 'Silver']
+        })
+        with self.assertRaises(KeyError):
+            aggregate_medals_by_event_team(data)
+            
+            
 if __name__ == "__main__":
     unittest.main()
