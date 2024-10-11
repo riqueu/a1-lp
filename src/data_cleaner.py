@@ -59,7 +59,7 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame com coluna 'Medal' convertida para inteiros.
     
-    Example
+    Example:
     ----------
     >>> data = pd.DataFrame({'Atleta': ['Jaime', 'Walleria', 'Carlos', 'Henrique', 'Novaes'], 'Medal': ['Gold', 'Gold', 'Silver', 'Bronze', np.nan]  })
     >>> df = medals_to_int(data)
@@ -89,16 +89,8 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
-def transform_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Transforma o DataFrame de atletas olímpicos no formato utilizado pelos DataFrames paralímpicos
-
-    Args:
-        athletes_df (pd.DataFrame): DataFrame contendo os dados dos atletas olímpicos com as colunas:
-
-    Returns:
-        pd.DataFrame: Um DataFrame formatado como os DataFrames paralímpicos, mas com os dados das olimpíadas
-    """
+def convert_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd.DataFrame:
+    """TODO:"""
     athletes_df = athletes_df[athletes_df['Year'] >= 1960]
 
     olympic_df = athletes_df.groupby(['NOC', 'Year', 'Season']).agg(
@@ -161,6 +153,80 @@ def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
         quit()
     else:
         return df
+    
+    
+def rename_countries_gdp(df: pd.DataFrame) -> pd.DataFrame:
+    countries = {
+        "Bahamas, The": "Bahamas",
+        "Curacao": "Curacao",
+        "Iran, Islamic Rep.": "Iran",
+        "Russian Federation": "Russia",
+        "Korea, Rep.": "South Korea",
+        "Syrian Arab Republic": "Syria",
+        "Trinidad and Tobago": "Trinidad",
+        "United Kingdom": "UK",
+        "United States": "USA",
+        "Venezuela, RB": "Venezuela",
+        "Bolivia": "Boliva",
+        "Egypt, Arab Rep.": "Egypt",
+        "Cote d'Ivoire": "Ivory Coast",
+        "Congo, Rep.": "Republic of Congo",
+        "Congo, Dem. Rep.": "Democratic Republic of the Congo",
+        "Virgin Islands (U.S.)": "Virgin Islands, US",
+        "Eswatini": "Swaziland",
+        "Antigua and Barbuda": "Antigua",
+        "Lao PDR": "Laos",
+        "Gambia, The": "Gambia",
+        "Yemen, Rep.": "Yemen",
+        "St. Vincent and the Grenadines": "Saint Vincent",
+        "Slovak Republic": "Slovakia",
+        "Kyrgyz Republic": "Kyrgyzstan",
+        "Brunei Darussalam": "Brunei",
+        "Cabo Verde": "Cape Verde",
+        "North Macedonia": "Macedonia",
+        "St. Kitts and Nevis": "Saint Kitts",
+        "St. Lucia": "Saint Lucia",
+        "Micronesia, Fed. Sts.": "Micronesia",
+    }
+    try:
+        df['Country'] = df['Country'].replace(countries)
+    except KeyError:
+        print(
+            f"The given dataframe has no column 'Country', consider replacing it.")
+        quit()
+    else:
+        return df
+
+
+def clean_paralympic_atletes_dataset():
+    """Função que padroniza os dados do dataset medal_athletes.csv com os dados dos outros datasets com informações das paralimpíadas e olimpíadas e cria um dataset modified_medal_athletes.csv com as modificações
+    """
+    df = pd.read_csv("data/medal_athlete.csv")
+    df.rename(columns={column: column.capitalize() for column in df.columns}, inplace=True)
+    df = medals_to_int(df)
+    df['Sex'] = np.nan
+    df.loc[df['Event'].str.contains('Men', case=False, na=False), ['Sex']] = 'M'
+    df.loc[df['Event'].str.contains('Women', case=False, na=False), ['Sex']] = 'F'
+
+    # Variaveis auxiliares para verificar se a quantidade de atletas removidos esta correta
+    identified_athletes = df[(df['Sex'] == 'F') | (df['Sex'] == 'M')]
+    unidentified_athletes = df[df['Sex'].isna()]
+    aux_1 = identified_athletes['Athlete_name'].unique().astype(str)
+    aux_2 = unidentified_athletes['Athlete_name'].unique().astype(str)
+
+    # Atualiza o dataframe com o genero dos atletas que foram distinguiveis
+    df_auxiliar_map = df.groupby(['Athlete_name']).first()
+    df_auxiliar_map = df_auxiliar_map['Sex'].to_dict()
+    df['Sex'] = df['Athlete_name'].map(df_auxiliar_map)
+
+    # Dropa os atletas em que nao foi possivel descobrir o genero
+    df.dropna(subset=['Sex'], inplace=True)
+
+    # Intersecao dos atletas que nao possuem identificacao alguma de genero com os atletas do dataset modificado
+    # print(np.intersect1d(df['Athlete_name'].to_numpy(), np.setdiff1d(aux_2, aux_1)))
+    # print(df['Athlete_name'].nunique())
+    
+    df.to_csv('data/modified_medal_athlete.csv')
 
 
 def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
