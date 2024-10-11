@@ -95,3 +95,5 @@ class TestStatisticsByAge(unittest.TestCase):
         
         self.assertEqual(result, expected_result)
 
+# TODO
+# Teste para as demais funções
