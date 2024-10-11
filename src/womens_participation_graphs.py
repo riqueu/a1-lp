@@ -1,3 +1,5 @@
+"""Módulo para geração de gráficos de dispersão comparando a participação e desempenho de atletas masculinos e femininos nas Olimpíadas e Paralimpíadas."""
+
 import pandas as pd
 import numpy as np
 import seaborn as sns
