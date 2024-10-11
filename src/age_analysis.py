@@ -166,9 +166,9 @@ def create_boxplot_sport_with_the_most_outliers(df: pd.DataFrame) -> plt:
         plt.figure()
         boxplot = sns.boxplot(x='Sport', y='Age', data=df_maioresporte)
         boxplot.set_yscale('linear')
-        plt.title('Boxplot de Idades por Esporte')
-        plt.xlabel('Esporte')
-        plt.ylabel('Idade')
+        plt.title('Age Boxplot by Sport')
+        plt.xlabel('Sport')
+        plt.ylabel('Age')
 
         return plt
     except KeyError:
@@ -221,9 +221,9 @@ def create_boxplot_top_3_esportes_outliers(df: pd.DataFrame)-> plt:
 
 
         # Adicionando título e rótulos
-        plt.title('Boxplot de Idades por Esporte')
-        plt.xlabel('Esporte')
-        plt.ylabel('Idade')
+        plt.title('Age Boxplot by Sport')
+        plt.xlabel('Sport')
+        plt.ylabel('Age')
         
         return plt
     except KeyError:
@@ -273,9 +273,9 @@ def create_boxplot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
         sns.boxplot(x='Sport', y='Age', data=df_top_3_mais)
 
         # Adicionando título e rótulos
-        plt.title('Boxplot de Idades dos Esportes mais premiados pelo Brasil')
-        plt.xlabel('Esporte')
-        plt.ylabel('Idade')
+        plt.title('Boxplot of Ages of the Most Awarded Sports by Brazil')
+        plt.xlabel('Sport')
+        plt.ylabel('Age')
 
         return plt
     except KeyError:
@@ -322,10 +322,10 @@ def create_boxplot_age_medal_status_brazil(df: pd.DataFrame) -> plt:
         sns.boxplot(x='Medal', y='Age', data=atletas_brasileiros)
 
         # Adicionando título e rótulos
-        plt.title('Boxplot de Idades dos atletas brasileiros premiados e não premiados')
+        plt.title('Boxplot of Ages of Awarded and Non-Awarded Brazilian Athletes')
         plt.xlabel('Was Awarded')
         plt.xticks([0, 1], ['Not Awarded', 'Awarded'])
-        plt.ylabel('Idade')
+        plt.ylabel('Age')
 
         # Exibindo o gráfico
         return plt

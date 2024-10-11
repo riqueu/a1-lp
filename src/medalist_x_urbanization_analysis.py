@@ -61,9 +61,9 @@ def create_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> pl
     scatterplot = sns.scatterplot(x='Urban_Pop_Percent', y='Urban_Medalist_Density', data=data_2016, size='Medalists', sizes=(10, 100), legend=False)
     scatterplot.set_yscale('log') # Escala logarítmica para melhor visualização
 
-    scatterplot.set_title('Urbanização X Densidade Urbana de Medalhas (2016)')
-    scatterplot.set_xlabel('População Urbana (%)')
-    scatterplot.set_ylabel('Medalhas por Habitante Urbano')
+    scatterplot.set_title('Urbanization vs Urban Medal Density (2016)')
+    scatterplot.set_xlabel('Urban Population (%)')
+    scatterplot.set_ylabel('Medals per Urban Inhabitant')
 
     # Identificando o top 5 e bottom 5 por Urban_Medalist_Density; também pegando o top 5 por medalhistas
     top_5_countries = data_2016.nlargest(5, 'Urban_Medalist_Density')
@@ -124,8 +124,8 @@ def calculate_dynamic_growth(data: pd.DataFrame, value_column: str) -> pd.DataFr
     """Calcula o crescimento percentual de o valor especificado por coluna entre o primeiro e o último ano disponível do país.
 
     Args:
-        data (pd.DataFrame): df com colunas: ,Year,NOC,Medalists,Country,Pop_Absolute,Urban_Pop_Percent
-        value_column (str): Colunas para calcular crescimento (e.g. 'Medalists' or 'Urban_Pop_Percent').
+        data (pd.DataFrame): df com colunas: ,Year,NOC,Medal,Country,Pop_Absolute,Urban_Pop_Percent
+        value_column (str): Colunas para calcular crescimento (e.g. 'Medal' or 'Urban_Pop_Percent').
 
     Returns:
         pd.DataFrame: Dataframe com País e Crescimento Percentual daquela coluna.
@@ -191,7 +191,7 @@ def create_map_visualization(data: pd.DataFrame) -> plt:
     world_medals.plot(column='Medal_Dynamic_Growth', cmap='Reds', legend=False, ax=ax[1], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black')
     ax[1].set_title('Medal Growth (First to Last Available Year)')
     
-    fig.suptitle('Comparison of Growth in Urbanization and Medalists (1956-2016)', fontsize=18, weight='bold')
+    fig.suptitle('Comparison of Growth in Urbanization and Medals (1956-2016)', fontsize=18, weight='bold')
     plt.subplots_adjust(bottom=0.55)
 
     return plt
