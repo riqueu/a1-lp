@@ -53,11 +53,15 @@ def merge_by_sport(df_main, df_aux):
     
     return df_main
 
-def create_dataframes():
-    df1 = pd.read_csv("data/athlete_events.csv")
-    df2 = pd.read_csv("data/modified_medal_athlete.csv")
-    df3 = pd.read_csv("data/summer_paralympics.csv")
-    df4 = pd.read_csv("data/winter_paralympics.csv")
+def create_dataframes(athletes_df, modified_medal_athlete_df, summer_paralympics_df, winter_paralympics_df):
+    #df1 = pd.read_csv("data/athlete_events.csv")
+    #df2 = pd.read_csv("data/modified_medal_athlete.csv")
+    #df3 = pd.read_csv("data/summer_paralympics.csv")
+    #df4 = pd.read_csv("data/winter_paralympics.csv")
+    df1 = athletes_df
+    df2 = modified_medal_athlete_df
+    df3 = summer_paralympics_df
+    df4 = winter_paralympics_df
     df3 = pd.concat([df3, df4])
     df3.sort_values(by=['Year'], inplace=True)
     df1 = medals_to_int(df1)

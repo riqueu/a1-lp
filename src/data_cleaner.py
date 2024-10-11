@@ -77,6 +77,7 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     [0.0, 0.0, 0.0, 0.0, 0.0]
     """
     try:
+        df = df.copy()
         df.loc[:, 'Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
         df['Medal'] = df['Medal'].infer_objects().fillna(0)
         df.loc[:, 'Medal'] = df['Medal'].astype(int)
