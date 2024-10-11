@@ -73,5 +73,47 @@ class TestAddCountryFromNoc(unittest.TestCase):
         })
         pd.testing.assert_frame_equal(result, expected)
    
+
+
+class TestPivotGdpToLong(unittest.TestCase):
+
+    def setUp(self):
+        # Exemplo de DataFrame no formato wide
+        self.gdp_df_wide = pd.DataFrame({
+            'Country Name': ['Country A', 'Country B'],
+            '2000': [1000, 2000],
+            '2001': [1100, 2100],
+            '2002': [1200, 2200]
+        })
+
+        # DataFrame esperado no formato long
+        self.gdp_df_long_expected = pd.DataFrame({
+            'Year': [2000, 2000, 2001, 2001, 2002, 2002],
+            'Country': ['Country A', 'Country B', 'Country A', 'Country B', 'Country A', 'Country B'],
+            'GDP': [1000, 2000, 1100, 2100, 1200, 2200]
+        })
+
+    def test_transform_wide_to_long(self):
+        result = pivot_gdp_to_long(self.gdp_df_wide)
+        
+        # Verificar coluna por coluna
+        for col in self.gdp_df_long_expected.columns:
+            with self.subTest(col=col):
+                # Converte a coluna Year para int64
+                if col == 'Year':
+                    pd.testing.assert_series_equal(result[col].reset_index(drop=True).astype('int64'), 
+                                                    self.gdp_df_long_expected[col].reset_index(drop=True))
+                else:
+                    pd.testing.assert_series_equal(result[col].reset_index(drop=True), 
+                                                    self.gdp_df_long_expected[col].reset_index(drop=True))
+
+    # Testa o caso em que a coluna 'Country Name' está ausente
+    def test_missing_country_name_column(self):
+        
+        gdp_df_missing_column = self.gdp_df_wide.drop(columns=['Country Name'])
+        with self.assertRaises(KeyError):
+            pivot_gdp_to_long(gdp_df_missing_column)
+
+    
 if __name__ == "__main__":
     unittest.main()
