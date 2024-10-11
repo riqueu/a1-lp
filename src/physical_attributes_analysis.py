@@ -1,4 +1,5 @@
 """Modulo com as funcoes para a hipotese do perfil fisico dos atletas"""
+
 import numpy as pd
 import pandas as pd
 import matplotlib.pyplot as plt

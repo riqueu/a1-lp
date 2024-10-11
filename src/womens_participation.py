@@ -1,3 +1,5 @@
+"""Módulo com funções para análise e visualização de participação e rendimento dos atletas do Brasil comparado com o mundo."""
+
 import pandas as pd
 import numpy as np
 import seaborn as sns

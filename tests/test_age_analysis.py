@@ -3,6 +3,7 @@ from src.age_analysis import *
 import numpy as np
 import unittest
 
+
 class TestStatisticsByAge(unittest.TestCase):
     
     # Teste com DataFrame vazio.
@@ -94,6 +95,7 @@ class TestStatisticsByAge(unittest.TestCase):
         
         self.assertEqual(result, expected_result)
 
+
 class HighestAgeAplitudeSports(unittest.TestCase):
     
     # Teste com algusn esportes diferentes
@@ -154,8 +156,7 @@ class HighestAgeAplitudeSports(unittest.TestCase):
     })  
         expected_result = {}
         
-        self.assertEqual(expected_result, highest_age_aplitude_sports(df))
-        
+        self.assertEqual(expected_result, highest_age_aplitude_sports(df)) 
 
 
 class CreateBoxplotSportWithTheMosOutliers:
@@ -172,6 +173,7 @@ class CreateBoxplotSportWithTheMosOutliers:
     
         self.assertEqual(plot.__class__.__name__, "module")
 
+
 class CreateBoxplotTop3EsportesOutliers:
     
     #  Cria um boxplot de idade dos 3 esportes com mais outliers 
@@ -187,6 +189,7 @@ class CreateBoxplotTop3EsportesOutliers:
         
         self.assertEqual(plot.__class__.__name__, "module")
     
+    
 class CreateBoxplotTop3EsportesMostAwarded:
     # Cria o box plot de idade dos 3 esportes mais premiados pelo Brasil
     def test_create_boxplot(self):
@@ -201,7 +204,8 @@ class CreateBoxplotTop3EsportesMostAwarded:
         
         self.assertEqual(plot.__class__.__name__, "module")
 
-class CreateBoxplotAgeAwardedAndNonAwardedAthletesInBrazil:
+
+class CreateBoxplotAgeMedalStatusBrazil:
     # Cria o boxplot de idade dos atletas brasileiros categorizados entre premiados e não premiados
     def test_create_boxplot(self):
         df_example = pd.DataFrame({
@@ -209,9 +213,10 @@ class CreateBoxplotAgeAwardedAndNonAwardedAthletesInBrazil:
          'Medal': [1, 0, 1, 0, 1, 0, 1, 0],
          'Age': [22, 24, 20, 23, 27, 26, 28, 25]
      })
-        plot = create_boxplot_age_awarded_and_non_awarded_athletes_in_brazil(df_example)
+        plot = create_boxplot_age_medal_status_brazil(df_example)
         
         self.assertEqual(plot.__class__.__name__, "module")
+
 
 class CreateBoxplotAgeByMedalsAthletesInBrazil:
     
@@ -225,4 +230,3 @@ class CreateBoxplotAgeByMedalsAthletesInBrazil:
         plot = create_boxplot_age_by_medals_athletes_in_brazil(df_example)
     
         self.assertEqual(plot.__class__.__name__, "module")     
-        
