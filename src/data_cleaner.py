@@ -161,6 +161,36 @@ def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
         quit()
     else:
         return df
+    
+def clean_paralympic_atletes_dataset():
+    """Função que padroniza os dados do dataset medal_athletes.csv com os dados dos outros datasets com informações das paralimpíadas e olimpíadas e cria um dataset modified_medal_athletes.csv com as modificações
+    """
+    df = pd.read_csv("data/medal_athlete.csv")
+    df.rename(columns={column: column.capitalize() for column in df.columns}, inplace=True)
+    df = medals_to_int(df)
+    df['Sex'] = np.nan
+    df.loc[df['Event'].str.contains('Men', case=False, na=False), ['Sex']] = 'M'
+    df.loc[df['Event'].str.contains('Women', case=False, na=False), ['Sex']] = 'F'
+
+    # Variaveis auxiliares para verificar se a quantidade de atletas removidos esta correta
+    identified_athletes = df[(df['Sex'] == 'F') | (df['Sex'] == 'M')]
+    unidentified_athletes = df[df['Sex'].isna()]
+    aux_1 = identified_athletes['Athlete_name'].unique().astype(str)
+    aux_2 = unidentified_athletes['Athlete_name'].unique().astype(str)
+
+    # Atualiza o dataframe com o genero dos atletas que foram distinguiveis
+    df_auxiliar_map = df.groupby(['Athlete_name']).first()
+    df_auxiliar_map = df_auxiliar_map['Sex'].to_dict()
+    df['Sex'] = df['Athlete_name'].map(df_auxiliar_map)
+
+    # Dropa os atletas em que nao foi possivel descobrir o genero
+    df.dropna(subset=['Sex'], inplace=True)
+
+    # Intersecao dos atletas que nao possuem identificacao alguma de genero com os atletas do dataset modificado
+    # print(np.intersect1d(df['Athlete_name'].to_numpy(), np.setdiff1d(aux_2, aux_1)))
+    # print(df['Athlete_name'].nunique())
+    
+    df.to_csv('data/modified_medal_athlete.csv')
 
 
 def map_name_normalization(df: pd.DataFrame) -> pd.DataFrame:
