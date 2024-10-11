@@ -64,4 +64,28 @@ class TestR2(unittest.TestCase):
         with self.assertRaises(KeyError) as context:
              r2(df, 'qualitativa', 'quantitativa')
 
-c
+class TestCorr(unittest.TestCase):
+    
+    #  Teste correlação igual a 1
+    def test_perfect_positive_correlation(self):
+        df = pd.DataFrame({'x': [1, 2, 3, 4, 5], 'y': [2, 4, 6, 8, 10]})
+        result = corr(df, 'x', 'y')
+        expected = 1.0
+       
+        self.assertAlmostEqual(result, expected)
+    
+    #  Teste correlação igual a -1
+    def test_perfect_negative_correlation(self):
+        df = pd.DataFrame({'a': [1, 2, 3, 4, 5], 'b': [5, 4, 3, 2, 1]})
+        result = corr(df, 'a', 'b')
+        expected = -1.0
+        
+        self.assertAlmostEqual(result, expected)
+    
+    #  Teste correlação igual a 0
+    def test_no_correlation(self):
+        df = pd.DataFrame({'m': [1, 2, 3, 4, 5], 'n': [7, 6, 5, 6, 7]})
+        result = corr(df, 'm', 'n')
+        expected = 0
+        
+        self.assertAlmostEqual(result, expected, places=1)
