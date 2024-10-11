@@ -1,4 +1,5 @@
 """Modulo com as funcoes para a hipotese do perfil fisico dos atletas"""
+
 import numpy as pd
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -64,8 +65,7 @@ def get_filters(df: pd.DataFrame) -> tuple:
 
 # df, cols_to_fix, cols_types, encoders = to_encoded(df)
 # print(f'Colunas problematicas: {cols_to_fix}\nColunas com varios tipos: {cols_types}')
-
-def attributes_sports_analysis(df: pd.DataFrame):
+def attributes_sports_analysis(df: pd.DataFrame) -> None:
     """ Funcao que recebe um DataFrame e analisa as possiveis relacoes de associacao entre suas variaveis de atributos fisicos com os esportes.
 
     Args:
@@ -90,13 +90,9 @@ def attributes_sports_analysis(df: pd.DataFrame):
     # Idade e geralmente o atributo que tem menor associacao com o esporte
     # Para os esportes mais premiados do Brasil, os atributos parecem tem maior associacao com o esporte do que quando aplicado a outros esportes
 
-
     # Analise dos dados dos esportes mais premiados do Brasil
     df_top_sports = df[df['Sport'].isin(top_sports_brasil)]
     df_top_sports_brasil = df_top_sports[df_top_sports['NOC'] == 'BRA']
-    #print()
-
-
     # Analise da associacao entre os atributos fisicos e a medalha para cada esporte mais premiado do Brasil
     """for sport in top_sports_brasil:
         print(f'Analise do esporte: {sport}')
@@ -123,12 +119,14 @@ def attributes_sports_analysis(df: pd.DataFrame):
             sns.boxplot(x='Medal', y=attribute, data=df_sport_brasil)
             plt.title(f'{sport} - {attribute}')
             plt.savefig(f'graphs/physical_attributes_graphs/{sport}_{attribute}.png')
-            
-#attributes_sports_analysis(df)
 
 
-def attributes_years_analysis(df: pd.DataFrame):
-    
+def attributes_years_analysis(df: pd.DataFrame) -> None:
+    """Função que recebe um DataFrame e analisa as possiveis relacoes de associacao entre suas variaveis de atributos fisicos com os anos.
+
+    Args:
+        df (pd.DataFrame): df dos atletas
+    """
     # Analise da correlacao entre o ano e os atributos fisicos
     plt.xlabel('Year')
     for attribute in ['Age', 'Height', 'Weight']:
@@ -150,6 +148,3 @@ def attributes_years_analysis(df: pd.DataFrame):
 
     # Idade parece se correlacionar mais com o Ano do que os demais atributos, mas ainda assim, muito pouco
     # No Brasil, pelo contrario, a idade quase nao variou, mas as correlacoes de altura e peso com o Ano sao mais significantes (ainda pouco) que a Idade
-    
-    
-#attributes_years_analysis(df)

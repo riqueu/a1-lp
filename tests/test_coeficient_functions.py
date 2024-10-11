@@ -89,3 +89,17 @@ class TestCorr(unittest.TestCase):
         expected = 0
         
         self.assertAlmostEqual(result, expected, places=1)
+
+    #  Teste correlação amostral e populacional iguais
+    def test_sample_vs_population(self):
+        df = pd.DataFrame({'x': [1, 2, 3, 4, 5], 'y': [5, 6, 7, 8, 9]})
+        sample_corr = corr(df, 'x', 'y', is_sample=True)
+        population_corr = corr(df, 'x', 'y', is_sample=False)
+       
+        self.assertAlmostEqual(sample_corr, population_corr, places=2)
+    
+    #  Teste com coluna ausente
+    def test_non_existent_columns(self):
+        df = pd.DataFrame({'x': [1, 2, 3, 4, 5], 'y': [5, 6, 7, 8, 9]})
+        with self.assertRaises(KeyError):
+            corr(df, 'x', 'z')

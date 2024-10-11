@@ -2,8 +2,8 @@
 import numpy as np
 import pandas as pd
 import doctest
-
 from sklearn.feature_selection import SelectKBest, chi2
+
 
 def r2(df: pd.DataFrame, quali: str, quanti: str, is_sample: bool = True) -> float:
     """ Funcao que calcula o coeficiente R2, que quantifica a correlacao entre uma variavel qualitativa e um quantitativa
@@ -100,6 +100,7 @@ def corr(df: pd.DataFrame, quanti_1: str, quanti_2: str, is_sample: bool = True)
     corr = cov / (std_1 * std_2)
 
     return corr
+
 
 if __name__ == "__main__":
      doctest.testmod(verbose=False)

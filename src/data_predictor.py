@@ -19,6 +19,28 @@ def to_encoded(df: pd.DataFrame) -> tuple:
 
     Returns:
         tuple: Tupla com o Dataframe convertido, uma lista das colunas problematicas, um dicionario com os tipos de cada uma delas, os algoritmos encoders para voltar aos labels originais.
+    
+    Example:
+    ----------
+    >>> df = pd.DataFrame({
+    ...     'Name': ['Alice', 'Bob', 'Charlie', 'Dave'],
+    ...     'Age': [25, np.nan, 30, 35],
+    ...     'Income': ['High', 'Medium', 'High', 40000],
+    ...     'Gender': ['F', 'M', 'M', 'F']
+    ... })
+    >>> df_encoded, cols_to_fix, cols_types, encoders = to_encoded(df)
+    >>> df_encoded
+      Name   Age  Income Gender
+    0    0  25.0    High      0
+    1    1   NaN  Medium      1
+    2    2  30.0    High      1
+    3    3  35.0   40000      0
+    >>> cols_to_fix
+    {'Age': 'Contains NaN', 'Income': 'Contains two or more types'}
+    >>> cols_types
+    {'Income': ["<class 'int'>", "<class 'str'>"]}
+    >>> encoders['Name'].inverse_transform([0, 1, 2, 3])
+    array(['Alice', 'Bob', 'Charlie', 'Dave'], dtype=object)
     """
     cols = []
     cols_to_fix = {}
@@ -94,6 +116,7 @@ def linear_regression(df: pd.DataFrame, features: list, target: str, test_size: 
         test_size (float): Tamanho do conjunto de dados usados para testar o algoritmo.
     Returns:
         pd.DataFrame: Dataframe com a coluna target preenchida
+    
     """
     # Obtem os conjuntos de treino e de teste
     filter_train = ~df[features].isna()
@@ -156,3 +179,6 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
         df.loc[:, column] = encoders[column].inverse_transform(df[column].astype(int))
 
     return df
+
+if __name__ == "__main__":
+     doctest.testmod(verbose=False)
