@@ -1,92 +1,134 @@
-import numpy as np
+"""Módulo para limpeza, organização e visualização de dados de Olimpíadas, Paralimpíadas e PIB."""
+
 import pandas as pd
-from data_cleaner import transform_athletes_df_to_paralympics_format
+from data_cleaner import convert_athletes_df_to_paralympics_format, rename_countries_gdp
 
 
-# Upload dos DataFrames
-athletes_df = pd.read_csv("../data/athlete_events.csv")
-summer_paralympics_df = pd.read_csv("../data/summer_paralympics.csv")
-winter_paralympics_df = pd.read_csv("../data/winter_paralympics.csv")
-noc_df = pd.read_csv("../data/noc_regions.csv").rename(columns={'region': 'Country'})
-gdp_df = pd.read_csv("../data/gdp/gdp.csv").drop(columns=['Code', 'Unnamed: 65'])
-
-
-def merge_noc_with_country(df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
+def add_country_from_noc(df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Faz merge do DataFrame de entrada com noc_regions_df para adicionar a coluna 'Country' com base no 'NOC' e reordenar as colunas conforme especificado.
+    Adiciona a coluna 'Country' ao DataFrame a partir do DataFrame NOC.
 
     Args:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        noc_regions_df (pd.DataFrame): O DataFrame que contém as informações de NOC e País.
+        df (pd.DataFrame): DataFrame no padrão do paralympics_df contendo a coluna 'NOC'.
+        noc_df (pd.DataFrame): DataFrame que relaciona NOC com os respectivos países.
 
     Returns:
-        pd.DataFrame: O DataFrame mesclado e reordenado.
+        pd.DataFrame: DataFrame resultante com a coluna 'Country' adicionada, incluindo
+            as colunas 'Year', 'Country', 'NOC', 'Season', 'Gold', 'Silver', 'Bronze',
+            'M_Total', 'Men', 'Women', 'P_Total'.
+
+    Raises:
+        KeyError: Se uma ou mais colunas necessárias não estiverem presentes no DataFrame.
+        Exception: Se ocorrer um erro durante a mesclagem dos DataFrames.
     """
-    # Faz merge do DataFrame passado com noc_regions_df para adicionar (ou atualizar) a coluna 'Country'
-    df = df.merge(noc_df[['NOC', 'Country']], on='NOC', how='left')
-    
-    return df[['Year', 'Country', 'NOC', 'Season', 'Gold', 'Silver', 'Bronze', 'M_Total', 'Men', 'Women', 'P_Total']]
+    try:
+        df = df.merge(noc_df[['NOC', 'Country']], on='NOC', how='left')
+        return df[['Year', 'Country', 'NOC', 'Season', 'Gold', 'Silver', 'Bronze', 'M_Total', 'Men', 'Women', 'P_Total']]
+    except KeyError as error:
+        raise KeyError(f"KeyError: Missing one or more required columns in the GDP DataFrame: {error}")
+    except Exception as error:
+        raise Exception(f"Failed to merge NOC with country: {str(error)}")
 
 
-def transform_gdp_data(gdp_df: pd.DataFrame) -> pd.DataFrame:
-    # Transforma o DataFrame de PIB de formato wide para formato long
-    gdp_df = gdp_df.melt(id_vars=['Country Name'], var_name='Year', value_name='GDP')
-    
-    # Converte a coluna 'Year' para tipo numérico (int)
-    gdp_df['Year'] = gdp_df['Year'].astype(int)
-    
-    # Renomeia a coluna 'Country Name' para 'Country' para facilitar os merges posteriores
-    gdp_df = gdp_df.rename(columns={'Country Name': 'Country'})
-    
-    gdp_df = gdp_df[['Year', 'Country', 'GDP']]
+def pivot_gdp_to_long(gdp_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforma o gdp_df do formato wide (com cada ano sendo uma coluna) para o long.
 
-    gdp_df = gdp_df.sort_values(by=['Year', 'Country'])
+    Args:
+        gdp_df (pd.DataFrame): DataFrame contendo dados do PIB com os anos como colunas.
 
-    return gdp_df
+    Returns:
+        pd.DataFrame: DataFrame transformado em formato long, com as colunas 'Year', 'Country'
+            e 'GDP', ordenado por 'Year e 'Country'.
 
-
-def prepare_olympics_paralympics_pib_analysis(athletes_df: pd.DataFrame, summer_paralympics_df: pd.DataFrame, winter_paralympics_df: pd.DataFrame, gdp_df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
-    # Limpa e transforma o DataFrame das Olimpíadas
-    olympics_df = transform_athletes_df_to_paralympics_format(athletes_df)
-
-    summer_paralympics_df.drop(columns=['Host_City', 'Host_Country', 'Country'], inplace=True)
-    summer_paralympics_df['Season'] = 'Summer'
-
-    winter_paralympics_df.drop(columns=['Host_City', 'Host_Country', 'Country'], inplace=True)
-    winter_paralympics_df['Season'] = 'Winter'
-
-    # Concatena as Paralimpíadas de verão e inverno
-    paralympics_df = pd.concat([summer_paralympics_df, winter_paralympics_df], ignore_index=True)
-
-    paralympics_df = paralympics_df.rename(columns={'Country_Code': 'NOC'})
-
-    # Crie uma coluna 'Country' com base nas colunas 'NOC' no olympics_df e no paralympics_df
-    clean_olympics_df = merge_noc_with_country(olympics_df, noc_df).sort_values(by=['Year', 'Country'])
-    clean_paralympics_df = merge_noc_with_country(paralympics_df, noc_df)
-
-    clean_olympics_df['Event'] = 'Olympics'
-    clean_paralympics_df['Event'] = 'Paralympics'
-
-    sports_df = pd.concat([clean_olympics_df, clean_paralympics_df], ignore_index=True)
-
-    gdp_df = transform_gdp_data(gdp_df)
-
-    combined_df = pd.merge(sports_df, gdp_df, on=['Year', 'Country'], how='left')
-    
-    return combined_df
+    Raises:
+        KeyError: Se uma ou mais colunas necessárias não estiverem presentes no DataFrame.
+        Exception: Se ocorrer um erro durante o reshape do DataFrame.
+    """
+    try:
+        # Transforma o DataFrame para o formato longo usando melt
+        gdp_df = gdp_df.melt(id_vars=['Country Name'], var_name='Year', value_name='GDP')
+        gdp_df['Year'] = pd.to_numeric(gdp_df['Year'], errors='coerce').dropna().astype(int)
+        gdp_df = gdp_df.rename(columns={'Country Name': 'Country'})
+        gdp_df = rename_countries_gdp(gdp_df)
+        return gdp_df[['Year', 'Country', 'GDP']].sort_values(by=['Year', 'Country'])
+    except KeyError as error:
+        raise KeyError(f"KeyError: Missing one or more required columns in the GDP DataFrame: {error}")
+    except Exception as error:
+        raise Exception(f"Error transforming GDP DataFrame: {str(error)}")
 
 
-# Aplica as funções, limpando e organizando os dois DataFrames para que possamos iniciar a análise
-# olympics_df = transform_olympics_to_paralympics_format(olympics_df) 
-# paralympics_df = merge_noc_with_country(paralympics_df, noc_regions_df)
+def fill_nan_gdp_with_interpolation(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Preenche valores NaN na coluna 'GDP' usando interpolação linear.
 
-prepare_olympics_paralympics_pib_analysis(athletes_df, summer_paralympics_df, winter_paralympics_df, gdp_df, noc_df)
+    Args:
+        df (pd.DataFrame): DataFrame contendo a coluna 'Country' e a coluna 'GDP'.
 
-# print(prepare_olympics_paralympics_pib_analysis(athletes_df, summer_paralympics_df, winter_paralympics_df, gdp_df, noc_df))
-# print(transform_gdp_data(gdp_df))
+    Returns:
+        pd.DataFrame: DataFrame com todos os valores NaN da coluna 'GDP' preenchidos 
+        por interpolação linear.
 
-# TODO: Rever a ordem do combined_df, pois ele está agrupando por Events
+    Raises:
+        KeyError: Se uma ou mais colunas necessárias não estiverem presentes no DataFrame.
+        Exception: Se ocorrer um erro durante a interpolação dos valores de GDP.
+    """
+    try:
+        # Interpola valores NaN na coluna 'GDP' para cada país
+        df['GDP'] = df.groupby('Country')['GDP'].transform(lambda group: group.interpolate(method='linear', limit_direction='both'))
+        return df
+    except KeyError as error:
+        raise KeyError(f"KeyError: Missing one or more required columns in the GDP DataFrame: {error}")
+    except Exception as error:
+        raise Exception(f"Error interpolating GDP values: {str(error)}")
 
-# TODO: Ver em quantas linhas o GDP é NaN, e com base nisso, excluí-las ou tomar outra atitude
 
-# TODO: Verificar se o combined_df está correto e pode ser usado para a análise
+def prepare_data_for_analysis(athletes_df: pd.DataFrame, summer_paralympics_df: pd.DataFrame, winter_paralympics_df: pd.DataFrame, gdp_df: pd.DataFrame, noc_df: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Prepara os dados das Olimpíadas, Paralimpíadas e PIB para análise conjunta.
+
+    Args:
+        athletes_df (pd.DataFrame): DataFrame contendo dados dos atletas das Olimpíadas.
+        summer_paralympics_df (pd.DataFrame): DataFrame contendo dados dos atletas das
+            Paralimpíadas de Verão.
+        winter_paralympics_df (pd.DataFrame): DataFrame contendo dados dos atletas das
+            Paralimpíadas de Inverno.
+        gdp_df (pd.DataFrame): DataFrame contendo dados do PIB por país e ano.
+        noc_df (pd.DataFrame): DataFrame relacionando códigos NOC com países.
+
+    Returns:
+        pd.DataFrame: DataFrame combinado contendo dados das Olimpíadas, Paralimpíadas e PIB,
+            ordenado por ano, país e evento.
+
+    Raises:
+        KeyError: Se uma ou mais colunas necessárias não estiverem presentes no DataFrame.
+        Exception: Se ocorrer um erro durante a preparação dos dados para análise.
+    """
+    try:
+        # Converte o DataFrame dos atletas para o formato apropriado
+        olympics_df = convert_athletes_df_to_paralympics_format(athletes_df)
+
+        # Prepara os DataFrames das Paralimpíadas de Verão e Inverno
+        summer_paralympics_df = summer_paralympics_df.drop(columns=['Host_City', 'Host_Country', 'Country']).assign(Season='Summer')
+        winter_paralympics_df = winter_paralympics_df.drop(columns=['Host_City', 'Host_Country', 'Country']).assign(Season='Winter')
+        combined_paralympics_df = pd.concat([summer_paralympics_df, winter_paralympics_df], ignore_index=True).rename(columns={'Country_Code': 'NOC'})
+
+        clean_olympics_df = add_country_from_noc(olympics_df, noc_df).assign(Event='Olympics')
+        clean_paralympics_df = add_country_from_noc(combined_paralympics_df, noc_df).assign(Event='Paralympics')
+        combined_events_df = pd.concat([clean_olympics_df, clean_paralympics_df], ignore_index=True)
+
+        gdp_long_df = pivot_gdp_to_long(gdp_df)
+
+        combined_df = pd.merge(combined_events_df, gdp_long_df, on=['Year', 'Country'], how='left')
+        combined_df = fill_nan_gdp_with_interpolation(combined_df)
+
+        # Exclui (poucas) linhas com NOCs problemáticos
+        nocs_not_in_analysis = ['FRO', 'RPT', 'PRK', 'AHO', 'TPE', 'IVB', 'COK', 'MAC', 'IOA', 'IPP', 'PLE', 'IPA', 'LBN', 'TUV', 'NPA', 'SSD', 'ROT', 'RPC']
+        combined_df = combined_df[~combined_df['NOC'].isin(nocs_not_in_analysis)]
+
+        return combined_df.sort_values(by=['Year', 'Country', 'Event'])
+    except KeyError as error:
+        raise KeyError(f"KeyError: Missing one or more required columns in the dataframes:")
+    except Exception as error:
+        raise Exception(f"Error preparing data for analysis: {str(error)}")

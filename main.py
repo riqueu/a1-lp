@@ -2,15 +2,19 @@ from src import medalist_x_urbanization_analysis as mu
 from src import age_analysis as aa
 from src import data_cleaner as dc
 from src import data_predictor as dp
+from src import physical_attributes_analysis as pa
+from src import womens_participation_graphs as wp
 import pandas as pd
 
 try:
     # Criação dos DataFrames para Análise
     athletes_df = pd.read_csv('data/athlete_events.csv')
     noc_df = pd.read_csv('data/noc_regions.csv').rename(columns={'region': 'Country'})
+    modified_medal_athlete_df = pd.read_csv('data/modified_medal_athlete.csv')
+    summer_paralympics_df = pd.read_csv('data/summer_paralympics.csv')
+    winter_paralympics_df = pd.read_csv('data/winter_paralympics.csv')
     urbanization_df = pd.read_csv('data/urbanization.csv')
-    gdp_df = pd.read_csv('data/gdp/gdp.csv')
-    gdp_per_capita_df = pd.read_csv('data/gdp/gdp_per_capita.csv')
+    gdp_df = pd.read_csv("data/gdp/gdp.csv").drop(columns=['Code', 'Unnamed: 65'])
 
     # Limpeza Inicial dos DataFrames
     dc.validade_athletes_columns(athletes_df) # Verifica se o DataFrame de Atletas possui todas as colunas necessárias
@@ -39,7 +43,18 @@ try:
     
     boxplot_age_medal_status_brazil = aa.create_boxplot_age_medal_status_brazil(clean_athletes_df)
     boxplot_age_medal_status_brazil.savefig('graphs/boxplot_age_awarded_and_non_awarded_brazil.png', format='png', dpi=300)
-
+    
+    # Análise dos Atributos Físicos dos Atletas: Carlos
+    pa.attributes_sports_analysis(clean_athletes_df)
+    pa.attributes_years_analysis(clean_athletes_df)
+    
+    # Análise da Participação Feminina nos Jogos Olímpicos e Paralímpicos: Walléria
+    female_participation_graphs = wp.create_all_graphs(clean_athletes_df, modified_medal_athlete_df, summer_paralympics_df, winter_paralympics_df)
+    for i, graph in enumerate(female_participation_graphs):
+        graph.savefig(f'graphs/female_participation/graph_{i+1}.png', dpi=500, bbox_inches='tight')
+        
+    # Análise PIB x Medalhas: Luís Filipe
+    # TODO:
 
 except FileNotFoundError:
     print("File not found, check if the path is correct.")
