@@ -1,6 +1,7 @@
 """Modulo com funcoes para calculo de coeficiente de associacao entre variaveis"""
 import numpy as np
 import pandas as pd
+import doctest
 
 from sklearn.feature_selection import SelectKBest, chi2
 
@@ -15,6 +16,15 @@ def r2(df: pd.DataFrame, quali: str, quanti: str, is_sample: bool = True) -> flo
 
     Returns:
         float: Coeficiente R2
+    
+    Example:
+    ----------
+    >>> df = pd.DataFrame({
+    ...     'qualitativa': ['A', 'A', 'B', 'B', 'C', 'C'],
+    ...     'quantitativa': [1, 2, 3, 4, 5, 6]
+    ... })
+    >>> r2(df, 'qualitativa', 'quantitativa')
+    0.8571428571428571
     """
     is_sample = int(is_sample)
 
@@ -59,6 +69,22 @@ def corr(df: pd.DataFrame, quanti_1: str, quanti_2: str, is_sample: bool = True)
 
     Returns:
         float: Coeficiente de correlacao
+    
+    Example:
+    ----------
+    >>> df = pd.DataFrame({
+    ...     'x': [1, 2, 3, 4, 5],
+    ...     'y': [2, 4, 6, 8, 10]
+    ... })
+    >>> corr(df, 'x', 'y')
+    0.9999999999999998
+
+    >>> df2 = pd.DataFrame({
+    ...     'a': [1, 2, 3, 4, 5],
+    ...     'b': [5, 4, 3, 2, 1]
+    ... })
+    >>> corr(df2, 'a', 'b')
+    -0.9999999999999998
     """
     is_sample = int(is_sample)
     # Calcula a covariancia das variaveis e os desvios padrao
@@ -74,3 +100,6 @@ def corr(df: pd.DataFrame, quanti_1: str, quanti_2: str, is_sample: bool = True)
     corr = cov / (std_1 * std_2)
 
     return corr
+
+if __name__ == "__main__":
+     doctest.testmod(verbose=False)
