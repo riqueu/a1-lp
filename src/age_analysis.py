@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns 
 import doctest
 
+
 def statistics_by_age(df: pd.DataFrame) -> dict:
     """Função que agrupa o DataFrame pela coluna 'Sport' e calcula mediana, 1º quartil (Q1) e 3º quartil (Q3)
     apenas para a coluna 'Age'.
@@ -283,7 +284,6 @@ def create_boxplot_top_3_esportes_most_awarded(df: pd.DataFrame) -> plt:
         quit()
         
 
-
 def create_boxplot_age_medal_status_brazil(df: pd.DataFrame) -> plt:
     """Cria um boxplot de idade com as categorias atletas brasileiros premiados 
     e atletas brasileiros não premiados
@@ -382,5 +382,3 @@ def create_boxplot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
 
 if __name__ == "__main__":
      doctest.testmod(verbose=False)
-
-
