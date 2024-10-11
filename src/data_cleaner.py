@@ -88,7 +88,7 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
-def transform_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd.DataFrame:
+def convert_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd.DataFrame:
     """
     Transforma o DataFrame de atletas olímpicos no formato utilizado pelos DataFrames paralímpicos
 
@@ -96,7 +96,7 @@ def transform_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd
         athletes_df (pd.DataFrame): DataFrame contendo os dados dos atletas olímpicos com as colunas:
 
     Returns:
-        pd.DataFrame: DataFrame com coluna 'Medal' convertida para booleanos.
+        pd.DataFrame: Um DataFrame formatado como os DataFrames paralímpicos, mas com os dados das olimpíadas
     
     Example:
     ----------
@@ -114,7 +114,6 @@ def transform_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd
     >>> cleaned_data =  medals_to_bool(data)
     >>> print(cleaned_data['Medal'].tolist())
     [False, False, False, False, False]
-        pd.DataFrame: Um DataFrame formatado como os DataFrames paralímpicos, mas com os dados das olimpíadas
     """
     athletes_df = athletes_df[athletes_df['Year'] >= 1960]
 
