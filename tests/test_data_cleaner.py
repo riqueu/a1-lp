@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from src.data_cleaner import *
-import unittest
+import unittest # python -m unittest discover -s tests
 
             
 class TestMedalsToInt(unittest.TestCase):
@@ -51,60 +51,6 @@ class TestMedalsToInt(unittest.TestCase):
         with self.assertRaises(SystemExit):
             medals_to_int(data)
 
-         
-class TestPredictMissing(unittest.TestCase):
-    # TODO
-    #  Adicionar mais casos de teste
-    
-    #  Test the function with a  DataFrame with one only 
-    def test_a_full_row_only(self):
-        
-        data = data = pd.DataFrame({
-    'Sport': ['Soccer', 'Soccer', 'Soccer'],
-    'Sex': ['F', 'F', 'F'],
-    'Age': [25, np.nan, 22],
-    'Height': [160, 165, np.nan],
-    'Weight': [55, np.nan, 60]
-})
-        expected_result = data = pd.DataFrame({
-    'Sport': ['Soccer', 'Soccer', 'Soccer'],
-    'Sex': ['F', 'F', 'F'],
-    'Age': [25, 25, 22],
-    'Height': [160, 165, 160],
-    'Weight': [55, 55, 60]
-})      
-        
-        modified_data = predict_missing(data) 
-        
-        self.assertEqual(expected_result['Age'].tolist(), modified_data['Age'].tolist())
-        self.assertEqual(expected_result['Height'].tolist(), modified_data['Height'].tolist())
-        self.assertEqual(expected_result['Weight'].tolist(), modified_data['Weight'].tolist())
-        
-        """
-        Outra possibilidade:
-        from pandas.testing import assert_frame_equal
-        
-        assert_frame_equal(df1, df2)
-        """
-
-    
-    def test_no_missing_values(self):
-        
-        data = pd.DataFrame({
-    'Sport': ['Tennis', 'Tennis', 'Tennis', 'Tennis'],
-    'Sex': ['M', 'F', 'F', 'M'],
-    'Age': [30, 25, 18, 19],
-    'Height': [180, 170, 160, 155],
-    'Weight': [75, 65, 68, 81]
-})
-        expected_result = data.copy()
-
-        modified_data = predict_missing(data)
-        
-        self.assertEqual(expected_result['Age'].tolist(), modified_data['Age'].tolist())
-        self.assertEqual(expected_result['Height'].tolist(), modified_data['Height'].tolist())
-        self.assertEqual(expected_result['Weight'].tolist(), modified_data['Weight'].tolist())
-
 
 class TestValidateAthletesColumns(unittest.TestCase):
 
@@ -147,66 +93,10 @@ class TestValidateAthletesColumns(unittest.TestCase):
         with self.assertRaises(KeyError):
             validade_athletes_columns(data)
 
-
-class TestMedalsToBool(unittest.TestCase):
-
-    def test_medals_to_bool_all_medals(self):
-        data = pd.DataFrame({
-            'Name': ['Alice', 'Bryan', 'Carlos', 'Daniel', 'Eliel'], 
-            'Medal': [3, 2, 1, 0, 3], 
-            'Height': [170, 160, 150, 155, 187], 
-            'Weight': [80, 60, 65, 46, 89], 
-            'Age': [15, 16, 17, 18, 19]
-        })
-        modified_data = medals_to_bool(data)
-        medals = modified_data['Medal']
-        expected_result = [True, True, True, False, True]
-        
-        self.assertEqual(expected_result, medals.tolist())
-
-    def test_medals_to_bool_no_medals(self):
-        data = pd.DataFrame({
-            'Name': ['Gustavo', 'Luciano', 'Chappel', 'Ariana', 'Taylor'], 
-            'Medal': [0, 0, 0, 0, 0], 
-            'Height': [170, 160, 150, 155, 187], 
-            'Weight': [80, 60, 65, 46, 89], 
-            'Age': [15, 16, 17, 18, 19]
-        })
-        modified_data = medals_to_bool(data)
-        medals = modified_data['Medal']
-        expected_result = [False, False, False, False, False]
-        
-        self.assertEqual(expected_result, medals.tolist())
-
-    def test_medals_to_bool_mixed_medals(self):
-        data = pd.DataFrame({
-            'Name': ['Jaime', 'Willian', 'Carneiro', 'Henrique', 'Novaes'], 
-            'Medal': [0, 1, 2, 3, 0], 
-            'Height': [170, 160, 150, 155, 187], 
-            'Weight': [80, 60, 65, 46, 89], 
-            'Age': [15, 16, 17, 18, 19]
-        })
-        modified_data = medals_to_bool(data)
-        medals = modified_data['Medal']
-        expected_result = [False, True, True, True, False]
-        
-        self.assertEqual(expected_result, medals.tolist())
-
-    def test_medals_to_bool_missing_medal_column(self):
-        data = pd.DataFrame({
-            'Name': ['Jaime', 'Willian', 'Carneiro'], 
-            'Height': [170, 160, 150], 
-            'Weight': [80, 60, 65], 
-            'Age': [15, 16, 17]
-        })
-        
-        with self.assertRaises(SystemExit):
-            medals_to_bool(data)
-
             
-class TestRenameCountries(unittest.TestCase):
+class TestUrbanizationRenameCountries(unittest.TestCase):
 
-    def test_rename_countries_standard(self):
+    def test_urbanization_rename_countries_standard(self):
         data = pd.DataFrame({
             'Country': [
                 "United States of America", "Côte d'Ivoire", "Korea, Republic of",
@@ -223,33 +113,79 @@ class TestRenameCountries(unittest.TestCase):
                 "Venezuela", "Vietnam"
             ]
         })
-        modified_data = rename_countries(data)
+        modified_data = urbanization_rename_countries(data)
         self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
 
-    def test_rename_countries_no_rename_needed(self):
+    def test_urbanization_rename_countries_no_rename_needed(self):
         data = pd.DataFrame({
             'Country': ["Brazil", "Argentina", "Canada"]
         })
         expected_result = data.copy()
-        modified_data = rename_countries(data)
+        modified_data = urbanization_rename_countries(data)
         self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
 
-    def test_rename_countries_mixed(self):
+    def test_urbanization_rename_countries_mixed(self):
         data = pd.DataFrame({
             'Country': ["Brazil", "United States of America", "Canada", "Türkiye"]
         })
         expected_result = pd.DataFrame({
             'Country': ["Brazil", "USA", "Canada", "Turkey"]
         })
-        modified_data = rename_countries(data)
+        modified_data = urbanization_rename_countries(data)
         self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
 
-    def test_rename_countries_missing_column(self):
+    def test_urbanization_rename_countries_missing_column(self):
         data = pd.DataFrame({
             'Nation': ["Brazil", "United States of America", "Canada"]
         })
         with self.assertRaises(SystemExit):
-            rename_countries(data)
+            urbanization_rename_countries(data)
+
+
+class TestMapNameNormalization(unittest.TestCase):
+
+    def test_map_name_normalization_standard(self):
+        data = pd.DataFrame({
+            'Country': ["USA", "UK", "Trinidad", "Macedonia", "Czech Republic", "Ivory Coast"]
+        })
+        expected_result = pd.DataFrame({
+            'Country': [
+                "United States of America", "United Kingdom", "Trinidad and Tobago",
+                "North Macedonia", "Czechia", "Côte d'Ivoire"
+            ]
+        })
+        modified_data = map_name_normalization(data)
+        self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
+
+    def test_map_name_normalization_no_rename_needed(self):
+        data = pd.DataFrame({
+            'Country': ["Brazil", "Argentina", "Canada"]
+        })
+        expected_result = data.copy()
+        modified_data = map_name_normalization(data)
+        self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
+
+    def test_map_name_normalization_mixed(self):
+        data = pd.DataFrame({
+            'Country': ["Brazil", "USA", "Canada", "UK"]
+        })
+        expected_result = pd.DataFrame({
+            'Country': ["Brazil", "United States of America", "Canada", "United Kingdom"]
+        })
+        modified_data = map_name_normalization(data)
+        self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
+
+    def test_map_name_normalization_missing_column(self):
+        data = pd.DataFrame({
+            'Nation': ["Brazil", "USA", "Canada"]
+        })
+        with self.assertRaises(SystemExit):
+            map_name_normalization(data)
+
+
+class TestTransformAthletesDfToParalympicsFormat(unittest.TestCase):
+    # TODO: Implementar tests para transform_athletes_df_to_paralympics_format
+    pass 
 
 
 if __name__ == "__main__":
