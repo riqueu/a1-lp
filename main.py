@@ -2,6 +2,7 @@ from src import medalist_x_urbanization_analysis as mu
 from src import age_analysis as aa
 from src import data_cleaner as dc
 from src import data_predictor as dp
+from src import physical_attributes_analysis as pa
 import pandas as pd
 
 try:
@@ -9,7 +10,7 @@ try:
     athletes_df = pd.read_csv('data/athlete_events.csv')
     noc_df = pd.read_csv('data/noc_regions.csv').rename(columns={'region': 'Country'})
     urbanization_df = pd.read_csv('data/urbanization.csv')
-    gdp_df = pd.read_csv("../data/gdp/gdp.csv").drop(columns=['Code', 'Unnamed: 65'])
+    gdp_df = pd.read_csv("data/gdp/gdp.csv").drop(columns=['Code', 'Unnamed: 65'])
 
     # Limpeza Inicial dos DataFrames
     dc.validade_athletes_columns(athletes_df) # Verifica se o DataFrame de Atletas possui todas as colunas necessárias
@@ -38,6 +39,11 @@ try:
     
     boxplot_age_medal_status_brazil = aa.create_boxplot_age_medal_status_brazil(clean_athletes_df)
     boxplot_age_medal_status_brazil.savefig('graphs/boxplot_age_awarded_and_non_awarded_brazil.png', format='png', dpi=300)
+    
+    # Análise dos Atributos Físicos dos Atletas: Carlos
+    pa.attributes_sports_analysis(clean_athletes_df)
+    pa.attributes_years_analysis(clean_athletes_df)
+    
 
 
 except FileNotFoundError:
