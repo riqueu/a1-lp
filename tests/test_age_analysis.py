@@ -230,3 +230,7 @@ class CreateBoxplotAgeByMedalsAthletesInBrazil:
         plot = create_boxplot_age_by_medals_athletes_in_brazil(df_example)
     
         self.assertEqual(plot.__class__.__name__, "module")     
+
+
+if __name__ == "__main__":
+    unittest.main()
