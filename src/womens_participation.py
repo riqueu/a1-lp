@@ -4,14 +4,33 @@ import seaborn as sns
 from data_cleaner import *
 
 
-def count_athletes(df, *args):
+def count_athletes(df: pd.DataFrame, *args) -> pd.DataFrame:
+    """Função que conta a quantidade de atletas por país e por ano.
+
+    Args:
+        df (pd.DataFrame): df dos atletas
+
+    Returns:
+        pd.DataFrame: df com a quantidade de atletas por país e por ano
+    """
     df = df.groupby(list(args))['Medal'].count().unstack(fill_value=0)
     df['Total_Athletes'] = df.sum(axis=1)
     df = df.reset_index()
     df.rename(columns={'F': 'F_Athletes', 'M': 'M_Athletes'}, inplace=True)
+    
     return df
 
-def update_medals_or_score(df, medal_or_score, *args, **kwargs):
+
+def update_medals_or_score(df: pd.DataFrame, medal_or_score: str, *args, **kwargs) -> pd.DataFrame:
+    """Função que atualiza o df com a quantidade de medalhas ou pontuação por país e por ano.
+
+    Args:
+        df (pd.DataFrame): df dos atletas
+        medal_or_score (str): Indicando o que deve ser atualizado
+
+    Returns:
+        pd.DataFrame: _description_
+    """
     if medal_or_score == 'Medal':
         df = df.groupby(list(args))['Medal'].apply(lambda x:  (x != 0).sum()).unstack(fill_value=0).reset_index()
     else:
@@ -20,10 +39,19 @@ def update_medals_or_score(df, medal_or_score, *args, **kwargs):
     df.rename(columns=kwargs, inplace=True)
     df[f'Total_{medal_or_score}'] = df[[f'F_{medal_or_score}', f'M_{medal_or_score}']].sum(axis=1)
     
-    
     return df
 
-def merge_by_country(df_main, df_aux):
+
+def merge_by_country(df_main: pd.DataFrame, df_aux: pd.DataFrame) -> pd.DataFrame:
+    """Função que faz merge de dois dataframes por país e por ano.
+
+    Args:
+        df_main (pd.DataFrame): dataframe principal
+        df_aux (pd.DataFrame): dataframe auxiliar
+
+    Returns:
+        pd.DataFrame: dataframe com os dois dataframes mergeados
+    """
     df_main = pd.merge(
         df_main,
         df_aux,
@@ -33,7 +61,17 @@ def merge_by_country(df_main, df_aux):
     
     return df_main
 
-def merge_by_year(df_main, df_aux):
+
+def merge_by_year(df_main: pd.DataFrame, df_aux: pd.DataFrame) -> pd.DataFrame:
+    """Função que faz merge de dois dataframes por ano.
+
+    Args:
+        df_main (pd.DataFrame): dataframe principal
+        df_aux (pd.DataFrame): dataframe auxiliar
+
+    Returns:
+        pd.DataFrame: dataframe com os dois dataframes mergeados
+    """
     df_main = pd.merge(
         df_main,
         df_aux,
@@ -43,7 +81,16 @@ def merge_by_year(df_main, df_aux):
     
     return df_main
 
-def merge_by_sport(df_main, df_aux):
+def merge_by_sport(df_main: pd.DataFrame, df_aux: pd.DataFrame) -> pd.DataFrame:
+    """Função que faz merge de dois dataframes por esporte e por ano.
+
+    Args:
+        df_main (pd.DataFrame): dataframe principal
+        df_aux (pd.DataFrame): dataframe auxiliar
+
+    Returns:
+        pd.DataFrame: dataframe com os dois dataframes mergeados
+    """
     df_main = pd.merge(
         df_main,
         df_aux,
@@ -53,11 +100,19 @@ def merge_by_sport(df_main, df_aux):
     
     return df_main
 
-def create_dataframes(athletes_df, modified_medal_athlete_df, summer_paralympics_df, winter_paralympics_df):
-    #df1 = pd.read_csv("data/athlete_events.csv")
-    #df2 = pd.read_csv("data/modified_medal_athlete.csv")
-    #df3 = pd.read_csv("data/summer_paralympics.csv")
-    #df4 = pd.read_csv("data/winter_paralympics.csv")
+
+def create_dataframes(athletes_df: pd.DataFrame, modified_medal_athlete_df: pd.DataFrame, summer_paralympics_df: pd.DataFrame, winter_paralympics_df: pd.DataFrame) -> tuple:
+    """Função que cria os dataframes para a análise e visualização de participação e rendimento dos atletas do Brasil comparado com o mundo.
+
+    Args:
+        athletes_df (pd.DataFrame): dataframe dos atletas
+        modified_medal_athlete_df (pd.DataFrame): dataframe dos atletas modificados
+        summer_paralympics_df (pd.DataFrame): dataframe das paralimpíadas de verão
+        winter_paralympics_df (pd.DataFrame): dataframe das paralimpíadas de inverno
+
+    Returns:
+        tuple: dataframes para análise
+    """
     df1 = athletes_df
     df2 = modified_medal_athlete_df
     df3 = summer_paralympics_df

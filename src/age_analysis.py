@@ -382,5 +382,3 @@ def create_boxplot_age_by_medals_athletes_in_brazil(df: pd.DataFrame) -> plt:
 
 if __name__ == "__main__":
      doctest.testmod(verbose=False)
-
-
