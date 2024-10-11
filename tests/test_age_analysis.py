@@ -46,7 +46,7 @@ class TestStatisticsByAge(unittest.TestCase):
         result = statistics_by_age(single_sport_df)
         self.assertEqual(result, expected_result)
     
-    #  teste com mais que um esporte
+    #  teste com mais de um esporte
     def test_with_some__different_sports(self):
         df = pd.DataFrame({
             'Sport': ['Soccer', 'Basketball', 'Tennis', 'Soccer', 'Basketball', 'Tennis'],
