@@ -32,11 +32,11 @@ def r2(df: pd.DataFrame, quali: str, quanti: str, is_sample: bool = True) -> flo
     columns = df.columns
     if np.isin(quanti, columns, invert=True) or np.isin(quali, columns, invert=True):
         raise KeyError('Quanti/Quali aren\'t on the columns')
-
+        quit()
     # A variavel quanti deve ter somente valores numericos
     if any(pd.to_numeric(df[quanti], errors='coerce').isna()):
         raise ValueError('Quanti column has non-numeric values')
-
+        quit()
     # Agrupa o dataframe pela coluna quali e calcula as medidas resumos para a variavel quanti em cada categoria quali
     df_quali_quanti = df[[quali, quanti]].groupby(quali).agg(
         qtd=(quanti, 'count'),
