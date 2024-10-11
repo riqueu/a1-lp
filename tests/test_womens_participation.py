@@ -1,6 +1,7 @@
 import unittest
 import pandas as pd
-from src.olympics_paralympics_pib_analysis import *
+from src.womens_participation import *
+from src.womens_participation_graphs import *
 from matplotlib import pyplot as plt
 
 
