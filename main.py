@@ -26,7 +26,7 @@ try:
     urbanization_df = urbanization_df[['Year', 'Country', 'Pop_Absolute', 'Urban_Pop_Percent']]
     urbanization_df = dc.urbanization_rename_countries(urbanization_df) # Renomear países para padrão do DataFrame de Atletas
     wp.clean_paralympic_atletes_dataset()
-    olymp_df, olymp_countries_df, paralymp_df, paralymp_countries_df, olymp_sports_df, olymp_sports_bra_df, paralymp_sports_df, paralymp_sports_bra_df = wp.create_dataframes()
+    olymp_df, olymp_countries_df, paralymp_df, paralymp_countries_df = wp.create_dataframes()
 
     # Análise de Densidade de Medalhas por População Urbana em 2016: Henrique
     data_2016 = mu.prepare_2016_medalist_urbanization_analysis(clean_athletes_df, urbanization_df, noc_df)
@@ -57,24 +57,20 @@ try:
     table_stds.close()
 
     scatterplot_paralymp_score_bra_df = wpg.filter_paralymp_score_bra()
-    scatterplot_paralymp_score_bra = wpg.plot_scatter_graph(scatterplot_paralymp_score_bra_df, 'Year', 'F_Medal', 'M_Medal', 'Scatter Plot: Men\'s Score X Women\'s Paralympic Score (Brazil)', 'Score')
-    scatterplot_paralymp_score_bra.savefig('graphs/female_participation/scatterplot_paralymp_score_bra.png', format='png', dpi=300)
-    scatterplot_paralymp_score_bra.close()
-    
-    scatterplot_olymp_score_bra_df = wpg.filter_olympic_score_bra()
-    scatterplot_olymp_score_bra = wpg.plot_scatter_graph(scatterplot_olymp_score_bra_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Olympic Score (Brazil)', 'Score')
-    scatterplot_olymp_score_bra.savefig('graphs/female_participation/scatterplot_olymp_score_bra.png', format='png', dpi=300)
-    scatterplot_olymp_score_bra.close()
+    scatterplot_paralymp_score_bra = wpg.plot_scatter_graph(scatterplot_paralymp_score_bra_df, 'Year', 'F_Medal', 'M_Medal', 'Scatter Plot Paralympics: Men\'s Score X Women\'s Score (Brazil)', 'Score')
+    scatterplot_paralymp_score_bra.savefig('graphs/scatterplot_paralymp_score_bra.png', format='png', dpi=300)
 
     scatterplot_paralymp_score_global_df = wpg.filter_paralymp_score_global()
-    scatterplot_paralymp_score_global = wpg.plot_scatter_graph(scatterplot_paralymp_score_global_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Paralympic Score', 'Score')
-    scatterplot_paralymp_score_global.savefig('graphs/female_participation/scatterplot_paralymp_score_global.png', format='png', dpi=300)
-    scatterplot_paralymp_score_global.close()
+    scatterplot_paralymp_score_global = wpg.plot_scatter_graph(scatterplot_paralymp_score_global_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot Paralympics: Men\'s Score X Women\'s Score (Global)', 'Score')
+    scatterplot_paralymp_score_global.savefig('graphs/scatterplot_paralymp_score_global.png', format='png', dpi=300)
 
     scatterplot_olymp_score_global_df = wpg.filter_olympic_score_global()
-    scatterplot_olymp_score_global = wpg.plot_scatter_graph(scatterplot_olymp_score_global_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Olympic Score', 'Score')
-    scatterplot_olymp_score_global.savefig('graphs/female_participation/scatterplot_olymp_score_global.png', format='png', dpi=300)
-    scatterplot_olymp_score_global.close()
+    scatterplot_olymp_score_global = wpg.plot_scatter_graph(scatterplot_olymp_score_global_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot Olympics: Men\'s Score X Women\'s Score (Global)', 'Score')
+    scatterplot_olymp_score_global.savefig('graphs/scatterplot_olymp_score_global.png', format='png', dpi=300)
+
+    scatterplot_olymp_score_bra_df = wpg.filter_olympic_score_bra()
+    scatterplot_olymp_score_bra = wpg.plot_scatter_graph(scatterplot_olymp_score_bra_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot Olympics: Men\'s Score X Women\'s Score (Brazil)', 'Score')
+    scatterplot_olymp_score_bra.savefig('graphs/scatterplot_olymp_score_bra.png', format='png', dpi=300)
     
     # Análise dos Atributos Físicos dos Atletas: Carlos
     pa.attributes_sports_analysis(clean_athletes_df)

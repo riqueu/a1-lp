@@ -5,7 +5,6 @@ import unittest
 
 
 class TestStatisticsByAge(unittest.TestCase):
-    
     # Teste com DataFrame vazio.
     def test_empty_dataframe(self):
         
@@ -97,7 +96,6 @@ class TestStatisticsByAge(unittest.TestCase):
 
 
 class HighestAgeAplitudeSports(unittest.TestCase):
-    
     # Teste com algusn esportes diferentes
     def test_with_some_different_sports(self):
         df = pd.DataFrame({
@@ -160,7 +158,6 @@ class HighestAgeAplitudeSports(unittest.TestCase):
 
 
 class CreateBoxplotSportWithTheMosOutliers:
-    
     #  Cria um boxplot de idade  com o espote com mais valores outliers
     def test_create_boxplot(self):
         data = pd.DataFrame({
@@ -175,7 +172,6 @@ class CreateBoxplotSportWithTheMosOutliers:
 
 
 class CreateBoxplotTop3EsportesOutliers:
-    
     #  Cria um boxplot de idade dos 3 esportes com mais outliers 
     def test_create_boxplot(self):
         data = pd.DataFrame({
@@ -219,7 +215,6 @@ class CreateBoxplotAgeMedalStatusBrazil:
 
 
 class CreateBoxplotAgeByMedalsAthletesInBrazil:
-    
     #  Cria o boxplot de idade dos atletas brasileiros categorizado por tipo de medalha
     def test_create_boxplot(self):
         df_example = pd.DataFrame({
