@@ -272,6 +272,7 @@ def create_scatterplot_olympics_paralympics_pib_2016(data_2016: pd.DataFrame, xl
     ax.set_title('3D Dispersion: Medals in the Olympics and Paralympics vs GDP (2016)')
 
     ax.view_init(elev=20, azim=-70)
+    ax.set_facecolor('#8f8f8f')
 
     if xlim:
         ax.set_xlim(xlim)
