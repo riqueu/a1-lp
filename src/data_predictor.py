@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import doctest
 
-
 from sklearn.linear_model import LinearRegression
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
@@ -20,6 +19,28 @@ def to_encoded(df: pd.DataFrame) -> tuple:
 
     Returns:
         tuple: Tupla com o Dataframe convertido, uma lista das colunas problematicas, um dicionario com os tipos de cada uma delas, os algoritmos encoders para voltar aos labels originais.
+    
+    Example:
+    ----------
+    >>> df = pd.DataFrame({
+    ...     'Name': ['Alice', 'Bob', 'Charlie', 'Dave'],
+    ...     'Age': [25, np.nan, 30, 35],
+    ...     'Income': ['High', 'Medium', 'High', 40000],
+    ...     'Gender': ['F', 'M', 'M', 'F']
+    ... })
+    >>> df_encoded, cols_to_fix, cols_types, encoders = to_encoded(df)
+    >>> df_encoded
+      Name   Age  Income Gender
+    0    0  25.0    High      0
+    1    1   NaN  Medium      1
+    2    2  30.0    High      1
+    3    3  35.0   40000      0
+    >>> cols_to_fix
+    {'Age': 'Contains NaN', 'Income': 'Contains two or more types'}
+    >>> cols_types
+    {'Income': ["<class 'int'>", "<class 'str'>"]}
+    >>> encoders['Name'].inverse_transform([0, 1, 2, 3])
+    array(['Alice', 'Bob', 'Charlie', 'Dave'], dtype=object)
     """
     cols = []
     cols_to_fix = {}
@@ -69,6 +90,21 @@ def fill(means: pd.DataFrame, row: pd.Series) -> pd.Series:
 
     Returns:
         pd.Series: Linha preenchida, ou com um valor nan para ser removida
+    
+    Example:
+    ----------
+    >>> means = pd.DataFrame({
+    ...     'Height': {('M', 'Soccer'): 180, ('M', 'Basketball'): 200},
+    ...     'Weight': {('M', 'Soccer'): 75, ('M', 'Basketball'): 90}
+    ... })
+    
+    >>> row = pd.Series({'Sex': 'M', 'Sport': 'Basketball', 'Height': np.nan, 'Weight': 88})
+    >>> fill(means, row)
+    Sex                M
+    Sport     Basketball
+    Height           NaN
+    Weight            88
+    dtype: object
     """
     features_nan = row[row.isna()]
     cont_nan = features_nan.shape[0]
@@ -76,12 +112,20 @@ def fill(means: pd.DataFrame, row: pd.Series) -> pd.Series:
     # Caso tenha algum um valor NaN, preenche-o com a media ate deixar somente um vazio
     for column in features_nan.index:
         key = (row['Sex'], row['Sport'])
-        value_column = means[key][column]
-        if cont_nan <= 1:
-            break
-        elif value_column:
-            row[column]  = value_column
-            cont_nan -= 1
+        try:
+            value_column = means[key][column]
+            if cont_nan <= 1:
+                break
+            elif value_column:
+                row[column] = value_column
+                cont_nan -= 1
+        except KeyError:
+            # Caso a chave (Sex, Sport) não exista no dicionário means
+            continue
+        except Exception as e:
+            # Para qualquer outro tipo de erro
+            print(f"Erro ao preencher a coluna {column}: {e}")
+            continue
         
     return row
 
@@ -157,3 +201,18 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
         df.loc[:, column] = encoders[column].inverse_transform(df[column].astype(int))
 
     return df
+
+if __name__ == "__main__":
+     doctest.testmod(verbose=False)
+
+# data = {
+#     'Age': [25, np.nan, 30, 35, np.nan, 45, np.nan, 40, 29, 31, np.nan, 34, 36, np.nan, 27],
+#     'Height': [175, 180, np.nan, 165, 170, 160, np.nan, 168, 176, 158, 177, 180, np.nan, 169, 171],
+#          'Weight': [70, 75, 80, np.nan, 65, 85, 90, 88, 72, np.nan, 78, 77, 74, np.nan, 68],
+#          'Sex': [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+#          'Sport': [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+#  }
+# df = pd.DataFrame(data)
+# features = ['Age', 'Height', 'Weight', 'Sex', 'Sport']
+# filled_df = linear_regression(df, features, 'Age', 0.2)
+# print(filled_df['Age'].isna().sum())
