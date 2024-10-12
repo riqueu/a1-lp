@@ -5,13 +5,13 @@ from data_cleaner import *
 
 
 def count_athletes(df: pd.DataFrame, *args) -> pd.DataFrame:
-    """Função que conta a quantidade de atletas por país e por ano.
+    """Função que conta a quantidade de atletas e agrupa pela lista passada.
 
     Args:
-        df (pd.DataFrame): df dos atletas
+        df (pd.DataFrame): DataFrame dos atletas
 
     Returns:
-        pd.DataFrame: df com a quantidade de atletas por país e por ano
+        pd.DataFrame: df com a quantidade de atletas agrupada
     """
     df = df.groupby(list(args))['Medal'].count().unstack(fill_value=0)
     df['Total_Athletes'] = df.sum(axis=1)
@@ -19,7 +19,6 @@ def count_athletes(df: pd.DataFrame, *args) -> pd.DataFrame:
     df.rename(columns={'F': 'F_Athletes', 'M': 'M_Athletes'}, inplace=True)
     
     return df
-
 
 def update_medals_or_score(df: pd.DataFrame, medal_or_score: str, *args, **kwargs) -> pd.DataFrame:
     """Função que atualiza o df com a quantidade de medalhas ou pontuação por país e por ano.
