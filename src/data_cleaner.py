@@ -77,6 +77,7 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
     [0.0, 0.0, 0.0, 0.0, 0.0]
     """
     try:
+        df = df.copy()
         df.loc[:, 'Medal'] = df['Medal'].map({'Gold': 3, 'Silver': 2, 'Bronze': 1})
         df['Medal'] = df['Medal'].infer_objects().fillna(0)
         df.loc[:, 'Medal'] = df['Medal'].astype(int)
@@ -90,7 +91,22 @@ def medals_to_int(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def convert_athletes_df_to_paralympics_format(athletes_df: pd.DataFrame) -> pd.DataFrame:
-    """TODO:"""
+    """Função que recebe um DataFrame de atletas e converte para o formato dos dados das paralimpíadas.
+
+    Args:
+        athletes_df (pd.DataFrame): dataframe com os dados dos atletas
+
+    Returns:
+        pd.DataFrame: dataframe no formato do dataset das paralimpíadas
+    
+    Example:
+    >>> data = pd.DataFrame({'ID': [1], 'Name': ['Carlos'], 'Sex': ['M'], 'Age': [23], 'Height': [160.0], 'Weight': [55.0], 'Team': ['Brazil'], 'NOC': ['BRA'], 'Games': ['2016 Summer'], 'Year': [2016], 'Season': ['Summer'], 'City': ['Rio'], 'Sport': ['Swimming'], 'Event': ['200m Freestyle'], 'Medal': ['Silver']})
+    >>> df = convert_athletes_df_to_paralympics_format(data)
+    >>> print(df['Silver'].tolist())
+    [1]
+    >>> print(df['Gold'].tolist())
+    [0]
+    """
     athletes_df = athletes_df[athletes_df['Year'] >= 1960]
 
     olympic_df = athletes_df.groupby(['NOC', 'Year', 'Season']).agg(
@@ -122,7 +138,7 @@ def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
     >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
     >>> df = urbanization_rename_countries(data)
     >>> print(df['Country'].tolist())
-    ['United States of America', 'United Kingdom', 'Trinidad and Tobago', 'North Macedonia', 'Czechia', "Côte d'Ivoire"]
+    ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']
     """
     try:
         countries = {
@@ -156,6 +172,20 @@ def urbanization_rename_countries(df: pd.DataFrame) -> pd.DateOffset:
     
     
 def rename_countries_gdp(df: pd.DataFrame) -> pd.DataFrame:
+    """Função que renomeia os países com nomes diferentes/em conflito internacional para padronizar com o dataset do PIB.
+
+    Args:
+        df (pd.DataFrame): df com coluna 'Country' para renomear.
+
+    Returns:
+        pd.DataFrame: df com coluna 'Country' renomeada.
+        
+    Example:
+    >>> data = pd.DataFrame({'Country': ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']})
+    >>> df = rename_countries_gdp(data)
+    >>> print(df['Country'].tolist())
+    ['USA', 'UK', 'Trinidad', 'Macedonia', 'Czech Republic', 'Ivory Coast']
+    """
     countries = {
         "Bahamas, The": "Bahamas",
         "Curacao": "Curacao",
@@ -198,13 +228,14 @@ def rename_countries_gdp(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
-def clean_paralympic_atletes_dataset():
+def clean_paralympic_atletes_dataset() -> None:
     """Função que padroniza os dados do dataset medal_athletes.csv com os dados dos outros datasets com informações das paralimpíadas e olimpíadas e cria um dataset modified_medal_athletes.csv com as modificações
     """
     df = pd.read_csv("data/medal_athlete.csv")
     df.rename(columns={column: column.capitalize() for column in df.columns}, inplace=True)
     df = medals_to_int(df)
     df['Sex'] = np.nan
+    df['Sex'] = df['Sex'].astype(object) # Evitar FutureWarning
     df.loc[df['Event'].str.contains('Men', case=False, na=False), ['Sex']] = 'M'
     df.loc[df['Event'].str.contains('Women', case=False, na=False), ['Sex']] = 'F'
 

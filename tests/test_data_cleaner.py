@@ -3,54 +3,6 @@ import numpy as np
 from src.data_cleaner import *
 import unittest # python -m unittest discover -s tests
 
-            
-class TestMedalsToInt(unittest.TestCase):
-    
-    # Test the function with a dataframe with all types of medals present.
-    def test_all_types_of_medals_present(self):
-        
-        data = pd.DataFrame({
-        'Name': ['Alice', 'Bryan', 'Carlos', 'Daniel', 'Eliel'], 
-        'Medal': ['Gold', 'Silver', 'Bronze', np.nan, 'Gold'], 
-        'Height':  [170, 160, 150, 155, 187], 
-        'Weight': [80, 60, 65, 46, 89], 
-        'Age': [15, 16, 17, 18, 19]
-})
-        modified_data = medals_to_int(data)
-        medals = modified_data['Medal']
-        expected_result =  [3, 2, 1, 0, 3]
-        
-        self.assertEqual(expected_result, medals.tolist())
-        
-    
-    # Test the function with a dataframe without medals
-    def test_without_medals(self):
-        
-        data = pd.DataFrame({
-        'Name': ['Gustavo', 'Luciano', 'Chappel', 'Ariana', 'Taylor'], 
-        'Medal': [np.nan, np.nan, np.nan, np.nan, np.nan], 
-        'Height': [170, 160, 150, 155, 187], 
-         'Weight': [80, 60, 65, 46, 89], 
-        'Age': [15, 16, 17, 18, 19]
-})
-        modified_data = medals_to_int(data)
-        medals = data['Medal']
-        expected_result = [0, 0, 0, 0, 0]
-        self.assertEqual(expected_result, medals.tolist())
-
-
-     # Test the function with a dataframe that doesn't have the Medals column 
-    def test_without_medal_column(self):
-        data = pd.DataFrame({
-        'Atleta': ['Jaime', 'Willian', 'Carneiro'], 
-        'Height': [170, 160, 150], 
-         'Weight': [80, 60, 65], 
-        'Age': [15, 16, 17]
-})
-        
-        with self.assertRaises(SystemExit):
-            medals_to_int(data)
-
 
 class TestValidateAthletesColumns(unittest.TestCase):
 
@@ -92,6 +44,54 @@ class TestValidateAthletesColumns(unittest.TestCase):
         data = pd.DataFrame()
         with self.assertRaises(KeyError):
             validade_athletes_columns(data)
+
+
+class TestMedalsToInt(unittest.TestCase):
+    
+    # Test the function with a dataframe with all types of medals present.
+    def test_all_types_of_medals_present(self):
+        
+        data = pd.DataFrame({
+        'Name': ['Alice', 'Bryan', 'Carlos', 'Daniel', 'Eliel'], 
+        'Medal': ['Gold', 'Silver', 'Bronze', np.nan, 'Gold'], 
+        'Height':  [170, 160, 150, 155, 187], 
+        'Weight': [80, 60, 65, 46, 89], 
+        'Age': [15, 16, 17, 18, 19]
+})
+        modified_data = medals_to_int(data)
+        medals = modified_data['Medal']
+        expected_result =  [3, 2, 1, 0, 3]
+        
+        self.assertEqual(expected_result, medals.tolist())
+        
+    
+    # Test the function with a dataframe without medals
+    def test_without_medals(self):
+        
+        data = pd.DataFrame({
+        'Name': ['Gustavo', 'Luciano', 'Chappel', 'Ariana', 'Taylor'], 
+        'Medal': [np.nan, np.nan, np.nan, np.nan, np.nan], 
+        'Height': [170, 160, 150, 155, 187], 
+        'Weight': [80, 60, 65, 46, 89], 
+        'Age': [15, 16, 17, 18, 19]
+})
+        modified_data = medals_to_int(data)
+        medals = modified_data['Medal']
+        expected_result = [0, 0, 0, 0, 0]
+        self.assertEqual(expected_result, medals.tolist())
+
+
+     # Test the function with a dataframe that doesn't have the Medals column 
+    def test_without_medal_column(self):
+        data = pd.DataFrame({
+        'Atleta': ['Jaime', 'Willian', 'Carneiro'], 
+        'Height': [170, 160, 150], 
+         'Weight': [80, 60, 65], 
+        'Age': [15, 16, 17]
+})
+        
+        with self.assertRaises(SystemExit):
+            medals_to_int(data)
 
             
 class TestUrbanizationRenameCountries(unittest.TestCase):
@@ -205,10 +205,10 @@ class TestTransformAthletesDfToParalympicsFormat(unittest.TestCase):
             'M_Total': [2, 3],
             'P_Total': [2, 3]
         })
-        transformed_data = transform_athletes_df_to_paralympics_format(data)
+        transformed_data = convert_athletes_df_to_paralympics_format(data)
         pd.testing.assert_frame_equal(expected_result, transformed_data)
 
-    def test_transform_athletes_df_to_paralympics_format_no_medals(self):
+    def test_convert_athletes_df_to_paralympics_format_no_medals(self):
         data = pd.DataFrame({
             'NOC': ['BRA', 'BRA', 'USA', 'USA'],
             'Year': [2016, 2016, 2016, 2016],
@@ -228,10 +228,10 @@ class TestTransformAthletesDfToParalympicsFormat(unittest.TestCase):
             'M_Total': [0, 0],
             'P_Total': [2, 2]
         })
-        transformed_data = transform_athletes_df_to_paralympics_format(data)
+        transformed_data = convert_athletes_df_to_paralympics_format(data)
         pd.testing.assert_frame_equal(expected_result, transformed_data)
 
-    def test_transform_athletes_df_to_paralympics_format_mixed_years(self):
+    def test_convert_athletes_df_to_paralympics_format_mixed_years(self):
         data = pd.DataFrame({
             'NOC': ['BRA', 'BRA', 'USA', 'USA', 'USA'],
             'Year': [2016, 2012, 2016, 2012, 2016],
@@ -251,10 +251,10 @@ class TestTransformAthletesDfToParalympicsFormat(unittest.TestCase):
                 'M_Total': [1, 1, 1, 2],
                 'P_Total': [1, 1, 1, 2]
         })
-        transformed_data = transform_athletes_df_to_paralympics_format(data)
+        transformed_data = convert_athletes_df_to_paralympics_format(data)
         pd.testing.assert_frame_equal(expected_result, transformed_data)
 
-    def test_transform_athletes_df_to_paralympics_format_missing_columns(self):
+    def test_convert_athletes_df_to_paralympics_format_missing_columns(self):
         data = pd.DataFrame({
             'NOC': ['BRA', 'BRA', 'USA', 'USA'],
             'Year': [2016, 2016, 2016, 2016],
@@ -262,7 +262,7 @@ class TestTransformAthletesDfToParalympicsFormat(unittest.TestCase):
             'Sex': ['M', 'F', 'M', 'F']
         })
         with self.assertRaises(KeyError):
-            transform_athletes_df_to_paralympics_format(data)
+            convert_athletes_df_to_paralympics_format(data)
 
 
 class TestAggregateMedalsByEventTeam(unittest.TestCase):
@@ -358,7 +358,52 @@ class TestAggregateMedalsByEventTeam(unittest.TestCase):
         })
         with self.assertRaises(KeyError):
             aggregate_medals_by_event_team(data)
-            
-            
+
+
+class TestRenameCountriesGDP(unittest.TestCase):
+
+    def test_rename_countries_gdp_standard(self):
+        data = pd.DataFrame({
+            'Country': [
+                "Bahamas, The", "Curacao", "Iran, Islamic Rep.", "Russian Federation",
+                "Korea, Rep.", "Syrian Arab Republic", "Trinidad and Tobago",
+                "United Kingdom", "United States", "Venezuela, RB"
+            ]
+        })
+        expected_result = pd.DataFrame({
+            'Country': [
+                "Bahamas", "Curacao", "Iran", "Russia", "South Korea", "Syria",
+                "Trinidad", "UK", "USA", "Venezuela"
+            ]
+        })
+        modified_data = rename_countries_gdp(data)
+        self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
+
+    def test_rename_countries_gdp_no_rename_needed(self):
+        data = pd.DataFrame({
+            'Country': ["Brazil", "Argentina", "Canada"]
+        })
+        expected_result = data.copy()
+        modified_data = rename_countries_gdp(data)
+        self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
+
+    def test_rename_countries_gdp_mixed(self):
+        data = pd.DataFrame({
+            'Country': ["Brazil", "Bahamas, The", "Canada", "Iran, Islamic Rep."]
+        })
+        expected_result = pd.DataFrame({
+            'Country': ["Brazil", "Bahamas", "Canada", "Iran"]
+        })
+        modified_data = rename_countries_gdp(data)
+        self.assertEqual(expected_result['Country'].tolist(), modified_data['Country'].tolist())
+
+    def test_rename_countries_gdp_missing_column(self):
+        data = pd.DataFrame({
+            'Nation': ["Brazil", "Bahamas, The", "Canada"]
+        })
+        with self.assertRaises(SystemExit):
+            rename_countries_gdp(data)
+
+
 if __name__ == "__main__":
     unittest.main()
