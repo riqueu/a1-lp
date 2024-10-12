@@ -5,6 +5,7 @@ from src import data_predictor as dp
 from src import womens_participation_graphs as wpg
 from src import womens_participation as wp
 from src import physical_attributes_analysis as pa
+from src import olympics_paralympics_pib_analysis as opp
 import pandas as pd
 
 try:
@@ -72,7 +73,19 @@ try:
     pa.attributes_years_analysis(clean_athletes_df)
     
     # Análise PIB x Medalhas: Luís Filipe
-    # TODO:
+    df = opp.prepare_data_for_analysis(athletes_df, summer_paralympics_df, winter_paralympics_df, gdp_df, noc_df)
+
+    olympics_paralympics_correlation_matrix = opp.prepare_olympics_paralympics_analysis(df)
+    heatmap_olympics_paralympics_pib = opp.create_heatmap(olympics_paralympics_correlation_matrix, "")
+    heatmap_olympics_paralympics_pib.savefig("graphs/heatmap_olympics_paralympics_medals.png", dpi=300)
+
+    medals_gdp_correlation_matrix = opp.prepare_medals_gdp_analysis(df)
+    heatmap_medals_gdp = opp.create_heatmap(medals_gdp_correlation_matrix, "")
+    heatmap_medals_gdp.savefig("graphs/heatmap_medals_gdp.png", dpi=300)
+
+    prepared_df = opp.prepare_2016_olympics_paralympics_pib_analysis(df)
+    scatterplot_opp_2016 = opp.create_scatterplot_olympics_paralympics_pib_2016(prepared_df)
+    scatterplot_opp_2016.savefig("graphs/scatterplot_olympics_paralympics_pib_2016.png", dpi=300)
 
 
 except FileNotFoundError:
