@@ -240,7 +240,7 @@ def create_heatmap(correlation_matrix: pd.DataFrame, title: str) -> None:
     plt.figure(figsize=(12, 8))
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidths=0.5)
     
-    plt.title('Heatmap de Correlação entre Medalhas de Ouro, Prata e Bronze')
+    plt.title(title)
     
     return plt
 
