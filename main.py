@@ -84,17 +84,20 @@ try:
     combined_df = opp.prepare_data_for_analysis(athletes_df, summer_paralympics_df, winter_paralympics_df, gdp_df, noc_df)
 
     olympics_paralympics_correlation_matrix = opp.prepare_olympics_paralympics_analysis(combined_df)
-    heatmap_olympics_paralympics_pib = opp.create_heatmap(olympics_paralympics_correlation_matrix, "")
+    heatmap_olympics_paralympics_pib = opp.create_heatmap(olympics_paralympics_correlation_matrix, 
+                                                          "Correlation Heatmap Between Total Olympic and Paralympic Medals")
     heatmap_olympics_paralympics_pib.savefig("graphs/medals_gdp_correlation_graphs/heatmap_olympics_paralympics_medals.png", dpi=300)
     heatmap_olympics_paralympics_pib.close()
 
     total_medals_gdp_correlation_matrix = opp.prepare_total_medals_gdp_analysis(combined_df)
-    heatmap_total_medals_gdp = opp.create_heatmap(total_medals_gdp_correlation_matrix, "")
+    heatmap_total_medals_gdp = opp.create_heatmap(total_medals_gdp_correlation_matrix, 
+                                                  "Correlation Heatmap Between Total Medals (Olympic and Paralympic) and GDP")
     heatmap_total_medals_gdp.savefig("graphs/medals_gdp_correlation_graphs/heatmap_total_medals_gdp.png", dpi=300)
     heatmap_total_medals_gdp.close()
 
     medals_gdp_correlation_matrix = opp.prepare_medals_categories_gdp_analysis(combined_df)
-    heatmap_medals_categories_gdp = opp.create_heatmap(medals_gdp_correlation_matrix, "")
+    heatmap_medals_categories_gdp = opp.create_heatmap(medals_gdp_correlation_matrix,
+                                                        "Correlation Heatmap Between the Types of Medals Won in the Olympics and Paralympics")
     heatmap_medals_categories_gdp.savefig("graphs/medals_gdp_correlation_graphs/heatmap_medals_categories_gdp.png", dpi=300)
     heatmap_medals_categories_gdp.close()
 
