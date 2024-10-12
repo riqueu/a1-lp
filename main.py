@@ -5,6 +5,7 @@ from src import data_predictor as dp
 from src import womens_participation_graphs as wpg
 from src import womens_participation as wp
 from src import physical_attributes_analysis as pa
+from src import olympics_paralympics_pib_analysis as opp
 import pandas as pd
 
 try:
@@ -31,25 +32,29 @@ try:
     data_2016 = mu.prepare_2016_medalist_urbanization_analysis(clean_athletes_df, urbanization_df, noc_df)
     scatterplot_2016 = mu.create_scatterplot_2016_medalist_urbanization(data_2016)
     scatterplot_2016.figure.savefig('graphs/urban_medal_density.png', dpi=500, bbox_inches='tight')
-    
     # Visualização Geográfica do crescimento de medalhas por país e do crescimento urbano de um país: Henrique
     data_map_visualization = mu.prepare_map_visualization_data(clean_athletes_df, urbanization_df, noc_df)
     map_visualization = mu.create_map_visualization(data_map_visualization)
     map_visualization.savefig('graphs/geographic_growth.png', dpi=500, bbox_inches='tight')
+    map_visualization.close()
     
     # Análise Idades: Jaime
     top_3_boxplot_outliers = aa.create_boxplot_top_3_esportes_outliers(clean_athletes_df)
     top_3_boxplot_outliers.savefig('graphs/bloxplot_top_3_highest_age_aplitude.png', format='png', dpi=300)
+    top_3_boxplot_outliers.close()
     
     top_3_boxplot_most_awarded = aa.create_boxplot_top_3_esportes_most_awarded(clean_athletes_df)
     top_3_boxplot_most_awarded.savefig('graphs/boxplot_top_3_most_awarded.png', format='png', dpi=300)
+    top_3_boxplot_most_awarded.close()
     
     boxplot_age_medal_status_brazil = aa.create_boxplot_age_medal_status_brazil(clean_athletes_df)
     boxplot_age_medal_status_brazil.savefig('graphs/boxplot_age_awarded_and_non_awarded_brazil.png', format='png', dpi=300)
+    boxplot_age_medal_status_brazil.close()
 
     #Análise Participação Feminina: Walléria
     table_stds = wpg.create_table_of_stds()
-    table_stds.savefig('graphs/table_stds_olympics_and_paralympics_bra.png', format='png', dpi=300)
+    table_stds.savefig('graphs/female_participation/table_stds_olympics_and_paralympics_bra.png', format='png', dpi=300)
+    table_stds.close()
 
     scatterplot_paralymp_score_bra_df = wpg.filter_paralymp_score_bra()
     scatterplot_paralymp_score_bra = wpg.plot_scatter_graph(scatterplot_paralymp_score_bra_df, 'Year', 'F_Medal', 'M_Medal', 'Scatter Plot Paralympics: Men\'s Score X Women\'s Score (Brazil)', 'Score')
@@ -72,8 +77,34 @@ try:
     pa.attributes_years_analysis(clean_athletes_df)
     
     # Análise PIB x Medalhas: Luís Filipe
-    # TODO:
+    combined_df = opp.prepare_data_for_analysis(athletes_df, summer_paralympics_df, winter_paralympics_df, gdp_df, noc_df)
 
+    olympics_paralympics_correlation_matrix = opp.prepare_olympics_paralympics_analysis(combined_df)
+    heatmap_olympics_paralympics_pib = opp.create_heatmap(olympics_paralympics_correlation_matrix, 
+                                                          "Correlation Heatmap Between Total Olympic and Paralympic Medals")
+    heatmap_olympics_paralympics_pib.savefig("graphs/medals_gdp_correlation_graphs/heatmap_olympics_paralympics_medals.png", dpi=300)
+    heatmap_olympics_paralympics_pib.close()
+
+    total_medals_gdp_correlation_matrix = opp.prepare_total_medals_gdp_analysis(combined_df)
+    heatmap_total_medals_gdp = opp.create_heatmap(total_medals_gdp_correlation_matrix, 
+                                                  "Correlation Heatmap Between Total Medals (Olympic and Paralympic) and GDP")
+    heatmap_total_medals_gdp.savefig("graphs/medals_gdp_correlation_graphs/heatmap_total_medals_gdp.png", dpi=300)
+    heatmap_total_medals_gdp.close()
+
+    medals_gdp_correlation_matrix = opp.prepare_medals_categories_gdp_analysis(combined_df)
+    heatmap_medals_categories_gdp = opp.create_heatmap(medals_gdp_correlation_matrix,
+                                                        "Correlation Heatmap Between the Types of Medals Won in the Olympics and Paralympics")
+    heatmap_medals_categories_gdp.savefig("graphs/medals_gdp_correlation_graphs/heatmap_medals_categories_gdp.png", dpi=300)
+    heatmap_medals_categories_gdp.close()
+
+    prepared_df = opp.prepare_2016_olympics_paralympics_pib_analysis(combined_df)
+    scatterplot_opp_2016 = opp.create_scatterplot_olympics_paralympics_pib_2016(prepared_df)
+    scatterplot_opp_2016.savefig("graphs/medals_gdp_correlation_graphs/scatterplot_olympics_paralympics_pib_2016.png", dpi=300)
+    scatterplot_opp_2016.close()
+
+    scatterplot_opp_2016_approximate = opp.create_scatterplot_olympics_paralympics_pib_2016(prepared_df, xlim=(0, 120), ylim=(0,120), zlim=(0, 4000))
+    scatterplot_opp_2016_approximate.savefig("graphs/medals_gdp_correlation_graphs/scatterplot_olympics_paralympics_pib_2016_approximate.png")
+    scatterplot_opp_2016_approximate.close()
 
 except FileNotFoundError:
     print("File not found, check if the path is correct.")
