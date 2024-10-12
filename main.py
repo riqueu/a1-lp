@@ -4,15 +4,18 @@ from src import data_cleaner as dc
 from src import data_predictor as dp
 from src import womens_participation_graphs as wpg
 from src import womens_participation as wp
+from src import physical_attributes_analysis as pa
 import pandas as pd
 
 try:
     # Criação dos DataFrames para Análise
     athletes_df = pd.read_csv('data/athlete_events.csv')
     noc_df = pd.read_csv('data/noc_regions.csv').rename(columns={'region': 'Country'})
+    modified_medal_athlete_df = pd.read_csv('data/modified_medal_athlete.csv')
+    summer_paralympics_df = pd.read_csv('data/summer_paralympics.csv')
+    winter_paralympics_df = pd.read_csv('data/winter_paralympics.csv')
     urbanization_df = pd.read_csv('data/urbanization.csv')
-    gdp_df = pd.read_csv('data/gdp/gdp.csv')
-    gdp_per_capita_df = pd.read_csv('data/gdp/gdp_per_capita.csv')
+    gdp_df = pd.read_csv("data/gdp/gdp.csv").drop(columns=['Code', 'Unnamed: 65'])
 
     # Limpeza Inicial dos DataFrames
     dc.validade_athletes_columns(athletes_df) # Verifica se o DataFrame de Atletas possui todas as colunas necessárias
@@ -63,6 +66,13 @@ try:
     scatterplot_olymp_score_bra_df = wpg.filter_olympic_score_bra()
     scatterplot_olymp_score_bra = wpg.plot_scatter_graph(scatterplot_olymp_score_bra_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Score', 'Score')
     scatterplot_olymp_score_bra.savefig('graphs/scatterplot_olymp_score_bra.png', format='png', dpi=300)
+    
+    # Análise dos Atributos Físicos dos Atletas: Carlos
+    pa.attributes_sports_analysis(clean_athletes_df)
+    pa.attributes_years_analysis(clean_athletes_df)
+    
+    # Análise PIB x Medalhas: Luís Filipe
+    # TODO:
 
 
 except FileNotFoundError:
