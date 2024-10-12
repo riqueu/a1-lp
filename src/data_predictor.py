@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import doctest
 
-
 from sklearn.linear_model import LinearRegression
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
