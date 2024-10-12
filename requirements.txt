@@ -1,6 +1,6 @@
-numpy
-pandas
-seaborn
-scikit-learn
-geopandas
-matplotlib
+numpy == 1.26.4
+pandas == 2.2.1
+seaborn == 0.13.2
+scikit-learn == 1.5.2
+geopandas ==  1.0.1
+matplotlib == 3.8.3

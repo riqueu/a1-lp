@@ -5,7 +5,6 @@ import unittest
 
 
 class TestR2(unittest.TestCase):
-    
     #  Teste com um dataframe valido e  esperado
     def test_with_a_valid_and_expected_dataframe(self):
         
@@ -64,7 +63,6 @@ class TestR2(unittest.TestCase):
 
 
 class TestCorr(unittest.TestCase):
-    
     #  Teste correlação igual a 1
     def test_perfect_positive_correlation(self):
         df = pd.DataFrame({'x': [1, 2, 3, 4, 5], 'y': [2, 4, 6, 8, 10]})

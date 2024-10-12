@@ -53,6 +53,7 @@ class TestToEncoded(unittest.TestCase):
         self.assertIn('AllNaN', cols_to_fix)
         self.assertEqual(cols_to_fix['AllNaN'], 'Contains NaN')
 
+
 class TestFill(unittest.TestCase):
     #  Teste com apenas um valor NaN
     def test_fill_single_nan(self):
@@ -91,6 +92,7 @@ class TestFill(unittest.TestCase):
         filled_row = fill(means, row)
         self.assertEqual(filled_row['Height'], 175)
         self.assertEqual(filled_row['Weight'], 75)  # Nenhum valor deve ser alterado
+
 
 if __name__ == "__main__":
     unittest.main()
