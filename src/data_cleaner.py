@@ -235,6 +235,7 @@ def clean_paralympic_atletes_dataset() -> None:
     df.rename(columns={column: column.capitalize() for column in df.columns}, inplace=True)
     df = medals_to_int(df)
     df['Sex'] = np.nan
+    df['Sex'] = df['Sex'].astype(object) # Evitar FutureWarning
     df.loc[df['Event'].str.contains('Men', case=False, na=False), ['Sex']] = 'M'
     df.loc[df['Event'].str.contains('Women', case=False, na=False), ['Sex']] = 'F'
 
