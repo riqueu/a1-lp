@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from data_cleaner import *
 from womens_participation import *
 
+olymp_df, olymp_countries_df, paralymp_df, paralymp_countries_df, olymp_sports_df, olymp_sports_bra_df, paralymp_sports_df, paralymp_sports_bra_df  = create_dataframes()
 
 def plot_scatter_graph(df: pd.DataFrame, x: str, y1: str, y2: str, title: str, score_or_amount: str) -> plt:
     """Função que recebe um DataFrame e plota um gráfico de dispersão com os dados de duas variáveis.
@@ -34,18 +35,18 @@ def plot_scatter_graph(df: pd.DataFrame, x: str, y1: str, y2: str, title: str, s
 
 # Funcoes auxiliares para o plot dos graficos de dispersao das paralimpiadas e olimpiadas
 def filter_paralymp_score_bra():
-    df_analysis_aux = df_paralymp_countries[df_paralymp_countries['NOC']=='BRA']
+    df_analysis_aux = paralymp_countries_df[paralymp_countries_df['NOC']=='BRA']
     df_analysis_aux = df_analysis_aux[(df_analysis_aux['M_Score'] > 0) | (df_analysis_aux['F_Score'] > 0)]
     return df_analysis_aux
 
   
 def filter_paralymp_score_global():
-    df_analysis_aux = df_paralymp[(df_paralymp['M_Score'] > 0) | (df_paralymp['F_Score'] > 0)]
+    df_analysis_aux = paralymp_df[(paralymp_df['M_Score'] > 0) | (paralymp_df['F_Score'] > 0)]
     return df_analysis_aux
     
     
 def filter_olympic_score_bra():
-    df_analysis_aux = df_olymp_countries[df_olymp_countries['NOC']=='BRA']
+    df_analysis_aux = olymp_countries_df[olymp_countries_df['NOC']=='BRA']
     df_analysis_aux = df_analysis_aux[(df_analysis_aux['M_Score'] > 0) | (df_analysis_aux['F_Score'] > 0)]
     return df_analysis_aux
 
@@ -92,15 +93,15 @@ def create_all_graphs(athletes_df: pd.DataFrame, modified_medal_athlete_df: pd.D
 
   
 def filter_olympic_score_global():
-    df_analysis_aux = df_olymp[(df_olymp['M_Score'] > 0) | (df_olymp['F_Score'] > 0)]
+    df_analysis_aux = olymp_df[(olymp_df['M_Score'] > 0) | (olymp_df['F_Score'] > 0)]
     return df_analysis_aux
 
   
 def create_table_of_stds():
     plt.figure()
 
-    df = estimate_statistics(df_olymp_countries[df_olymp_countries['NOC']=='BRA'])
-    df = pd.concat([df, estimate_statistics(df_paralymp_countries[df_paralymp_countries['NOC']=='BRA'])])
+    df = estimate_statistics(olymp_countries_df[olymp_countries_df['NOC']=='BRA'])
+    df = pd.concat([df, estimate_statistics(paralymp_countries_df[paralymp_countries_df['NOC']=='BRA'])])
     df = df.loc['std']
     index = ['Olympic_Std_Normal', 'Olympic_Std_Cleaned', 'Paralympic_Std_Normal', 'Paralympic_Std_Cleaned']
     df = df.set_axis(index).reset_index()
@@ -116,3 +117,20 @@ def create_table_of_stds():
     table.scale(1.2, 1.2)
     
     return plt
+
+#Pegar top 5 esportes nas olimpiadas e paralimpiadas pelo score
+auxiliar_df = olymp_sports_bra_df.groupby(['Year', 'Sport'])['F_Score'].sum().reset_index()
+#print(auxiliar_df[auxiliar_df['F_Score'] != 0])
+auxiliar_df = auxiliar_df[auxiliar_df['F_Score'] != 0].sort_values(by=['Year','F_Score'])
+auxiliar_df = auxiliar_df.groupby('Year').tail(3)
+years = auxiliar_df['Year'].unique()
+print(auxiliar_df)
+print(years)
+print(len(years))
+
+auxiliar_df = olymp_sports_bra_df.groupby(['Year', 'Sport'])['M_Score'].sum().reset_index()
+auxiliar_df = auxiliar_df[auxiliar_df['M_Score'] != 0].sort_values(by=['Year','M_Score'])
+auxiliar_df = auxiliar_df.groupby('Year').tail(3)
+years = auxiliar_df['Year'].unique()
+print(auxiliar_df)
+print(years)
