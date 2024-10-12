@@ -234,9 +234,10 @@ def clean_paralympic_atletes_dataset() -> None:
     df = pd.read_csv("data/medal_athlete.csv")
     df.rename(columns={column: column.capitalize() for column in df.columns}, inplace=True)
     df = medals_to_int(df)
-    df['Sex'] = np.nan
-    df.loc[df['Event'].str.contains('Men', case=False, na=False), ['Sex']] = 'M'
-    df.loc[df['Event'].str.contains('Women', case=False, na=False), ['Sex']] = 'F'
+    # df['Sex'] = np.nan
+
+    df.loc[df['Event'].astype(str).str.contains('Men', case=False, na=False), ['Sex']] = 'M'
+    df.loc[df['Event'].astype(str).str.contains('Women', case=False, na=False), ['Sex']] = 'F'
 
     # Variaveis auxiliares para verificar se a quantidade de atletas removidos esta correta
     identified_athletes = df[(df['Sex'] == 'F') | (df['Sex'] == 'M')]
