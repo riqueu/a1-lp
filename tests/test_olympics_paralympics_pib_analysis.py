@@ -3,8 +3,8 @@ import pandas as pd
 from src.olympics_paralympics_pib_analysis import *
 from matplotlib import pyplot as plt
 
+
 class TestAddCountryFromNoc(unittest.TestCase):
-    
     # Configura os DataFrames para os testes
     def setUp(self):
         
@@ -73,7 +73,6 @@ class TestAddCountryFromNoc(unittest.TestCase):
         })
         pd.testing.assert_frame_equal(result, expected)
    
-
 
 class TestPivotGdpToLong(unittest.TestCase):
 

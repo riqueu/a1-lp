@@ -7,13 +7,6 @@ import matplotlib.pyplot as plt
 from data_cleaner import convert_athletes_df_to_paralympics_format, rename_countries_gdp
 
 
-athletes_df = pd.read_csv('../data/athlete_events.csv')
-summer_paralympics_df = pd.read_csv('../data/summer_paralympics.csv')
-winter_paralympics_df = pd.read_csv('../data/winter_paralympics.csv')
-gdp_df = pd.read_csv("../data/gdp/gdp.csv").drop(columns=['Code', 'Unnamed: 65'])
-noc_df = pd.read_csv('../data/noc_regions.csv').rename(columns={'region': 'Country'})
-
-
 def add_country_from_noc(df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
     """
     Adiciona a coluna 'Country' ao DataFrame a partir do DataFrame NOC.
@@ -149,6 +142,15 @@ def prepare_data_for_analysis(athletes_df: pd.DataFrame, summer_paralympics_df: 
 
 
 def prepare_olympics_paralympics_analysis(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Prepara os dados para análise de correlação entre medalhas nas Olimpíadas e nas Paralimpíadas.
+
+    Args:
+        data (pd.DataFrame): DataFrame contendo colunas 'Country', 'Event', 'Gold', 'Silver' e 'Bronze'.
+
+    Returns:
+        pd.DataFrame: Matriz de correlação entre as medalhas de ouro, bronze e prata das Olimpíadas e Paralimpíadas.
+    """
     grouped_data = data.groupby(['Country', 'Event']).agg({
         'Gold': 'sum',
         'Silver': 'sum',
@@ -165,6 +167,15 @@ def prepare_olympics_paralympics_analysis(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def prepare_medals_gdp_analysis(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Prepara os dados para análise de correlação entre medalhas e PIB.
+
+    Args:
+        data (pd.DataFrame): DataFrame contendo colunas 'Gold', 'Silver', 'Bronze' e 'GDP'.
+
+    Returns:
+        pd.DataFrame: Matriz de correlação entre as medalhas de ouro, prata, bronze e o PIB.
+    """
     correlation_matrix = data[['Gold', 'Silver', 'Bronze', 'GDP']].corr()
 
     return correlation_matrix
@@ -250,18 +261,3 @@ def create_scatterplot_olympics_paralympics_pib_2016(data_2016: pd.DataFrame) ->
     ax.view_init(elev=20, azim=-70)
 
     return plt
-
-
-df = prepare_data_for_analysis(athletes_df, summer_paralympics_df, winter_paralympics_df, gdp_df, noc_df)
-
-correlation_matrix_1 = prepare_olympics_paralympics_analysis(df)
-graph1 = create_heatmap(correlation_matrix_1, "")
-graph1.savefig("../graphs/heatmap_olympics_paralympics_medals.png", dpi=300)
-
-correlation_matrix_2 = prepare_medals_gdp_analysis(df)
-graph2 = create_heatmap(correlation_matrix_2, "")
-graph2.savefig("../graphs/heatmap_medals_gdp.png", dpi=300)
-
-merged_df = prepare_2016_olympics_paralympics_pib_analysis(df)
-graph3 = create_scatterplot_olympics_paralympics_pib_2016(merged_df)
-graph3.savefig("../graphs/scatterplot_olympics_paralympics_pib_2016.png", dpi=300)
