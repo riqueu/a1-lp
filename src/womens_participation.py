@@ -2,7 +2,7 @@
 
 import pandas as pd
 from data_cleaner import *
-
+import doctest
 
 def count_athletes(df: pd.DataFrame, *args) -> pd.DataFrame:
     """Função que conta a quantidade de atletas e agrupa pela lista passada.
@@ -39,6 +39,23 @@ def update_medals_or_score(df: pd.DataFrame, medal_or_score: str, *args, **kwarg
     df[f'Total_{medal_or_score}'] = df[[f'F_{medal_or_score}', f'M_{medal_or_score}']].sum(axis=1)
     
     return df
+
+# data = {
+#     'Year': [2020, 2020, 2021, 2021],
+#     'NOC': ['BRA', 'BRA', 'USA', 'BRA'],
+#     'Medal': [1, 0, 1, 1],
+#     'Sex': ['F', 'M', 'F', 'M']
+#     }
+# df = pd.DataFrame(data)
+# result_df = update_medals_or_score(df, 'Medal', 'NOC', 'Year', Sex='Sex')
+# print(result_df)
+# df1 = pd.read_csv("data/athlete_events.csv")
+# df1 = medals_to_int(df1)
+# df2 = df1.head(5)
+# df2 = df2[['Medal', 'Year', 'NOC', 'Sex']]
+# print(df2)
+# df_aux = update_medals_or_score(df2, 'Medal', *['Year', 'NOC', 'Sex'], **{'F': 'F_Medal', 'M': 'M_Medal'})
+# print(df_aux.head())
 
 
 def merge_by_country(df_main: pd.DataFrame, df_aux: pd.DataFrame) -> pd.DataFrame:
@@ -186,3 +203,5 @@ def estimate_statistics(df: pd.DataFrame) -> pd.DataFrame:
     df_without_outliers = df[['F_Athletes', 'F_Medal', 'F_Score']].describe()
     
     return pd.concat([df_with_outliers, df_without_outliers])
+if __name__ == "__main__":
+     doctest.testmod(verbose=False)
