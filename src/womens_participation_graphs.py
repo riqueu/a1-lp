@@ -118,7 +118,7 @@ def create_table_of_stds():
     
     return plt
 
-#Pegar top 5 esportes nas olimpiadas e paralimpiadas pelo score
+"""#Pegar top 5 esportes nas olimpiadas e paralimpiadas pelo score
 auxiliar_df = olymp_sports_bra_df.groupby(['Year', 'Sport'])['F_Score'].sum().reset_index()
 #print(auxiliar_df[auxiliar_df['F_Score'] != 0])
 auxiliar_df = auxiliar_df[auxiliar_df['F_Score'] != 0].sort_values(by=['Year','F_Score'])
@@ -133,4 +133,4 @@ auxiliar_df = auxiliar_df[auxiliar_df['M_Score'] != 0].sort_values(by=['Year','M
 auxiliar_df = auxiliar_df.groupby('Year').tail(3)
 years = auxiliar_df['Year'].unique()
 print(auxiliar_df)
-print(years)
+print(years)"""

@@ -49,23 +49,23 @@ try:
 
     #Análise Participação Feminina: Walléria
     table_stds = wpg.create_table_of_stds()
-    table_stds.savefig('graphs/table_stds_olympics_and_paralympics_bra.png', format='png', dpi=300)
+    table_stds.savefig('graphs/female_participation/table_stds_olympics_and_paralympics_bra.png', format='png', dpi=300)
 
     scatterplot_paralymp_score_bra_df = wpg.filter_paralymp_score_bra()
     scatterplot_paralymp_score_bra = wpg.plot_scatter_graph(scatterplot_paralymp_score_bra_df, 'Year', 'F_Medal', 'M_Medal', 'Scatter Plot: Men\'s Score X Women\'s Score (Brazil)', 'Score')
-    scatterplot_paralymp_score_bra.savefig('graphs/scatterplot_paralymp_score_bra.png', format='png', dpi=300)
+    scatterplot_paralymp_score_bra.savefig('graphs/female_participation/scatterplot_paralymp_score_bra.png', format='png', dpi=300)
+    
+    scatterplot_olymp_score_bra_df = wpg.filter_olympic_score_bra()
+    scatterplot_olymp_score_bra = wpg.plot_scatter_graph(scatterplot_olymp_score_bra_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Score (Brazil)', 'Score')
+    scatterplot_olymp_score_bra.savefig('graphs/female_participation/scatterplot_olymp_score_bra.png', format='png', dpi=300)
 
     scatterplot_paralymp_score_global_df = wpg.filter_paralymp_score_global()
     scatterplot_paralymp_score_global = wpg.plot_scatter_graph(scatterplot_paralymp_score_global_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Score', 'Score')
-    scatterplot_paralymp_score_global.savefig('graphs/scatterplot_paralymp_score_global.png', format='png', dpi=300)
+    scatterplot_paralymp_score_global.savefig('graphs/female_participation/scatterplot_paralymp_score_global.png', format='png', dpi=300)
 
     scatterplot_olymp_score_global_df = wpg.filter_olympic_score_global()
     scatterplot_olymp_score_global = wpg.plot_scatter_graph(scatterplot_olymp_score_global_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Score', 'Score')
-    scatterplot_olymp_score_global.savefig('graphs/scatterplot_olymp_score_global.png', format='png', dpi=300)
-
-    scatterplot_olymp_score_bra_df = wpg.filter_olympic_score_bra()
-    scatterplot_olymp_score_bra = wpg.plot_scatter_graph(scatterplot_olymp_score_bra_df, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Men\'s Score X Women\'s Score', 'Score')
-    scatterplot_olymp_score_bra.savefig('graphs/scatterplot_olymp_score_bra.png', format='png', dpi=300)
+    scatterplot_olymp_score_global.savefig('graphs/female_participation/scatterplot_olymp_score_global.png', format='png', dpi=300)
     
     # Análise dos Atributos Físicos dos Atletas: Carlos
     pa.attributes_sports_analysis(clean_athletes_df)
