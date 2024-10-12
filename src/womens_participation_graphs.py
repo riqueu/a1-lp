@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from data_cleaner import *
 from womens_participation import *
 
+
 def plot_scatter_graph(df: pd.DataFrame, x: str, y1: str, y2: str, title: str, score_or_amount: str) -> plt:
     """Função que recebe um DataFrame e plota um gráfico de dispersão com os dados de duas variáveis.
 
@@ -17,13 +18,10 @@ def plot_scatter_graph(df: pd.DataFrame, x: str, y1: str, y2: str, title: str, s
         y2 (str): Nome da coluna do DataFrame a ser usada no eixo y para a segunda variável.
         title (str): Título do gráfico.
         score_or_amount (str): Rótulo do eixo y.
-
-    Returns:
-        plt: Objeto matplotlib.pyplot com o gráfico de dispersão.
     """
     # Criando o gráfico de dispersão
     plt.figure(figsize=(12, 6))
-    sns.scatterplot(x=x, y=y1, data=df, label='Women', color='purple', s=70)
+    sns.scatterplot(x=x, y=y1, data=df, label='Women', color='red', s=70)
     sns.scatterplot(x=x, y=y2, data=df, label='Men', color='blue', s=70)
 
     # Ajustando o gráfico
@@ -32,6 +30,25 @@ def plot_scatter_graph(df: pd.DataFrame, x: str, y1: str, y2: str, title: str, s
     plt.title(title)
     plt.legend(loc='upper left', fontsize='large')
     return plt
+    
+
+# Funcoes auxiliares para o plot dos graficos de dispersao das paralimpiadas e olimpiadas
+def filter_paralymp_score_bra():
+    df_analysis_aux = df_paralymp_countries[df_paralymp_countries['NOC']=='BRA']
+    df_analysis_aux = df_analysis_aux[(df_analysis_aux['M_Score'] > 0) | (df_analysis_aux['F_Score'] > 0)]
+    return df_analysis_aux
+
+  
+def filter_paralymp_score_global():
+    df_analysis_aux = df_paralymp[(df_paralymp['M_Score'] > 0) | (df_paralymp['F_Score'] > 0)]
+    return df_analysis_aux
+    
+    
+def filter_olympic_score_bra():
+    df_analysis_aux = df_olymp_countries[df_olymp_countries['NOC']=='BRA']
+    df_analysis_aux = df_analysis_aux[(df_analysis_aux['M_Score'] > 0) | (df_analysis_aux['F_Score'] > 0)]
+    return df_analysis_aux
+
     
 def create_all_graphs(athletes_df: pd.DataFrame, modified_medal_athlete_df: pd.DataFrame, summer_paralympics_df: pd.DataFrame, winter_paralympics_df: pd.DataFrame) -> list:
     """
@@ -49,6 +66,7 @@ def create_all_graphs(athletes_df: pd.DataFrame, modified_medal_athlete_df: pd.D
     
     plots = []
     
+    # Plot dos graficos de dispersao das olimpíadas
     df_analisys_aux = df_olymp
     plots.append(plot_scatter_graph(df_analisys_aux, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Male Athletes X Female Athletes (Global)', 'Amount'))
     df_analisys_aux = df_analisys_aux[(df_analisys_aux['M_Score'] > 0) | (df_analisys_aux['F_Score'] > 0)]
@@ -58,10 +76,8 @@ def create_all_graphs(athletes_df: pd.DataFrame, modified_medal_athlete_df: pd.D
     plots.append(plot_scatter_graph(df_analisys_aux, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Male Athletes X Female Athletes (Brazil)', 'Amount'))
     df_analisys_aux = df_analisys_aux[(df_analisys_aux['M_Score'] > 0) | (df_analisys_aux['F_Score'] > 0)]
     plots.append(plot_scatter_graph(df_analisys_aux, 'Year', 'F_Medal', 'M_Medal', 'Scatter Plot: Men\'s Score X Women\'s Score (Brazil)', 'Score'))
-
-
+    
     # Plot dos graficos de dispersao das paralimpiadas
-
     df_analisys_aux = df_paralymp
     plots.append(plot_scatter_graph(df_analisys_aux, 'Year', 'F_Athletes', 'M_Athletes', 'Scatter Plot: Male Athletes X Female Athletes (Global)', 'Amount'))
     df_analisys_aux = df_analisys_aux[(df_analisys_aux['M_Score'] > 0) | (df_analisys_aux['F_Score'] > 0)]
@@ -73,3 +89,30 @@ def create_all_graphs(athletes_df: pd.DataFrame, modified_medal_athlete_df: pd.D
     plots.append(plot_scatter_graph(df_analisys_aux, 'Year', 'F_Medal', 'M_Medal', 'Scatter Plot: Men\'s Score X Women\'s Score (Brazil)', 'Score'))
     
     return plots
+
+  
+def filter_olympic_score_global():
+    df_analysis_aux = df_olymp[(df_olymp['M_Score'] > 0) | (df_olymp['F_Score'] > 0)]
+    return df_analysis_aux
+
+  
+def create_table_of_stds():
+    plt.figure()
+
+    df = estimate_statistics(df_olymp_countries[df_olymp_countries['NOC']=='BRA'])
+    df = pd.concat([df, estimate_statistics(df_paralymp_countries[df_paralymp_countries['NOC']=='BRA'])])
+    df = df.loc['std']
+    index = ['Olympic_Std_Normal', 'Olympic_Std_Cleaned', 'Paralympic_Std_Normal', 'Paralympic_Std_Cleaned']
+    df = df.set_axis(index).reset_index()
+    df.rename(columns={'index': ''}, inplace=True)
+
+    sns.set_theme(style='darkgrid') 
+    fig, ax = plt.subplots(figsize=(10, 3))
+    ax.axis('tight')   
+    ax.axis('off')
+    table = ax.table(cellText=df.values, colLabels=df.columns, cellLoc='center', loc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(12)
+    table.scale(1.2, 1.2)
+    
+    return plt
