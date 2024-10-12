@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import doctest
+import math
 from sklearn.feature_selection import SelectKBest, chi2
 
 
@@ -100,6 +101,50 @@ def corr(df: pd.DataFrame, quanti_1: str, quanti_2: str, is_sample: bool = True)
     corr = cov / (std_1 * std_2)
 
     return corr
+
+def qui2(df, quali1, quali2, is_sample=True):
+    # Agruprando pelas classes iguais
+    df = df.groupby([quali1, quali2]).count()
+    # display(df.head())
+    df = df.unstack(level='Sport')
+    df['Total'] = df.apply('sum', axis=1)
+    df.loc['Total', :] = df.apply('sum')
+
+    # Calcula as frequencias relativas as colunas
+    df_relative = df.apply(lambda x: x/x[:-1].sum())
+    df_expected = df.apply(lambda x: x*df_relative.Total)
+
+    df_qui = (df - df_expected)**2
+    df_qui /= df_expected
+    
+    # display(df)
+    
+    # display(df_relative)
+
+    # display(df_expected)
+
+    # display(df_qui)
+
+    qui2 = df_qui.iloc[:-1, :-1].sum().sum()
+
+    return qui2, df.shape[0]-1, df.shape[1]-1
+    
+
+def coeficientes_qui2(df: pd.DataFrame, quali_1: str, quali_2: str, is_sample: bool) -> float:
+    
+    # Obtem o qui2
+    qui_2, rows, columns = qui2(df, quali_1, quali_2, is_sample)
+    
+    # Coeficiente de contigencia
+    C = math.sqrt(qui_2/(qui_2+df.shape[0]))
+
+    # Coeficente T
+    T = math.sqrt(qui_2/(df.shape[0].math.sqrt((rows-1)(columns-1))))
+
+    # Coeficient V Cramer
+    V = math.sqrt(qui_2/(df.shape[0]*min([rows, columns])))
+     
+    return C, T, V
 
 
 if __name__ == "__main__":
