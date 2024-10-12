@@ -238,7 +238,7 @@ def create_heatmap(correlation_matrix: pd.DataFrame, title: str) -> None:
         plt: Objeto do tipo matplotlib.pyplot com o heatmap.
     """
     plt.figure(figsize=(12, 8))
-    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidths=0.5)
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidths=0.5, annot_kws={'size': 30})
     
     plt.title(title)
     
