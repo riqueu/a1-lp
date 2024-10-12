@@ -103,22 +103,16 @@ def merge_by_sport(df_main: pd.DataFrame, df_aux: pd.DataFrame) -> pd.DataFrame:
     return df_main
 
 
-def create_dataframes(athletes_df: pd.DataFrame, modified_medal_athlete_df: pd.DataFrame, summer_paralympics_df: pd.DataFrame, winter_paralympics_df: pd.DataFrame) -> tuple:
+def create_dataframes() -> tuple:
     """Função que cria os dataframes para a análise e visualização de participação e rendimento dos atletas do Brasil comparado com o mundo.
-
-    Args:
-        athletes_df (pd.DataFrame): dataframe dos atletas
-        modified_medal_athlete_df (pd.DataFrame): dataframe dos atletas modificados
-        summer_paralympics_df (pd.DataFrame): dataframe das paralimpíadas de verão
-        winter_paralympics_df (pd.DataFrame): dataframe das paralimpíadas de inverno
 
     Returns:
         tuple: dataframes para análise
     """
-    df1 = athletes_df
-    df2 = modified_medal_athlete_df
-    df3 = summer_paralympics_df
-    df4 = winter_paralympics_df
+    df1 = pd.read_csv("data/athlete_events.csv")
+    df2 = pd.read_csv("data/modified_medal_athlete.csv")
+    df3 = pd.read_csv("data/summer_paralympics.csv")
+    df4 = pd.read_csv("data/winter_paralympics.csv")
     df3 = pd.concat([df3, df4])
     df3.sort_values(by=['Year'], inplace=True)
     df1 = medals_to_int(df1)
