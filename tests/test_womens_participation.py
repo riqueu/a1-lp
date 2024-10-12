@@ -38,7 +38,6 @@ class TestCountAthletes(unittest.TestCase):
         }
         df = pd.DataFrame(data)
 
-        # DataFrame esperado
         expected_data = {
             'NOC': ['BRA', 'USA'],
             'F_Athletes': [1, 1],
@@ -48,7 +47,6 @@ class TestCountAthletes(unittest.TestCase):
         expected_df = pd.DataFrame(expected_data)
         result_df = count_athletes(df, 'NOC', 'Sex')
 
-        # Verifica se o DataFrame gerado é igual ao esperado
         self.assertTrue(result_df[['NOC', 'F_Athletes', 'M_Athletes', 'Total_Athletes']].equals(expected_df))
 
     def test_no_medals(self):
@@ -109,7 +107,237 @@ class TestUpdateMedalsOrScore(unittest.TestCase):
         self.assertEqual(result_df['NOC'].tolist(), expected_result['NOC'].tolist())
         self.assertEqual(result_df['Total_Medal'].tolist(), expected_result['Total_Medal'].tolist())
         self.assertEqual(result_df['Year'].tolist(), expected_result['Year'].tolist())
+
+class TestMergeByCountry(unittest.TestCase):
+
+    def setUp(self):
+        """Função que cria os DataFrames para usar nos testes."""
+        self.df_main = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'NOC': ['USA', 'BRA', 'CHN'],
+            'T_Medal': [40, 20, 30]
+        })
+
+        self.df_aux = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'NOC': ['USA', 'BRA', 'CHN'],
+            'Athletes': [100, 80, 120]
+        })
+
+    def test_normal_merge(self):
+        """Teste para verificar o merge com dados normais."""
+        result = merge_by_country(self.df_main, self.df_aux)
+
+        expected = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'NOC': ['USA', 'BRA', 'CHN'],
+            'T_Medal': [40, 20, 30],
+            'Athletes': [100, 80, 120]
+        })
+
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_missing_values(self):
+        """Teste para verificar se o merge lida corretamente com valores faltantes."""
+        df_aux_with_missing = pd.DataFrame({
+            'Year': [2000, 2008],
+            'NOC': ['USA', 'CHN'],
+            'Athletes': [100, 120]
+        })
+
+        result = merge_by_country(self.df_main, df_aux_with_missing)
+
+        expected = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'NOC': ['USA', 'BRA', 'CHN'],
+            'T_Medal': [40, 20, 30],
+            'Athletes': [100, None, 120]
+        })
+
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_empty_dataframes(self):
+        """Teste para verificar se a função lida com dataframes vazios."""
+        df_empty = pd.DataFrame(columns=['Year', 'NOC', 'Athletes'])
+        result = merge_by_country(self.df_main, df_empty)
+
+        expected = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'NOC': ['USA', 'BRA', 'CHN'],
+            'T_Medal': [40, 20, 30],
+            'Athletes': [None, None, None]
+        })
+
+        pd.testing.assert_frame_equal(result, expected)
+
+class TestMergeByYear(unittest.TestCase):
+
+    def setUp(self):
+        """Função que cria os DataFrames para usar nos testes."""
+        self.df_main = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'T_Medal': [40, 20, 30]
+        })
+
+        self.df_aux = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'Athletes': [100, 80, 120]
+        })
+
+    def test_normal_merge(self):
+        """Teste para verificar o merge com dados normais."""
+        result = merge_by_year(self.df_main, self.df_aux)
+
+        expected = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'T_Medal': [40, 20, 30],
+            'Athletes': [100, 80, 120]
+        })
+
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_missing_values(self):
+        """Teste para verificar o comportamento com valores faltantes."""
+        df_aux_with_missing = pd.DataFrame({
+            'Year': [2000, 2008],
+            'Athletes': [100, 120]
+        })
+
+        result = merge_by_year(self.df_main, df_aux_with_missing)
+
+        expected = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'T_Medal': [40, 20, 30],
+            'Athletes': [100, None, 120]
+        })
+
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_empty_dataframes(self):
+        """Teste para verificar se a função lida com dataframes vazios."""
+        df_empty = pd.DataFrame(columns=['Year', 'Athletes'])
+        result = merge_by_year(self.df_main, df_empty)
+
+        expected = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'T_Medal': [40, 20, 30],
+            'Athletes': [None, None, None]
+        })
+
+        pd.testing.assert_frame_equal(result, expected)
     
-    
+class TestMergeBySport(unittest.TestCase):
+
+    def setUp(self):
+        """Função que cria os DataFrames para usar nos testes."""
+        self.df_main = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'Sport': ['Football', 'Basketball', 'Swimming'],
+            'T_Medal': [10, 15, 20]
+        })
+
+        self.df_aux = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'Sport': ['Football', 'Basketball', 'Swimming'],
+            'Athletes': [50, 30, 60]
+        })
+
+    def test_normal_merge(self):
+        """Teste para verificar o merge com dados normais."""
+        result = merge_by_sport(self.df_main, self.df_aux)
+
+        expected = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'Sport': ['Football', 'Basketball', 'Swimming'],
+            'T_Medal': [10, 15, 20],
+            'Athletes': [50, 30, 60]
+        })
+
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_missing_values(self):
+        """Teste para verificar o comportamento com valores faltantes."""
+        df_aux_with_missing = pd.DataFrame({
+            'Year': [2000, 2008],
+            'Sport': ['Football', 'Swimming'],
+            'Athletes': [50, 60]
+        })
+
+        result = merge_by_sport(self.df_main, df_aux_with_missing)
+
+        expected = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'Sport': ['Football', 'Basketball', 'Swimming'],
+            'T_Medal': [10, 15, 20],
+            'Athletes': [50, None, 60]
+        })
+
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_empty_dataframes(self):
+        """Teste para verificar se a função lida com dataframes vazios."""
+        df_empty = pd.DataFrame(columns=['Year', 'Sport', 'Athletes'])
+        result = merge_by_sport(self.df_main, df_empty)
+
+        expected = pd.DataFrame({
+            'Year': [2000, 2004, 2008],
+            'Sport': ['Football', 'Basketball', 'Swimming'],
+            'T_Medal': [10, 15, 20],
+            'Athletes': [None, None, None]
+        })
+
+        pd.testing.assert_frame_equal(result, expected)
+
+class TestEstimateStatistics(unittest.TestCase):
+
+    def setUp(self):
+        """Função que cria um DataFrame para usar nos testes."""
+        self.df = pd.DataFrame({
+            'F_Athletes': [10, -5, 15, 0, 20],
+            'F_Medal': [2, 3, 4, -1, 5],
+            'F_Score': [90, 85, 88, 0, 92],
+            'Other_Column': [1, 2, 3, 4, 5] 
+        })
+
+    def test_statistics_with_and_without_outliers(self):
+        """Teste para verificar as estatísticas antes e depois de remover outliers."""
+        result = estimate_statistics(self.df)
+
+        # Checa se o resultado tem 2 vezes o número de linhas do describe (um antes e um depois dos outliers)
+        self.assertEqual(result.shape[0], 16) 
+
+        # Verifica se as estatísticas para as colunas específicas estão corretas
+        df_with_outliers = self.df[['F_Athletes', 'F_Medal', 'F_Score']].describe()
+        df_without_outliers = self.df[(self.df['F_Athletes'] > 0) & (self.df['F_Medal'] > 0) & (self.df['F_Score'] > 0)][['F_Athletes', 'F_Medal', 'F_Score']].describe()
+
+        expected_result = pd.concat([df_with_outliers, df_without_outliers])
+
+        pd.testing.assert_frame_equal(result, expected_result)
+
+    def test_empty_dataframe(self):
+        """Teste para verificar o comportamento com um DataFrame vazio."""
+        df_empty = pd.DataFrame(columns=['F_Athletes', 'F_Medal', 'F_Score'])
+        result = estimate_statistics(df_empty)
+
+        # Describe de um DataFrame vazio
+        expected = pd.concat([df_empty.describe(), df_empty.describe()])
+
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_no_outliers(self):
+        """Teste para verificar o comportamento quando não há outliers (valores negativos ou zero)."""
+        df_no_outliers = pd.DataFrame({
+            'F_Athletes': [10, 15, 20],
+            'F_Medal': [2, 3, 4],
+            'F_Score': [90, 85, 88]
+        })
+
+        result = estimate_statistics(df_no_outliers)
+
+        df_describe = df_no_outliers[['F_Athletes', 'F_Medal', 'F_Score']].describe()
+        expected = pd.concat([df_describe, df_describe])
+
+        pd.testing.assert_frame_equal(result, expected)
+
 if __name__ == "__main__":
     unittest.main()
