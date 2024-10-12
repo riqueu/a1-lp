@@ -90,6 +90,21 @@ def fill(means: pd.DataFrame, row: pd.Series) -> pd.Series:
 
     Returns:
         pd.Series: Linha preenchida, ou com um valor nan para ser removida
+    
+    Example:
+    ----------
+    >>> means = pd.DataFrame({
+    ...     'Height': {('M', 'Soccer'): 180, ('M', 'Basketball'): 200},
+    ...     'Weight': {('M', 'Soccer'): 75, ('M', 'Basketball'): 90}
+    ... })
+    
+    >>> row = pd.Series({'Sex': 'M', 'Sport': 'Basketball', 'Height': np.nan, 'Weight': 88})
+    >>> fill(means, row)
+    Sex                M
+    Sport     Basketball
+    Height           NaN
+    Weight            88
+    dtype: object
     """
     features_nan = row[row.isna()]
     cont_nan = features_nan.shape[0]
@@ -124,7 +139,6 @@ def linear_regression(df: pd.DataFrame, features: list, target: str, test_size: 
         test_size (float): Tamanho do conjunto de dados usados para testar o algoritmo.
     Returns:
         pd.DataFrame: Dataframe com a coluna target preenchida
-    
     """
     # Obtem os conjuntos de treino e de teste
     filter_train = ~df[features].isna()
@@ -190,3 +204,15 @@ def predict_missing(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
      doctest.testmod(verbose=False)
+
+# data = {
+#     'Age': [25, np.nan, 30, 35, np.nan, 45, np.nan, 40, 29, 31, np.nan, 34, 36, np.nan, 27],
+#     'Height': [175, 180, np.nan, 165, 170, 160, np.nan, 168, 176, 158, 177, 180, np.nan, 169, 171],
+#          'Weight': [70, 75, 80, np.nan, 65, 85, 90, 88, 72, np.nan, 78, 77, 74, np.nan, 68],
+#          'Sex': [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+#          'Sport': [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+#  }
+# df = pd.DataFrame(data)
+# features = ['Age', 'Height', 'Weight', 'Sex', 'Sport']
+# filled_df = linear_regression(df, features, 'Age', 0.2)
+# print(filled_df['Age'].isna().sum())

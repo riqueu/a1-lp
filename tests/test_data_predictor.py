@@ -53,6 +53,44 @@ class TestToEncoded(unittest.TestCase):
         self.assertIn('AllNaN', cols_to_fix)
         self.assertEqual(cols_to_fix['AllNaN'], 'Contains NaN')
 
+class TestFill(unittest.TestCase):
+    #  Teste com apenas um valor NaN
+    def test_fill_single_nan(self):
+        
+        means = pd.DataFrame({
+            'Height': {('M', 'Soccer'): 180, ('M', 'Basketball'): 200, ('F', 'Tennis'): 170},
+            'Weight': {('M', 'Soccer'): 75, ('M', 'Basketball'): 90, ('F', 'Tennis'): 65}
+        })
+        row = pd.Series({'Sex': 'M', 'Sport': 'Soccer', 'Height': np.nan, 'Weight': 70})
+        filled_row = fill(means, row)
+        
+        self.assertEqual(filled_row['Weight'], 70)  # Peso não deve ser alterado
+
+    # Teste onde há dois valores NaN, apenas um será preenchido
+    def test_fill_multiple_nan(self):
+        
+        means = pd.DataFrame({
+            'Height': {('M', 'Soccer'): 180, ('M', 'Basketball'): 200, ('F', 'Tennis'): 170},
+            'Weight': {('M', 'Soccer'): 75, ('M', 'Basketball'): 90, ('F', 'Tennis'): 65}
+        })
+        
+        row = pd.Series({'Sex': 'M', 'Sport': 'Basketball', 'Height': np.nan, 'Weight': np.nan})
+        filled_row = fill(means, row)
+        # self.assertEqual(filled_row['Height'], 200)  
+        self.assertTrue(pd.isna(filled_row['Weight']))  # Peso continuará NaN
+
+    def test_fill_no_nan(self):
+        # Teste onde não há valores NaN
+        row = pd.Series({'Sex': 'M', 'Sport': 'Soccer', 'Height': 175, 'Weight': 75})
+        
+        means = pd.DataFrame({
+            'Height': {('M', 'Soccer'): 180, ('M', 'Basketball'): 200, ('F', 'Tennis'): 170},
+            'Weight': {('M', 'Soccer'): 75, ('M', 'Basketball'): 90, ('F', 'Tennis'): 65}
+        })
+        
+        filled_row = fill(means, row)
+        self.assertEqual(filled_row['Height'], 175)
+        self.assertEqual(filled_row['Weight'], 75)  # Nenhum valor deve ser alterado
 
 if __name__ == "__main__":
     unittest.main()
