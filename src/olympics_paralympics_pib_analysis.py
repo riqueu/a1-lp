@@ -296,6 +296,11 @@ def create_scatterplot_olympics_paralympics_pib_2016_2d(data_2016: pd.DataFrame)
         Returns:
             plt: Objeto do tipo matplotlib.pyplot com os scatterplots.
         """
+        # Remove countries with GDP of 0
+        data_2016 = data_2016[data_2016['GDP'] > 0]
+        
+        data_2016.to_csv('data/df_checkpoints/data_2016.csv', index=False)
+
         fig, axes = plt.subplots(1, 3, figsize=(18, 6))
         colors = ['red', 'blue', 'orange', 'pink'] # red blue yellow pink
         
@@ -342,4 +347,17 @@ def create_scatterplot_olympics_paralympics_pib_2016_2d(data_2016: pd.DataFrame)
             # ax_inset.set_yticklabels([])
             ax_inset.set_title('Zoomed In', fontsize=8, loc='center', pad=-120)
             count += 1
+            
+        # Add correlation coefficient text for Olympics vs Paralympics
+        corr_coef = data_2016[['M_Olympics', 'M_Paralympics']].corr().iloc[0, 1]
+        axes[0].text(0.95, 0.05, f'Corr: {corr_coef:.2f}', ha='right', va='center', transform=axes[0].transAxes, fontsize=12, bbox=dict(facecolor='white', alpha=0.6))
+
+        # Add correlation coefficient text for Olympics vs GDP
+        corr_coef = data_2016[['M_Olympics', 'GDP']].corr().iloc[0, 1]
+        axes[1].text(0.95, 0.05, f'Corr: {corr_coef:.2f}', ha='right', va='center', transform=axes[1].transAxes, fontsize=12, bbox=dict(facecolor='white', alpha=0.6))
+
+        # Add correlation coefficient text for Paralympics vs GDP
+        corr_coef = data_2016[['M_Paralympics', 'GDP']].corr().iloc[0, 1]
+        axes[2].text(0.95, 0.05, f'Corr: {corr_coef:.2f}', ha='right', va='center', transform=axes[2].transAxes, fontsize=12, bbox=dict(facecolor='white', alpha=0.6))
+        
         return plt
