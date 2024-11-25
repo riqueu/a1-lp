@@ -6,8 +6,10 @@ import pandas as pd
 import geopandas as gpd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+from matplotlib import cm
+from matplotlib.lines import Line2D
 from data_cleaner import *
-
 
 def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urbanization_df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
     """Função que gera um scatterplot com a relação entre a urbanização percentual e a densidade de medalhas por habitante urbano.
@@ -42,11 +44,13 @@ def prepare_2016_medalist_urbanization_analysis(athletes_df: pd.DataFrame, urban
     data_2016['Urban_Medalist_Density'] = data_2016['Medalists'] / data_2016['Urban_Pop_Absolute']
     data_2016 = data_2016.sort_values(by='Urban_Pop_Percent')
     
+    data_2016.to_csv('data/df_checkpoints/medalist_urbanization_2016_checkpoint.csv', index=False) # Checkpoint para análise
+    
     return data_2016
 
 
 def create_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> plt:
-    """Função que gera um scatterplot com a relação entre a urbanização percentual e a densidade de medalhas por habitante urbano.
+    """Função que gera um scatterplot com a relação entre a urbanização percentual e a densidade de medalhas por habitante urbano.  
     
     Args:
         data_2016 (pd.DataFrame): DataFrame com dados de medalistas e urbanização em 2016.
@@ -55,30 +59,62 @@ def create_scatterplot_2016_medalist_urbanization(data_2016: pd.DataFrame) -> pl
         plt: Objeto do tipo matplotlib.pyplot com o scatterplot.
     """
     # Scatterplot com Seaborn
-    sns.set_theme(style="whitegrid")
+    # sns.set_theme(style="whitegrid")
+    sns.set_style("whitegrid", {'axes.grid' : False})
     sns.set_palette("rocket")
-
-    scatterplot = sns.scatterplot(x='Urban_Pop_Percent', y='Urban_Medalist_Density', data=data_2016, size='Medalists', sizes=(10, 100), legend=False)
-    scatterplot.set_yscale('log') # Escala logarítmica para melhor visualização
-
-    scatterplot.set_title('Urbanization vs Urban Medal Density (2016)')
-    scatterplot.set_xlabel('Urban Population (%)')
-    scatterplot.set_ylabel('Medals per Urban Inhabitant')
-
+    
+    data_2016['Urban_Medalist_Density'] = data_2016['Urban_Medalist_Density'] * 10**6  # Convertendo para medalhas por 1m habitantes urbanos
+    
     # Identificando o top 5 e bottom 5 por Urban_Medalist_Density; também pegando o top 5 por medalhistas
     top_5_countries = data_2016.nlargest(5, 'Urban_Medalist_Density')
     bottom_5_countries = data_2016.nsmallest(5, 'Urban_Medalist_Density')
     most_medalists = data_2016.nlargest(5, 'Medalists')
     brazil = data_2016[data_2016['Country'] == 'Brazil']
+    data_2016_without_top_bottom = data_2016[~data_2016['Country'].isin(top_5_countries['Country'].tolist() + bottom_5_countries['Country'].tolist() + most_medalists['Country'].tolist() + brazil['Country'].tolist())]
+    
+    colors = ["#47d786", "#ff715c", "#ff9626", "#5394fc"]
+    markers = ["s", "X", "D", "o"]
+    data = [top_5_countries, bottom_5_countries, most_medalists, brazil]
+    
+    # Anotando países normais no scatterplot
+    scatterplot = sns.scatterplot(x='Urban_Pop_Percent', y='Urban_Medalist_Density', data=data_2016_without_top_bottom, size='Medalists', legend=False)
+    
+    for _, (df, color, marker) in enumerate(zip(data, colors, markers)):
+        scatterplot = sns.scatterplot(x='Urban_Pop_Percent', y='Urban_Medalist_Density', data=df, color=color, marker=marker, size=20, edgecolor='#35193e', linewidth=0.4, legend=False)
+        for _, row in df.iterrows():
+            scatterplot.text(row['Urban_Pop_Percent'] - 1, row['Urban_Medalist_Density'], row['NOC'], color='black', weight='bold', fontsize=4, ha='right')
+    
+    # Adicionando legenda para os marcadores
+    legend_elements = [
+        Line2D([0], [0], marker='s', color='w', markerfacecolor=colors[0], markersize=5, label='Top 5'),
+        Line2D([0], [0], marker='X', color='w', markerfacecolor=colors[1], markersize=5, label='Bottom 5'),
+        Line2D([0], [0], marker='D', color='w', markerfacecolor=colors[2], markersize=5, label='Most Medalists'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor=colors[3], markersize=5, label='Brazil')
+    ]
+    scatterplot.legend(handles=legend_elements, loc='upper left', fontsize=5)
 
-    # Anotando o scatterplot com os países
-    colorir = [top_5_countries, bottom_5_countries, most_medalists, brazil]
+    scatterplot.set_yscale('log') # Escala logarítmica para melhor visualização
+    scatterplot.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: '{:.1f}'.format(y))) # Formatação decimal
+
+    scatterplot.set_title('Urbanization vs Urban Medal Density (2016)', pad=20)
+    scatterplot.set_xlabel('Urban Population (%)')
+    scatterplot.set_ylabel('Medals per Million of Urban Inhabitants')
+
+    scatterplot.spines[['right', 'top']].set_visible(False)
+    plt.xlim(-1, 101)
+    
+
+    
+    # Anotando o scatterplot com os países especiais
+    """colorir = [top_5_countries, bottom_5_countries, most_medalists, brazil]
     colors = ['seagreen', '#e35252', '#d67e20', '#037bfc']
+    markers = ['o', 's', 'D', 'X']
     font_sizes = [7, 7, 6, 6]
     for i, df in enumerate(colorir):
         for _, row in df.iterrows():
-            scatterplot.text(row['Urban_Pop_Percent'], row['Urban_Medalist_Density'], row['Country'], color=colors[i], weight='bold', fontsize=font_sizes[i])
-
+            #scatterplot.text(row['Urban_Pop_Percent'], row['Urban_Medalist_Density'], row['Country'], color=colors[i], weight='bold', fontsize=font_sizes[i])
+            scatterplot.scatter(row['Urban_Pop_Percent'], row['Urban_Medalist_Density'], color=colors[i], marker=markers[i])"""
+    
     return scatterplot
 
 
@@ -180,19 +216,36 @@ def create_map_visualization(data: pd.DataFrame) -> plt:
     world_urban = pd.merge(world, urban_growth, how='left', left_on='NAME', right_on='Country')
     world_medals = pd.merge(world, medal_growth, how='left', left_on='NAME', right_on='Country')
     
+    cmap = cm.seismic_r
+    
     # Plot crescimento da urbanização
     plt.figure()
-    fig, ax = plt.subplots(1, 2, figsize=(20, 10))
+    fig, ax = plt.subplots(2, 1, sharex=True, sharey=True, figsize=(10, 15))
     plt.subplots_adjust(wspace=0)  # Adjust the width space between subplots
-    world_urban.plot(column='Urban_Pop_Percent_Dynamic_Growth', cmap='Blues', legend=False, ax=ax[0], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black')
-    ax[0].set_title('Urbanization Growth (First to Last Available Year)')
+    #world_urban.plot(column='Urban_Pop_Percent_Dynamic_Growth', cmap='RdBu', legend=True, ax=ax[0], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black', vmin=-max(abs(world_urban['Urban_Pop_Percent_Dynamic_Growth'].min()), world_urban['Urban_Pop_Percent_Dynamic_Growth'].max()), vmax=max(abs(world_urban['Urban_Pop_Percent_Dynamic_Growth'].min()), world_urban['Urban_Pop_Percent_Dynamic_Growth'].max()))
+    world_urban.plot(column='Urban_Pop_Percent_Dynamic_Growth', cmap=cmap, legend=True, ax=ax[0], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black', norm=colors.CenteredNorm())
+    
+    ax[0].set_title('Urbanization Growth (%) (First to Last Available Year)')
 
     # Plot crescimento de medalhistas
-    world_medals.plot(column='Medal_Dynamic_Growth', cmap='Reds', legend=False, ax=ax[1], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black')
-    ax[1].set_title('Medal Growth (First to Last Available Year)')
+    #world_medals.plot(column='Medal_Dynamic_Growth', cmap='RdBu', legend=True, ax=ax[1], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black', vmin=-max(abs(world_medals['Medal_Dynamic_Growth'].min()), world_medals['Medal_Dynamic_Growth'].max()), vmax=max(abs(world_medals['Medal_Dynamic_Growth'].min()), world_medals['Medal_Dynamic_Growth'].max()))
+    world_medals.plot(column='Medal_Dynamic_Growth', cmap=cmap, legend=True, ax=ax[1], missing_kwds={'color': 'lightgrey'}, linewidth=0.25, edgecolor='black', norm=colors.CenteredNorm())
+    
+    ax[1].set_title('Medal Growth (%) (First to Last Available Year)')
     
     fig.suptitle('Comparison of Growth in Urbanization and Medals (1956-2016)', fontsize=18, weight='bold')
-    plt.subplots_adjust(bottom=0.55)
+    plt.subplots_adjust(bottom=0.55, top=0.93)
+    
+    # Color Keys
+    # plt.rc('legend',fontsize=10) # using a size in points
+    
+    # Zoom in
+    plt.xlim(-180, 180)
+    plt.ylim(-60, 90)
+
+    # Remove Latitudes e Longitudes
+    plt.xticks([], [])
+    plt.yticks([], [])
 
     return plt
 
