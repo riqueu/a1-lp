@@ -5,6 +5,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from data_cleaner import convert_athletes_df_to_paralympics_format, rename_countries_gdp
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 
 def add_country_from_noc(df: pd.DataFrame, noc_df: pd.DataFrame) -> pd.DataFrame:
@@ -282,3 +283,63 @@ def create_scatterplot_olympics_paralympics_pib_2016(data_2016: pd.DataFrame, xl
         ax.set_zlim(zlim)
 
     return plt
+
+def create_scatterplot_olympics_paralympics_pib_2016_2d(data_2016: pd.DataFrame) -> None:
+        """
+        Cria gráficos de dispersão 2D que mostram a relação entre medalhas nas
+        Olimpíadas, nas Paralimpíadas e PIB dos países em 2016.
+
+        Args:
+            data (pd.DataFrame): DataFrame preparado com colunas 'Country', 
+                'M_Olympics', 'M_Paralympics' e 'GDP'.
+
+        Returns:
+            plt: Objeto do tipo matplotlib.pyplot com os scatterplots.
+        """
+        fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+        colors = ['red', 'blue', 'orange', 'pink'] # red blue yellow pink
+        
+        # Regplot Olympics vs Paralympics
+        sns.regplot(ax=axes[0], x=data_2016['M_Olympics'], y=data_2016['M_Paralympics'], color=colors[0], scatter_kws={'alpha':0.6}, line_kws={'alpha': 0.7, 'color': colors[3]}, ci=50)
+        axes[0].set_xlabel('Total Medals at the Olympics')
+        axes[0].set_ylabel('Total Medals at the Paralympics')
+        axes[0].set_title('Olympics vs Paralympics Medals (2016)')
+        axes[0].spines[['right', 'top']].set_visible(False)
+        axes[0].set_xlim(0, axes[0].get_xlim()[1])
+        axes[0].set_ylim(0, axes[0].get_ylim()[1])
+
+        # Regplot Olympics vs GDP
+        sns.regplot(ax=axes[1], x=data_2016['M_Olympics'], y=data_2016['GDP'], color=colors[1], scatter_kws={'alpha':0.6}, line_kws={'alpha': 0.7, 'color': colors[3]}, ci=50)
+        axes[1].set_xlabel('Total Medals at the Olympics')
+        axes[1].set_ylabel('GDP (in billions)')
+        axes[1].set_title('Olympics Medals vs GDP (2016)')
+        axes[1].spines[['right', 'top']].set_visible(False)
+        axes[1].set_xlim(0, axes[1].get_xlim()[1])
+        axes[1].set_ylim(0, axes[1].get_ylim()[1])
+
+        # Regplot Paralympics vs GDP
+        sns.regplot(ax=axes[2], x=data_2016['M_Paralympics'], y=data_2016['GDP'], color=colors[2], scatter_kws={'alpha':0.6}, line_kws={'alpha': 0.7, 'color': colors[3]}, ci=50)
+        axes[2].set_xlabel('Total Medals at the Paralympics')
+        axes[2].set_ylabel('GDP (in billions)')
+        axes[2].set_title('Paralympics Medals vs GDP (2016)')
+        axes[2].spines[['right', 'top']].set_visible(False)
+        axes[2].set_xlim(0, axes[2].get_xlim()[1])
+        axes[2].set_ylim(0, axes[2].get_ylim()[1])
+
+        plt.tight_layout()
+        # Add zoomed-in inset plot
+
+        count = 0
+        for ax in axes:
+            ax_inset = inset_axes(ax, width="40%", height="40%", loc='upper left')
+            sns.regplot(ax=ax_inset, x=ax.collections[0].get_offsets()[:, 0], y=ax.collections[0].get_offsets()[:, 1], scatter_kws={'alpha':0.7, 'color': colors[count]},
+            line_kws={'alpha': 0.6, 'color': colors[3]}, ci=50)
+            ax_inset.set_xlim(-ax.get_xlim()[1] * 0.01, ax.get_xlim()[1] * 0.15)
+            ax_inset.set_ylim(-ax.get_xlim()[1] * 0.01, ax.get_ylim()[1] * 0.15)
+            ax_inset.set_xticks([])
+            ax_inset.set_yticks([])
+            # ax_inset.set_xticklabels([])
+            # ax_inset.set_yticklabels([])
+            ax_inset.set_title('Zoomed In', fontsize=8, loc='center', pad=-120)
+            count += 1
+        return plt
